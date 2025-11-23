@@ -1,15 +1,55 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <Shell
     x:Class="UziSport.AppShell"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:local="clr-namespace:UziSport"
-    Shell.FlyoutBehavior="Disabled"
-    Title="UziSport">
+    xmlns:views="clr-namespace:UziSport"
+    FlyoutBehavior="Locked"
+    FlyoutWidth="250">
 
-    <ShellContent
-        Title="Home"
-        ContentTemplate="{DataTemplate local:MainPage}"
-        Route="MainPage" />
+    <!-- PHẦN 1: Header trên Flyout (tên + logo) -->
+    <Shell.FlyoutHeader>
+        <Grid Padding="16">
+            <VerticalStackLayout Spacing="12" VerticalOptions="Center">
+                <Image Source="icon_uzi.jpg"
+                       WidthRequest="200"
+                       HeightRequest="200"
+                       Aspect="AspectFit" />
+                <Label Text="UziSport"
+                       FontSize="24"
+                       FontAttributes="Bold"
+                       HorizontalOptions="Center" />
+            </VerticalStackLayout>
+        </Grid>
+    </Shell.FlyoutHeader>
+
+    <!-- PHẦN 2: Nội dung chính (MainPage, màn hình chính của app) -->
+    <FlyoutItem Title="Trang chính" Icon="dotnet_bot.png">
+        <Tab Title="Trang chính" Icon="dotnet_bot.png">
+            <ShellContent
+                Title="MainPage"
+                Icon="dotnet_bot.png"
+                ContentTemplate="{DataTemplate views:MainPage}" />
+        </Tab>
+    </FlyoutItem>
+
+    <!-- PHẦN 3: Nhóm QUẢN LÝ (dropdown dạng nhiều mục con trong flyout) -->
+    <!-- FlyoutDisplayOptions="AsMultipleItems" sẽ hiển thị từng ShellContent như item con -->
+    <FlyoutItem Title="Quản lý"
+                FlyoutDisplayOptions="AsMultipleItems">
+
+        <!-- Mục con 1: Quản lý sản phẩm -->
+        <ShellContent
+            Title="Quản lý sản phẩm"
+            Icon="dotnet_bot.png"
+            ContentTemplate="{DataTemplate views:MainPage}" />
+
+        <!-- Sau này bạn có thể thêm các mục con khác kiểu: 
+        <ShellContent
+            Title="Quản lý khách hàng"
+            Icon="some_icon.png"
+            ContentTemplate="{DataTemplate views:QuanLyKhachHangPage}" />
+        -->
+    </FlyoutItem>
 
 </Shell>

@@ -1,24 +1,45 @@
-﻿namespace UziSport
+﻿using UziSport.DAL;
+
+namespace UziSport
 {
     public partial class MainPage : ContentPage
     {
         int count = 0;
+        private readonly ProductDAL _productDal;
 
         public MainPage()
         {
             InitializeComponent();
+
+            _productDal = new ProductDAL();
+
         }
 
-        private void OnCounterClicked(object sender, EventArgs e)
+        private async void OnCounterClicked(object sender, EventArgs e)
         {
-            count++;
+            try
+            {
+                //var products = await _productDal.GetProductsAsync();
 
-            if (count == 1)
-                CounterBtn.Text = $"Clicked {count} time";
-            else
-                CounterBtn.Text = $"Clicked {count} times";
+                //var brandDAL = new BrandDAL();
 
-            SemanticScreenReader.Announce(CounterBtn.Text);
+                //await brandDAL.SaveItemAsync(new Model.BrandInfo() { BrandName = "Nike" });
+                //await brandDAL.SaveItemAsync(new Model.BrandInfo() { BrandName = "Yonex" });
+                //await brandDAL.SaveItemAsync(new Model.BrandInfo() { BrandName = "Lining" });
+                //await brandDAL.SaveItemAsync(new Model.BrandInfo() { BrandName = "Victor" });
+                //await brandDAL.SaveItemAsync(new Model.BrandInfo() { BrandName = "Adidas" });
+
+                var catalogDAL = new CatalogDAL();
+                await catalogDAL.SaveItemAsync(new Model.CatalogInfo() { CatalogName = "Vợt" });
+                await catalogDAL.SaveItemAsync(new Model.CatalogInfo() { CatalogName = "Giày" });
+                await catalogDAL.SaveItemAsync(new Model.CatalogInfo() { CatalogName = "Trang phục" });
+                await catalogDAL.SaveItemAsync(new Model.CatalogInfo() { CatalogName = "Phụ kiện" });
+
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlert("Lỗi", ex.Message, "OK");
+            }
         }
     }
 
