@@ -116,7 +116,7 @@
         </Setter>
     </Style>
 
-    <Style TargetType="Entry">
+    <Style ApplyToDerivedTypes="True" TargetType="Entry">
         <Setter Property="TextColor" Value="{StaticResource PrimaryDarkText}" />
         <Setter Property="BackgroundColor" Value="{StaticResource Gray200}" />
         <Setter Property="FontFamily" Value="OpenSansRegular" />

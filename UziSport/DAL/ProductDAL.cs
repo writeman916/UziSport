@@ -13,6 +13,8 @@ namespace UziSport.DAL
     {
         private SQLiteAsyncConnection database;
 
+        private ProductComboCostDAL comboCostDAL = new ProductComboCostDAL();
+
         async Task Init()
         {
             if (database is not null)
@@ -21,9 +23,10 @@ namespace UziSport.DAL
             database = new SQLiteAsyncConnection(DBConstants.DatabasePath, DBConstants.Flags);
 
             var result = await database.CreateTableAsync<ProductInfo>();
+
             await database.CreateTableAsync<CatalogInfo>();
             await database.CreateTableAsync<BrandInfo>();
-
+            await database.CreateTableAsync<ProductComboCostInfo>();
         }
 
         public async Task<ProductInfo> GetItemByIdAsync(int productId)
@@ -43,7 +46,7 @@ namespace UziSport.DAL
             }
         }
 
-        public async Task<List<ProductInfo>> GetProductsAsync()
+        public async Task<List<ProductViewInfo>> GetProductsAsync()
         {
             await Init();
 
@@ -61,21 +64,21 @@ namespace UziSport.DAL
                     p.Price,
                     p.Status,
                     p.Note,
-                    p.CreatedBy,
-                    p.CreatedAt,
-                    p.UpdatedBy,    
-                    p.UpdatedAt
+                    p.CreateBy,
+                    p.CreateAt,
+                    p.UpdateBy,    
+                    p.UpdateAt
                 FROM ProductInfo p
                 LEFT JOIN BrandInfo b ON p.BrandId = b.BrandId
                 LEFT JOIN CatalogInfo c ON p.CatalogId = c.CatalogId
                 ORDER BY p.ProductName;
             ";
 
-            var list = await database.QueryAsync<ProductInfo>(sql);
+            var list = await database.QueryAsync<ProductViewInfo>(sql);
             return list;
         }
 
-        public async Task<ProductInfo?> GetProductByCodeAsync(string code)
+        public async Task<ProductViewInfo?> GetProductByCodeAsync(string code)
         {
             await Init();
 
@@ -93,10 +96,10 @@ namespace UziSport.DAL
                     p.Price,
                     p.Status,
                     p.Note,
-                    p.CreatedBy,
-                    p.CreatedAt,
-                    p.UpdatedBy,    
-                    p.UpdatedAt
+                    p.CreateBy,
+                    p.CreateAt,
+                    p.UpdateBy,    
+                    p.UpdateAt
                 FROM ProductInfo p
                 LEFT JOIN BrandInfo b ON p.BrandId = b.BrandId
                 LEFT JOIN CatalogInfo c ON p.CatalogId = c.CatalogId
@@ -104,7 +107,7 @@ namespace UziSport.DAL
                 WHERE p.ProductCode = '{code}';
             ";
 
-            List<ProductInfo> list = await database.QueryAsync<ProductInfo>(sql);
+            List<ProductViewInfo> list = await database.QueryAsync<ProductViewInfo>(sql);
 
             return list.FirstOrDefault();
         }
@@ -114,24 +117,49 @@ namespace UziSport.DAL
         {
             await Init();
 
-            if (item.ProductId != 0)
+            int result = 0;
+
+            await database.RunInTransactionAsync(conn =>
             {
-                var existInfo = await database.Table<ProductInfo>()
-                                              .Where(x => x.ProductId == item.ProductId)
-                                              .FirstOrDefaultAsync();
-
-                if (existInfo != null)
+                if (item.ProductId == 0)
                 {
-                    return await database.UpdateAsync(item);
+                    result = conn.Insert(item);
                 }
-            }
+                else
+                {
+                    result = conn.Update(item);
 
-            return await database.InsertAsync(item);
+                    if (result == 0)
+                    {
+                        result = conn.Insert(item);
+                    }
+                }
+
+                if (item.ProductComboCostInfos != null && item.ProductComboCostInfos.Count > 0)
+                {
+                    foreach (var cost in item.ProductComboCostInfos)
+                    {
+                        cost.ProductId = item.ProductId;
+                    }
+
+                    comboCostDAL.SaveItemInTransaction(conn, item.ProductComboCostInfos);
+                }
+                else
+                {
+                    comboCostDAL.DeleteByProductIdInTransaction(conn, item.ProductId);
+                }
+            });
+
+            return result;
         }
+
 
         public async Task<int> DeleteItemAsync(ProductInfo item)
         {
             await Init();
+
+            await comboCostDAL.DeleteByProductIdAsync(item.ProductId);
+
             return await database.DeleteAsync(item);
         }
 
@@ -140,8 +168,11 @@ namespace UziSport.DAL
             await Init();
 
             var item = await GetItemByIdAsync(productId);
+
             if (item == null)
                 return 0;
+
+            await comboCostDAL.DeleteByProductIdAsync(productId);
 
             return await database.DeleteAsync(item);
         }

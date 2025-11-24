@@ -1,21 +1,54 @@
-using System.Collections.ObjectModel;
-using UziSport.DAL;
+﻿using System.Collections.ObjectModel;
+using System.Linq;
+using Microsoft.Maui.Controls;
 using UziSport.Model;
+using UziSport.DAL;
 
 namespace UziSport;
 
 public partial class ProductManage : ContentPage
 {
-    public ObservableCollection<ProductComboCostInfo> ComboCosts { get; } = new();
+    public ObservableCollection<ProductComboCostInfo> ComboCosts { get; set; } = new();
+    public ObservableCollection<CatalogInfo> Catalogs { get; } = new();
+    public ObservableCollection<BrandInfo> Brands { get; } = new();
+    public ProductViewInfo CurrentProduct { get; set; } = new ProductViewInfo();
 
-    public int NextNo => ComboCosts.Count == 0 ? 1 : ComboCosts.Count + 1;
+    private List<ProductViewInfo> _allProductInfos = new();
+
+    public List<ProductViewInfo> AllProductInfos
+    {
+        get => _allProductInfos;
+        set
+        {
+            if (_allProductInfos != value)
+            {
+                _allProductInfos = value;
+                OnPropertyChanged(nameof(AllProductInfos));
+            }
+        }
+    }
 
     private int _productId = 0;
+
+    private ProductDAL _productDal = new ProductDAL();
 
     public ProductManage()
     {
         this.InitializeComponent();
         BindingContext = this;
+    }
+
+    private void ClearInput()
+    {
+        this.BarcodeEntry.Text = string.Empty;
+        this.ProductNameEntry.Text = string.Empty;
+        this.CatalogPicker.SelectedIndex = -1;
+        this.BrandPicker.SelectedIndex = -1;
+        this.SpecificationEntry.Text = string.Empty;
+        this.CostEntry.Text = string.Empty;
+        this.PriceEntry.Text = string.Empty;
+
+        ComboCosts = new ObservableCollection<ProductComboCostInfo>();
     }
 
     private void AddButton_Clicked(object sender, EventArgs e)
@@ -54,11 +87,77 @@ public partial class ProductManage : ContentPage
     {
         base.OnAppearing();
 
+        // Load Catalog
         var catalogs = await CatalogDAL.Instance.GetCatalogsAsync();
-        CatalogPicker.ItemsSource = catalogs.Select(x => x.CatalogName).ToList();
+        Catalogs.Clear();
+        foreach (var c in catalogs)
+            Catalogs.Add(c);
 
+        // Load Brand
         var brands = await BrandDAL.Instance.GetBrandsAsync();
-        BrandPicker.ItemsSource =  brands.Select(x => x.BrandName).ToList();
+        Brands.Clear();
+        foreach (var b in brands)
+            Brands.Add(b);
 
+        // Load Product List
+        AllProductInfos =  await _productDal.GetProductsAsync();
+    }
+
+    private void ProductList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        var selected = e.CurrentSelection.FirstOrDefault() as ProductViewInfo;
+        if (selected == null)
+            return;
+
+        // Gán sản phẩm đang chọn lên CurrentProduct (header đang bind vào CurrentProduct)
+        CurrentProduct = selected;
+        OnPropertyChanged(nameof(CurrentProduct));
+
+        // Set CatalogPicker
+        var catalog = Catalogs.FirstOrDefault(c => c.CatalogId == selected.CatalogId);
+        if (catalog != null)
+            CatalogPicker.SelectedItem = catalog;
+
+        // Set BrandPicker
+        var brand = Brands.FirstOrDefault(b => b.BrandId == selected.BrandId);
+        if (brand != null)
+            BrandPicker.SelectedItem = brand;
+
+        // Nếu muốn load lại ComboCosts theo product:
+        ComboCosts.Clear();
+        foreach (var combo in CurrentProduct.ProductComboCostInfos)
+            ComboCosts.Add(combo);
+    }
+
+
+    private async void BtnLuu_Clicked(object sender, EventArgs e)
+    {
+        CurrentProduct.ProductComboCostInfos = ComboCosts.ToList();
+
+        if (CatalogPicker.SelectedItem is CatalogInfo selectedCatalog)
+            CurrentProduct.CatalogId = selectedCatalog.CatalogId;
+
+        if (BrandPicker.SelectedItem is BrandInfo selectedBrand)
+            CurrentProduct.BrandId = selectedBrand.BrandId;
+
+        if (CurrentProduct.ProductId == 0)
+        {
+            this.CurrentProduct.CreateBy = "admin";
+            this.CurrentProduct.CreateAt = DateTime.Now;
+        }else
+        {
+            this.CurrentProduct.UpdateBy = "admin";
+            this.CurrentProduct.UpdateAt = DateTime.Now;
+        }
+
+        await _productDal.SaveItemAsync(CurrentProduct.ConvertProductToSave());
+
+        await DisplayAlert("Thông báo", "Đã lưu sản phẩm", "OK");
+
+        this.ClearInput();
+
+        this.CurrentProduct = new ProductViewInfo();
+
+        AllProductInfos = await _productDal.GetProductsAsync();
     }
 }

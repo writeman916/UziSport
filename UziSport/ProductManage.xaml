@@ -3,11 +3,13 @@
     x:Class="UziSport.ProductManage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:UziSport.Controls"
     Shell.NavBarIsVisible="False">
 
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="300" />
+            <RowDefinition Height="40" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
@@ -30,6 +32,7 @@
                     x:Name="BarcodeEntry"
                     HeightRequest="50"
                     Placeholder="Barcode"
+                    Text="{Binding CurrentProduct.ProductCode}"
                     WidthRequest="200 " />
             </HorizontalStackLayout>
 
@@ -43,6 +46,7 @@
                     x:Name="ProductNameEntry"
                     HeightRequest="50"
                     Placeholder="Tên Sản Phẩm"
+                    Text="{Binding CurrentProduct.ProductName}"
                     WidthRequest="390" />
             </HorizontalStackLayout>
 
@@ -55,11 +59,15 @@
                 <Picker
                     x:Name="CatalogPicker"
                     HeightRequest="50"
+                    ItemDisplayBinding="{Binding CatalogName}"
+                    ItemsSource="{Binding Catalogs}"
                     WidthRequest="180" />
                 <Label>Hãng</Label>
                 <Picker
                     x:Name="BrandPicker"
                     HeightRequest="50"
+                    ItemDisplayBinding="{Binding BrandName}"
+                    ItemsSource="{Binding Brands}"
                     WidthRequest="180" />
             </HorizontalStackLayout>
 
@@ -73,6 +81,7 @@
                     x:Name="SpecificationEntry"
                     HeightRequest="50"
                     Placeholder="Thông số kĩ thuật"
+                    Text="{Binding CurrentProduct.Specification}"
                     WidthRequest="370" />
             </HorizontalStackLayout>
 
@@ -81,11 +90,12 @@
                 Grid.Column="2"
                 Spacing="10">
                 <Label>Giá vốn</Label>
-                <Entry
+                <controls:NumericEntry
                     x:Name="CostEntry"
                     HeightRequest="50"
                     Keyboard="Numeric"
                     Placeholder="Giá vốn"
+                    Text="{Binding CurrentProduct.Cost}"
                     WidthRequest="200" />
             </HorizontalStackLayout>
 
@@ -94,11 +104,12 @@
                 Grid.Column="2"
                 Spacing="10">
                 <Label>Giá bán</Label>
-                <Entry
+                <controls:NumericEntry
                     x:Name="PriceEntry"
                     HeightRequest="50"
                     Keyboard="Numeric"
                     Placeholder="Giá bán"
+                    Text="{Binding CurrentProduct.Price}"
                     WidthRequest="200" />
             </HorizontalStackLayout>
 
@@ -109,7 +120,9 @@
                 HorizontalOptions="End"
                 Spacing="10">
                 <Button
+                    x:Name="SaveButton"
                     BackgroundColor="DarkGreen"
+                    Clicked="BtnLuu_Clicked"
                     HeightRequest="50"
                     Text="Lưu"
                     WidthRequest="100" />
@@ -174,13 +187,12 @@
                         </CollectionView.ItemTemplate>
                     </CollectionView>
 
-                    <!--  Dòng mới luôn ở cuối: Entry nhập số + nút Thêm  -->
                     <Grid
                         Grid.Row="2"
                         Padding="0,8,0,0"
                         ColumnDefinitions="*,Auto">
 
-                        <Entry
+                        <controls:NumericEntry
                             x:Name="NewCostEntry"
                             Grid.Column="0"
                             Completed="NewCostEntry_Completed"
@@ -193,9 +205,201 @@
                             Text="+"
                             WidthRequest="40" />
                     </Grid>
-
                 </Grid>
             </Frame>
         </Grid>
+
+        <!--  Product List  -->
+        <Frame
+            Grid.Row="2"
+            Margin="5"
+            BackgroundColor="Transparent"
+            BorderColor="{StaticResource Secondary}"
+            CornerRadius="10">
+
+            <Grid RowDefinitions="Auto,Auto,*">
+
+                <!--  Header: tiêu đề cột  -->
+                <HorizontalStackLayout Grid.Row="0">
+                    <Label HorizontalTextAlignment="Center" WidthRequest="100">Barcode</Label>
+                    <Line
+                        Stroke="{StaticResource Secondary}"
+                        StrokeThickness="1"
+                        X1="0"
+                        X2="0"
+                        Y1="0"
+                        Y2="30" />
+                    <Label HorizontalTextAlignment="Center" WidthRequest="300">Tên Sản Phẩm</Label>
+                    <Line
+                        Stroke="{StaticResource Secondary}"
+                        StrokeThickness="1"
+                        X1="0"
+                        X2="0"
+                        Y1="0"
+                        Y2="30" />
+                    <Label HorizontalTextAlignment="Center" WidthRequest="150">Danh mục</Label>
+                    <Line
+                        Stroke="{StaticResource Secondary}"
+                        StrokeThickness="1"
+                        X1="0"
+                        X2="0"
+                        Y1="0"
+                        Y2="30" />
+                    <Label HorizontalTextAlignment="Center" WidthRequest="150">Hãng</Label>
+                    <Line
+                        Stroke="{StaticResource Secondary}"
+                        StrokeThickness="1"
+                        X1="0"
+                        X2="0"
+                        Y1="0"
+                        Y2="30" />
+                    <Label HorizontalTextAlignment="Center" WidthRequest="200">Thông số</Label>
+                    <Line
+                        Stroke="{StaticResource Secondary}"
+                        StrokeThickness="1"
+                        X1="0"
+                        X2="0"
+                        Y1="0"
+                        Y2="30" />
+                    <Label HorizontalTextAlignment="Center" WidthRequest="200">Giá vốn</Label>
+                    <Line
+                        Stroke="{StaticResource Secondary}"
+                        StrokeThickness="1"
+                        X1="0"
+                        X2="0"
+                        Y1="0"
+                        Y2="30" />
+                    <Label HorizontalTextAlignment="Center" WidthRequest="200">Giá bán</Label>
+                </HorizontalStackLayout>
+
+                <!--  Line ngang  -->
+                <Line
+                    Grid.Row="1"
+                    Aspect="Fill"
+                    HeightRequest="1"
+                    HorizontalOptions="Fill"
+                    Stroke="{StaticResource Secondary}"
+                    StrokeThickness="1"
+                    X1="0"
+                    X2="1"
+                    Y1="0"
+                    Y2="0" />
+
+                <!--  CollectionView sẽ scroll trong hàng * này  -->
+                <CollectionView
+                    Grid.Row="2"
+                    ItemsSource="{Binding AllProductInfos}"
+                    SelectionChanged="ProductList_SelectionChanged"
+                    SelectionMode="Single">
+
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <HorizontalStackLayout>
+                                <Label
+                                    HorizontalTextAlignment="Center"
+                                    Text="{Binding ProductCode}"
+                                    WidthRequest="100" />
+                                <Line
+                                    Stroke="{StaticResource Secondary}"
+                                    StrokeThickness="1"
+                                    X1="0"
+                                    X2="0"
+                                    Y1="0"
+                                    Y2="30" />
+
+                                <Label
+                                    HorizontalTextAlignment="Center"
+                                    Text="{Binding ProductName}"
+                                    WidthRequest="300" />
+                                <Line
+                                    Stroke="{StaticResource Secondary}"
+                                    StrokeThickness="1"
+                                    X1="0"
+                                    X2="0"
+                                    Y1="0"
+                                    Y2="30" />
+
+                                <Label
+                                    HorizontalTextAlignment="Center"
+                                    Text="{Binding CatalogName}"
+                                    WidthRequest="150" />
+                                <Line
+                                    Stroke="{StaticResource Secondary}"
+                                    StrokeThickness="1"
+                                    X1="0"
+                                    X2="0"
+                                    Y1="0"
+                                    Y2="30" />
+
+                                <Label
+                                    HorizontalTextAlignment="Center"
+                                    Text="{Binding BrandName}"
+                                    WidthRequest="150" />
+                                <Line
+                                    Stroke="{StaticResource Secondary}"
+                                    StrokeThickness="1"
+                                    X1="0"
+                                    X2="0"
+                                    Y1="0"
+                                    Y2="30" />
+
+                                <Label
+                                    HorizontalTextAlignment="Center"
+                                    Text="{Binding Specification}"
+                                    WidthRequest="200" />
+                                <Line
+                                    Stroke="{StaticResource Secondary}"
+                                    StrokeThickness="1"
+                                    X1="0"
+                                    X2="0"
+                                    Y1="0"
+                                    Y2="30" />
+
+                                <Label
+                                    HorizontalTextAlignment="Center"
+                                    Text="{Binding Cost, StringFormat='{}{0:N0}'}"
+                                    WidthRequest="200" />
+                                <Line
+                                    Stroke="{StaticResource Secondary}"
+                                    StrokeThickness="1"
+                                    X1="0"
+                                    X2="0"
+                                    Y1="0"
+                                    Y2="30" />
+
+                                <Label
+                                    HorizontalTextAlignment="Center"
+                                    Text="{Binding Price, StringFormat='{}{0:N0}'}"
+                                    WidthRequest="200" />
+                                <Line
+                                    Stroke="{StaticResource Secondary}"
+                                    StrokeThickness="1"
+                                    X1="0"
+                                    X2="0"
+                                    Y1="0"
+                                    Y2="30" />
+
+                                <VisualStateManager.VisualStateGroups>
+                                    <VisualStateGroup x:Name="CommonStates">
+                                        <VisualState x:Name="Normal">
+                                            <VisualState.Setters>
+                                                <Setter Property="BackgroundColor" Value="Transparent" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                        <VisualState x:Name="Selected">
+                                            <VisualState.Setters>
+                                                <Setter Property="BackgroundColor" Value="{StaticResource Gray300}" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                    </VisualStateGroup>
+                                </VisualStateManager.VisualStateGroups>
+                            </HorizontalStackLayout>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+            </Grid>
+        </Frame>
+
     </Grid>
 </ContentPage>

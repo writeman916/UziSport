@@ -10,9 +10,7 @@ namespace UziSport.Model
     public class ProductComboCostInfo : BaseModelInfo
     {
         [PrimaryKey, AutoIncrement]
-
         public int ProductComboCostId { get; set; }
-
 
         public int ProductId { get; set; }
 
