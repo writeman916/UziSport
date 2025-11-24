@@ -10,7 +10,14 @@ namespace UziSport.DAL
 {
     public class CatalogDAL
     {
+        // SINGLETON
+        public static CatalogDAL Instance { get; } = new CatalogDAL();
+
         private SQLiteAsyncConnection database;
+
+        // CACHE trong RAM
+        private List<CatalogInfo> _catalogCache;
+        private bool _isCatalogLoaded = false;
 
         async Task Init()
         {
@@ -22,17 +29,26 @@ namespace UziSport.DAL
             var result = await database.CreateTableAsync<CatalogInfo>();
         }
 
-        public async Task<List<CatalogInfo>> GetCatalogsAsync()
+        public async Task<List<CatalogInfo>> GetCatalogsAsync(bool forceRefresh = false)
         {
             await Init();
-            return await database.Table<CatalogInfo>()
-                                 .OrderBy(b => b.CatalogName)
-                                 .ToListAsync();
+
+            if (!_isCatalogLoaded || forceRefresh || _catalogCache == null)
+            {
+                _catalogCache = await database.Table<CatalogInfo>()
+                                              .OrderBy(b => b.CatalogName)
+                                              .ToListAsync();
+                _isCatalogLoaded = true;
+            }
+
+            return _catalogCache;
         }
 
         public async Task<int> SaveItemAsync(CatalogInfo item)
         {
             await Init();
+
+            int result;
 
             if (item.CatalogId != 0)
             {
@@ -42,17 +58,47 @@ namespace UziSport.DAL
 
                 if (existInfo != null)
                 {
-                    return await database.UpdateAsync(item);
+                    result = await database.UpdateAsync(item);
+
+                    if (_isCatalogLoaded && _catalogCache != null)
+                    {
+                        var index = _catalogCache.FindIndex(x => x.CatalogId == item.CatalogId);
+                        if (index >= 0)
+                            _catalogCache[index] = item;
+                    }
+
+                    return result;
                 }
             }
 
-            return await database.InsertAsync(item);
+            result = await database.InsertAsync(item);
+
+            if (_isCatalogLoaded && _catalogCache != null)
+            {
+                _catalogCache.Add(item);
+            }
+
+            return result;
         }
 
-        public async Task<int> DeleteItemAsync(ProductInfo item)
+        public async Task<int> DeleteItemAsync(CatalogInfo item)
         {
             await Init();
-            return await database.DeleteAsync(item);
+
+            int result = await database.DeleteAsync(item);
+
+            if (_isCatalogLoaded && _catalogCache != null)
+            {
+                _catalogCache.RemoveAll(x => x.CatalogId == item.CatalogId);
+            }
+
+            return result;
+        }
+
+        public void ClearCache()
+        {
+            _catalogCache = null;
+            _isCatalogLoaded = false;
         }
     }
 }

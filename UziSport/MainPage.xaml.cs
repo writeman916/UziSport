@@ -29,11 +29,11 @@ namespace UziSport
                 //await brandDAL.SaveItemAsync(new Model.BrandInfo() { BrandName = "Victor" });
                 //await brandDAL.SaveItemAsync(new Model.BrandInfo() { BrandName = "Adidas" });
 
-                var catalogDAL = new CatalogDAL();
-                await catalogDAL.SaveItemAsync(new Model.CatalogInfo() { CatalogName = "Vợt" });
-                await catalogDAL.SaveItemAsync(new Model.CatalogInfo() { CatalogName = "Giày" });
-                await catalogDAL.SaveItemAsync(new Model.CatalogInfo() { CatalogName = "Trang phục" });
-                await catalogDAL.SaveItemAsync(new Model.CatalogInfo() { CatalogName = "Phụ kiện" });
+                //var catalogDAL = new CatalogDAL();
+                //await catalogDAL.SaveItemAsync(new Model.CatalogInfo() { CatalogName = "Vợt" });
+                //await catalogDAL.SaveItemAsync(new Model.CatalogInfo() { CatalogName = "Giày" });
+                //await catalogDAL.SaveItemAsync(new Model.CatalogInfo() { CatalogName = "Trang phục" });
+                //await catalogDAL.SaveItemAsync(new Model.CatalogInfo() { CatalogName = "Phụ kiện" });
 
             }
             catch (Exception ex)

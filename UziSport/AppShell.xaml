@@ -42,7 +42,7 @@
         <ShellContent
             Title="Quản lý sản phẩm"
             Icon="dotnet_bot.png"
-            ContentTemplate="{DataTemplate views:MainPage}" />
+            ContentTemplate="{DataTemplate views:ProductManage}" />
 
         <!-- Sau này bạn có thể thêm các mục con khác kiểu: 
         <ShellContent
