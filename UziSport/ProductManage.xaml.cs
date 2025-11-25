@@ -49,6 +49,34 @@ public partial class ProductManage : ContentPage
         this.PriceEntry.Text = string.Empty;
 
         ComboCosts = new ObservableCollection<ProductComboCostInfo>();
+
+        CurrentProduct = new ProductViewInfo();
+    }
+
+    private bool CheckInputs()
+    {
+        if (string.IsNullOrWhiteSpace(BarcodeEntry.Text))
+        {
+            _ = AppToast.ShowAsync(Controls.ToastView.ToastKind.Error, "Chưa nhập Barcode !", 3000);
+            this.BarcodeEntry.Focus();
+            return false;
+        }
+
+        if (CurrentProduct.ProductId == 0 && this._allProductInfos.Any(x => x.ProductCode == this.BarcodeEntry.Text))
+        {
+            _ = AppToast.ShowAsync(Controls.ToastView.ToastKind.Error, "Barcode này đã tồn tại !", 3000);
+            this.BarcodeEntry.Focus();
+            return false;
+        }
+
+        if (string.IsNullOrWhiteSpace(ProductNameEntry.Text))
+        {
+            _ = AppToast.ShowAsync(Controls.ToastView.ToastKind.Error, "Chưa nhập tên sản phẩm !", 3000);
+            this.ProductNameEntry.Focus();
+            return false;
+        }
+
+        return true;
     }
 
     private void AddButton_Clicked(object sender, EventArgs e)
@@ -132,6 +160,9 @@ public partial class ProductManage : ContentPage
 
     private async void BtnLuu_Clicked(object sender, EventArgs e)
     {
+        if(CheckInputs() == false)
+            return;
+
         CurrentProduct.ProductComboCostInfos = ComboCosts.ToList();
 
         if (CatalogPicker.SelectedItem is CatalogInfo selectedCatalog)
@@ -152,11 +183,34 @@ public partial class ProductManage : ContentPage
 
         await _productDal.SaveItemAsync(CurrentProduct.ConvertProductToSave());
 
-        await DisplayAlert("Thông báo", "Đã lưu sản phẩm", "OK");
+        _ = AppToast.ShowAsync(Controls.ToastView.ToastKind.Success, "Đã lưu sản phẩm thành công", 2000);
 
         this.ClearInput();
 
-        this.CurrentProduct = new ProductViewInfo();
+        AllProductInfos = await _productDal.GetProductsAsync();
+    }
+
+    private async void BtnXoa_Clicked(object sender, EventArgs e)
+    {
+        if (CurrentProduct == null || CurrentProduct.ProductId == 0)
+        {
+            _ = AppToast.ShowAsync(Controls.ToastView.ToastKind.Warning, "Chưa chọn sản phẩm để xóa", 2000);
+            return;
+        }
+
+        bool confirm = await DisplayAlert(
+            "Xác nhận xóa",
+            $"Bạn có chắc muốn xóa sản phẩm \"{CurrentProduct.ProductName}\" không?",
+            "Xóa",
+            "Không");
+
+        if (!confirm)
+            return;
+
+        _ = AppToast.ShowAsync(Controls.ToastView.ToastKind.Success, "Đã xóa sản phẩm thành công", 2000);
+
+        // Reset form nhập
+        this.ClearInput();
 
         AllProductInfos = await _productDal.GetProductsAsync();
     }

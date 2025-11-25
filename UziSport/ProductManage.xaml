@@ -130,6 +130,7 @@
                     BackgroundColor="DarkRed"
                     HeightRequest="50"
                     Text="Xóa"
+                    Clicked="BtnXoa_Clicked"
                     WidthRequest="100" />
             </HorizontalStackLayout>
 
@@ -400,6 +401,13 @@
 
             </Grid>
         </Frame>
+
+        <!--  Toast overlay  -->
+        <controls:ToastView
+            x:Name="AppToast"
+            HorizontalOptions="End"
+            InputTransparent="True"
+            VerticalOptions="Start" />
 
     </Grid>
 </ContentPage>
