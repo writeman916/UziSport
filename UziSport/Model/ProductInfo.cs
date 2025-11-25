@@ -84,5 +84,43 @@ namespace UziSport.Model
                 ProductComboCostInfos = ProductComboCostInfos
             };
         }
+
+        public ProductViewInfo CloneProduct()
+        {
+            return new ProductViewInfo
+            {
+                ProductId = this.ProductId,
+                ProductCode = this.ProductCode,
+                ProductName = this.ProductName,
+                CatalogId = this.CatalogId,
+                CatalogName = this.CatalogName,
+                BrandId = this.BrandId,
+                BrandName = this.BrandName,
+                Specification = this.Specification,
+                Cost = this.Cost,
+                Price = this.Price,
+                Status = this.Status,
+                Note = this.Note,
+
+                CreateBy = this.CreateBy,
+                CreateAt = this.CreateAt,
+                UpdateBy = this.UpdateBy,
+                UpdateAt = this.UpdateAt,
+
+                ProductComboCostInfos = this.ProductComboCostInfos?
+                    .Select(c => new ProductComboCostInfo
+                    {
+                        ProductComboCostId = c.ProductComboCostId,
+                        ProductId = c.ProductId,
+                        Cost = c.Cost,
+                        CreateAt = c.CreateAt,
+                        CreateBy = c.CreateBy,
+                        UpdateAt = c.UpdateAt,
+                        UpdateBy = c.UpdateBy
+                    })
+                    .ToList() ?? new List<ProductComboCostInfo>()
+            };
+        }
+
     }
 }

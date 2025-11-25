@@ -75,6 +75,12 @@ namespace UziSport.DAL
             ";
 
             var list = await database.QueryAsync<ProductViewInfo>(sql);
+
+            foreach (var info in list)
+            {
+                info.ProductComboCostInfos = await comboCostDAL.GetItemByProductIdAsync(info.ProductId);
+            }
+
             return list;
         }
 

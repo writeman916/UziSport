@@ -15,18 +15,24 @@ public partial class ProductManage : ContentPage
 
     private List<ProductViewInfo> _allProductInfos = new();
 
-    public List<ProductViewInfo> AllProductInfos
+    private List<ProductViewInfo> _viewProductInfos = new();
+
+    private ProductViewInfo? _selectedProduct;
+
+    public List<ProductViewInfo> ViewProductInfos
     {
-        get => _allProductInfos;
+        get => _viewProductInfos;
         set
         {
-            if (_allProductInfos != value)
+            if (_viewProductInfos != value)
             {
-                _allProductInfos = value;
-                OnPropertyChanged(nameof(AllProductInfos));
+                _viewProductInfos = value;
+                OnPropertyChanged(nameof(ViewProductInfos));
             }
         }
     }
+
+    public string SearchString { get; }
 
     private int _productId = 0;
 
@@ -40,6 +46,8 @@ public partial class ProductManage : ContentPage
 
     private void ClearInput()
     {
+        _selectedProduct = null;
+
         this.BarcodeEntry.Text = string.Empty;
         this.ProductNameEntry.Text = string.Empty;
         this.CatalogPicker.SelectedIndex = -1;
@@ -48,10 +56,12 @@ public partial class ProductManage : ContentPage
         this.CostEntry.Text = string.Empty;
         this.PriceEntry.Text = string.Empty;
 
-        ComboCosts = new ObservableCollection<ProductComboCostInfo>();
+        ComboCosts.Clear();
 
         CurrentProduct = new ProductViewInfo();
+        OnPropertyChanged(nameof(CurrentProduct));
     }
+
 
     private bool CheckInputs()
     {
@@ -62,7 +72,7 @@ public partial class ProductManage : ContentPage
             return false;
         }
 
-        if (CurrentProduct.ProductId == 0 && this._allProductInfos.Any(x => x.ProductCode == this.BarcodeEntry.Text))
+        if (CurrentProduct.ProductId == 0 && this._viewProductInfos.Any(x => x.ProductCode == this.BarcodeEntry.Text))
         {
             _ = AppToast.ShowAsync(Controls.ToastView.ToastKind.Error, "Barcode này đã tồn tại !", 3000);
             this.BarcodeEntry.Focus();
@@ -128,7 +138,8 @@ public partial class ProductManage : ContentPage
             Brands.Add(b);
 
         // Load Product List
-        AllProductInfos =  await _productDal.GetProductsAsync();
+        ViewProductInfos =  await _productDal.GetProductsAsync();
+        _allProductInfos = ViewProductInfos.ToList();
     }
 
     private void ProductList_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -137,25 +148,29 @@ public partial class ProductManage : ContentPage
         if (selected == null)
             return;
 
-        // Gán sản phẩm đang chọn lên CurrentProduct (header đang bind vào CurrentProduct)
-        CurrentProduct = selected;
+        // Giữ lại item gốc trong list
+        _selectedProduct = selected;
+
+        // Tạo bản copy để edit
+        CurrentProduct = selected.CloneProduct();
         OnPropertyChanged(nameof(CurrentProduct));
 
         // Set CatalogPicker
-        var catalog = Catalogs.FirstOrDefault(c => c.CatalogId == selected.CatalogId);
+        var catalog = Catalogs.FirstOrDefault(c => c.CatalogId == CurrentProduct.CatalogId);
         if (catalog != null)
             CatalogPicker.SelectedItem = catalog;
 
         // Set BrandPicker
-        var brand = Brands.FirstOrDefault(b => b.BrandId == selected.BrandId);
+        var brand = Brands.FirstOrDefault(b => b.BrandId == CurrentProduct.BrandId);
         if (brand != null)
             BrandPicker.SelectedItem = brand;
 
-        // Nếu muốn load lại ComboCosts theo product:
+        // Load ComboCosts từ bản copy
         ComboCosts.Clear();
         foreach (var combo in CurrentProduct.ProductComboCostInfos)
             ComboCosts.Add(combo);
     }
+
 
 
     private async void BtnLuu_Clicked(object sender, EventArgs e)
@@ -187,7 +202,8 @@ public partial class ProductManage : ContentPage
 
         this.ClearInput();
 
-        AllProductInfos = await _productDal.GetProductsAsync();
+        ViewProductInfos = await _productDal.GetProductsAsync();
+        _allProductInfos = ViewProductInfos.ToList();
     }
 
     private async void BtnXoa_Clicked(object sender, EventArgs e)
@@ -212,6 +228,48 @@ public partial class ProductManage : ContentPage
         // Reset form nhập
         this.ClearInput();
 
-        AllProductInfos = await _productDal.GetProductsAsync();
+        ViewProductInfos = await _productDal.GetProductsAsync();
+        _allProductInfos = ViewProductInfos.ToList();
+    }
+
+    private void SearchEntry_TextChanged(object sender, TextChangedEventArgs e)
+    {
+        if (_allProductInfos == null)
+            return;
+
+        var text = e.NewTextValue;
+
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            ViewProductInfos = _allProductInfos.ToList();
+            return;
+        }
+
+        text = text.Trim();
+
+        var filtered = _allProductInfos.Where(p =>
+               (!string.IsNullOrEmpty(p.ProductCode) && p.ProductCode.Contains(text, StringComparison.OrdinalIgnoreCase))
+            || (!string.IsNullOrEmpty(p.ProductName) && p.ProductName.Contains(text, StringComparison.OrdinalIgnoreCase))
+            || (!string.IsNullOrEmpty(p.CatalogName) && p.CatalogName.Contains(text, StringComparison.OrdinalIgnoreCase))
+            || (!string.IsNullOrEmpty(p.BrandName) && p.BrandName.Contains(text, StringComparison.OrdinalIgnoreCase))
+            || (!string.IsNullOrEmpty(p.Specification) && p.Specification.Contains(text, StringComparison.OrdinalIgnoreCase))
+            || (!string.IsNullOrEmpty(p.Note) && p.Note.Contains(text, StringComparison.OrdinalIgnoreCase))
+        ).ToList();
+
+        ViewProductInfos = filtered;
+    }
+
+    private void BtnTao_Clicked(object sender, EventArgs e)
+    {
+        this.ClearInput();
+        ViewProductInfos = _allProductInfos.ToList();
+        this.BarcodeEntry.Focus();
+    }
+
+    protected override void OnDisappearing()
+    {
+        base.OnDisappearing();
+
+        ClearInput();
     }
 }

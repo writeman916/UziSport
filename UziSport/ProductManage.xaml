@@ -128,9 +128,9 @@
                     WidthRequest="100" />
                 <Button
                     BackgroundColor="DarkRed"
+                    Clicked="BtnXoa_Clicked"
                     HeightRequest="50"
                     Text="Xóa"
-                    Clicked="BtnXoa_Clicked"
                     WidthRequest="100" />
             </HorizontalStackLayout>
 
@@ -210,6 +210,37 @@
             </Frame>
         </Grid>
 
+        <!--  Search And New  -->
+        <Grid Grid.Row="1" ColumnDefinitions="*,*">
+            <Frame
+                Grid.Column="0"
+                Margin="20,0,0,0"
+                Padding="0"
+                BackgroundColor="Transparent"
+                BorderColor="{StaticResource Secondary}"
+                CornerRadius="15"
+                HeightRequest="35"
+                HorizontalOptions="Start"
+                WidthRequest="300">
+                <Entry
+                    x:Name="SearchEntry"
+                    HeightRequest="35"
+                    Placeholder="Tìm kiếm"
+                    Text="{Binding SearchString}"
+                    TextChanged="SearchEntry_TextChanged"
+                    WidthRequest="300" />
+            </Frame>
+            <StackLayout
+                Grid.Column="1"
+                Margin="0,0,10,0"
+                HorizontalOptions="End">
+                <Button
+                    x:Name="BtnTao"
+                    Clicked="BtnTao_Clicked"
+                    Text="+ Tạo mới" />
+
+            </StackLayout>
+        </Grid>
         <!--  Product List  -->
         <Frame
             Grid.Row="2"
@@ -289,7 +320,7 @@
                 <!--  CollectionView sẽ scroll trong hàng * này  -->
                 <CollectionView
                     Grid.Row="2"
-                    ItemsSource="{Binding AllProductInfos}"
+                    ItemsSource="{Binding ViewProductInfos}"
                     SelectionChanged="ProductList_SelectionChanged"
                     SelectionMode="Single">
 
