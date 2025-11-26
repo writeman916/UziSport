@@ -95,12 +95,19 @@ namespace UziSport.Controls
             if (string.IsNullOrWhiteSpace(BrandNameEntry.Text))
                 return;
 
+            if (Brands.Any(X => X.BrandName.Equals(BrandNameEntry.Text.Trim(), StringComparison.OrdinalIgnoreCase)))
+            {
+                this.BrandExistsLabel.IsVisible = true;
+                return;
+            }
+
             Brands.Add(new BrandInfo
             {
                 BrandName = BrandNameEntry.Text.Trim(),
             });
 
             BrandNameEntry.Text = string.Empty;
+            this.BrandExistsLabel.IsVisible = false;
         }
     }
 }

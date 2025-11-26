@@ -283,7 +283,7 @@ public partial class ProductManage : ContentPage
 
     private async void BtnAddBrand_Clicked(object sender, EventArgs e)
     {
-        await CenterPopup.ShowAsync();
+        await BrandPopup.ShowAsync();
 
     }
 
@@ -294,5 +294,20 @@ public partial class ProductManage : ContentPage
         Brands.Clear();
         foreach (var b in brands)
             Brands.Add(b);
+    }
+
+    private async void BtnAddCatalog_Clicked(object sender, EventArgs e)
+    {
+        await CatalogPopup.ShowAsync();
+
+    }
+
+    private async void Catalogs_Saved(object sender, EventArgs e)
+    {
+        // Refresh Catalog list after popup closed
+        var catalogs = await CatalogDAL.Instance.GetCatalogsAsync(forceRefresh: true);
+        Catalogs.Clear();
+        foreach (var b in catalogs)
+            Catalogs.Add(b);
     }
 }

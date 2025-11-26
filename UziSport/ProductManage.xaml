@@ -65,7 +65,7 @@
                 <Button
                     x:Name="BtnAddCatalog"
                     BackgroundColor="LightGray"
-                    Clicked="AddButton_Clicked"
+                    Clicked="BtnAddCatalog_Clicked"
                     FontSize="17"
                     HeightRequest="35"
                     Text="+"
@@ -459,11 +459,20 @@
 
         <!--  Brand Popup overlay  -->
         <controls:BrandViewPopup
-            x:Name="CenterPopup"
+            x:Name="BrandPopup"
             Grid.RowSpan="4"
             Grid.ColumnSpan="4"
             HorizontalOptions="Fill"
             Saved="Brands_Saved"
+            VerticalOptions="Fill" />
+
+        <!--  Catalog Popup overlay  -->
+        <controls:CatalogViewPopup
+            x:Name="CatalogPopup"
+            Grid.RowSpan="4"
+            Grid.ColumnSpan="4"
+            HorizontalOptions="Fill"
+            Saved="Catalogs_Saved"
             VerticalOptions="Fill" />
     </Grid>
 </ContentPage> 

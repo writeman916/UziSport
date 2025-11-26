@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentView
-    x:Class="UziSport.Controls.BrandViewPopup"
+    x:Class="UziSport.Controls.CatalogViewPopup"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     InputTransparent="False"
     IsVisible="False">
-
     <Grid
         BackgroundColor="#80000000"
         HorizontalOptions="Fill"
@@ -30,17 +29,17 @@
                         FontAttributes="Bold"
                         FontSize="18"
                         HorizontalOptions="Center"
-                        Text="Thêm hãng" />
+                        Text="Thêm danh mục" />
                     <Entry
-                        x:Name="BrandNameEntry"
-                        Completed="BrandNameEntry_Completed"
-                        Placeholder="Tên hãng" />
+                        x:Name="CatalogNameEntry"
+                        Completed="CatalogNameEntry_Completed"
+                        Placeholder="Tên danh mục" />
                     <Label
-                        x:Name="BrandExistsLabel"
+                        x:Name="CatalogExistsLabel"
                         FontSize="18"
                         HorizontalOptions="Center"
                         IsVisible="False"
-                        Text="Hãng này đã tồn tại!"
+                        Text="Danh mục này đã tồn tại!"
                         TextColor="Red" />
                     <!--  Line ngăn cách  -->
                     <BoxView
@@ -48,14 +47,14 @@
                         HeightRequest="1"
                         HorizontalOptions="Fill" />
                 </VerticalStackLayout>
-                <!--  Danh sách hãng hiện có  -->
+                <!--  Danh sách danh mục hiện có  -->
                 <CollectionView
                     Grid.Row="1"
                     Margin="0,8,0,0"
-                    ItemsSource="{Binding Brands}">
+                    ItemsSource="{Binding Catalogs}">
                     <CollectionView.ItemTemplate>
                         <DataTemplate>
-                            <!--  Mỗi record: Tên hãng + nút X  -->
+                            <!--  Mỗi record: Tên danh mục + nút X  -->
                             <Grid ColumnDefinitions="*,Auto" RowSpacing="2">
                                 <HorizontalStackLayout
                                     Grid.Column="0"
@@ -66,7 +65,7 @@
                                         Grid.Column="0"
                                         Margin="2,0,0,0"
                                         HorizontalTextAlignment="Start"
-                                        Text="{Binding BrandName}"
+                                        Text="{Binding CatalogName}"
                                         VerticalTextAlignment="Center" />
 
                                     <!--  Nút Xóa  -->
@@ -74,7 +73,7 @@
                                         Grid.Column="1"
                                         Margin="6,0,0,0"
                                         BackgroundColor="Transparent"
-                                        Clicked="DeleteBrandButton_Clicked"
+                                        Clicked="DeleteCatalogButton_Clicked"
                                         FontSize="16"
                                         Text="✕"
                                         TextColor="Red"
