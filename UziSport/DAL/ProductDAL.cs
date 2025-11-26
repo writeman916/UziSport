@@ -76,11 +76,6 @@ namespace UziSport.DAL
 
             var list = await database.QueryAsync<ProductViewInfo>(sql);
 
-            foreach (var info in list)
-            {
-                info.ProductComboCostInfos = await comboCostDAL.GetItemByProductIdAsync(info.ProductId);
-            }
-
             return list;
         }
 
@@ -119,9 +114,11 @@ namespace UziSport.DAL
         }
 
 
-        public async Task<int> SaveItemAsync(ProductInfo item)
+        public async Task<int> SaveItemAsync(ProductViewInfo viewItem)
         {
             await Init();
+
+            ProductInfo item = viewItem.ConvertProductToSave();
 
             int result = 0;
 
@@ -141,14 +138,14 @@ namespace UziSport.DAL
                     }
                 }
 
-                if (item.ProductComboCostInfos != null && item.ProductComboCostInfos.Count > 0)
+                if (viewItem.ProductComboCostInfos != null && viewItem.ProductComboCostInfos.Count > 0)
                 {
-                    foreach (var cost in item.ProductComboCostInfos)
+                    foreach (var cost in viewItem.ProductComboCostInfos)
                     {
                         cost.ProductId = item.ProductId;
                     }
 
-                    comboCostDAL.SaveItemInTransaction(conn, item.ProductComboCostInfos);
+                    comboCostDAL.SaveItemInTransaction(conn, viewItem.ProductComboCostInfos);
                 }
                 else
                 {
@@ -160,9 +157,11 @@ namespace UziSport.DAL
         }
 
 
-        public async Task<int> DeleteItemAsync(ProductInfo item)
+        public async Task<int> DeleteItemAsync(ProductViewInfo viewItem)
         {
             await Init();
+
+            ProductInfo item = viewItem.ConvertProductToSave();
 
             await comboCostDAL.DeleteByProductIdAsync(item.ProductId);
 

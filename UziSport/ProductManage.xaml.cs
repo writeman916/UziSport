@@ -34,7 +34,7 @@ public partial class ProductManage : ContentPage
 
     public string SearchString { get; }
 
-    private int _productId = 0;
+    private bool _isInitialized;
 
     private ProductDAL _productDal = new ProductDAL();
 
@@ -99,7 +99,6 @@ public partial class ProductManage : ContentPage
 
         ComboCosts.Add(new ProductComboCostInfo
         {
-            ProductId = _productId,
             Cost = value,
             CreateAt = DateTime.Now,
             CreateBy = "admin"
@@ -125,6 +124,9 @@ public partial class ProductManage : ContentPage
     {
         base.OnAppearing();
 
+        if (_isInitialized)
+            return;
+
         // Load Catalog
         var catalogs = await CatalogDAL.Instance.GetCatalogsAsync();
         Catalogs.Clear();
@@ -138,11 +140,14 @@ public partial class ProductManage : ContentPage
             Brands.Add(b);
 
         // Load Product List
-        ViewProductInfos =  await _productDal.GetProductsAsync();
-        _allProductInfos = ViewProductInfos.ToList();
+        _allProductInfos = await _productDal.GetProductsAsync();
+        ViewProductInfos = _allProductInfos.ToList();
+
+        _isInitialized = true;
     }
 
-    private void ProductList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+
+    private async void ProductList_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         var selected = e.CurrentSelection.FirstOrDefault() as ProductViewInfo;
         if (selected == null)
@@ -167,7 +172,8 @@ public partial class ProductManage : ContentPage
 
         // Load ComboCosts từ bản copy
         ComboCosts.Clear();
-        foreach (var combo in CurrentProduct.ProductComboCostInfos)
+        var combos = await new ProductComboCostDAL().GetItemByProductIdAsync(CurrentProduct.ProductId);
+        foreach (var combo in combos)
             ComboCosts.Add(combo);
     }
 
@@ -196,7 +202,7 @@ public partial class ProductManage : ContentPage
             this.CurrentProduct.UpdateAt = DateTime.Now;
         }
 
-        await _productDal.SaveItemAsync(CurrentProduct.ConvertProductToSave());
+        await _productDal.SaveItemAsync(CurrentProduct);
 
         _ = AppToast.ShowAsync(Controls.ToastView.ToastKind.Success, "Đã lưu sản phẩm thành công", 2000);
 
@@ -222,6 +228,8 @@ public partial class ProductManage : ContentPage
 
         if (!confirm)
             return;
+
+        await _productDal.DeleteItemAsync(CurrentProduct);
 
         _ = AppToast.ShowAsync(Controls.ToastView.ToastKind.Success, "Đã xóa sản phẩm thành công", 2000);
 
@@ -271,5 +279,20 @@ public partial class ProductManage : ContentPage
         base.OnDisappearing();
 
         ClearInput();
+    }
+
+    private async void BtnAddBrand_Clicked(object sender, EventArgs e)
+    {
+        await CenterPopup.ShowAsync();
+
+    }
+
+    private async void Brands_Saved(object sender, EventArgs e)
+    {
+        // Refresh Brand list after popup closed
+        var brands = await BrandDAL.Instance.GetBrandsAsync(forceRefresh: true);
+        Brands.Clear();
+        foreach (var b in brands)
+            Brands.Add(b);
     }
 }

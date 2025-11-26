@@ -62,13 +62,29 @@
                     ItemDisplayBinding="{Binding CatalogName}"
                     ItemsSource="{Binding Catalogs}"
                     WidthRequest="180" />
-                <Label>Hãng</Label>
+                <Button
+                    x:Name="BtnAddCatalog"
+                    BackgroundColor="LightGray"
+                    Clicked="AddButton_Clicked"
+                    FontSize="17"
+                    HeightRequest="35"
+                    Text="+"
+                    WidthRequest="40" />
+                <Label Margin="30,0,0,0">Hãng</Label>
                 <Picker
                     x:Name="BrandPicker"
                     HeightRequest="50"
                     ItemDisplayBinding="{Binding BrandName}"
                     ItemsSource="{Binding Brands}"
                     WidthRequest="180" />
+                <Button
+                    x:Name="BtnAddBrand"
+                    BackgroundColor="LightGray"
+                    Clicked="BtnAddBrand_Clicked"
+                    FontSize="17"
+                    HeightRequest="35"
+                    Text="+"
+                    WidthRequest="40" />
             </HorizontalStackLayout>
 
             <HorizontalStackLayout
@@ -180,7 +196,7 @@
                                             FontSize="16"
                                             Text="✕"
                                             TextColor="Red"
-                                            WidthRequest="32" />
+                                            WidthRequest="40" />
                                     </HorizontalStackLayout>
 
                                 </Grid>
@@ -203,6 +219,7 @@
                         <Button
                             Grid.Column="1"
                             Clicked="AddButton_Clicked"
+                            FontSize="17"
                             Text="+"
                             WidthRequest="40" />
                     </Grid>
@@ -440,5 +457,13 @@
             InputTransparent="True"
             VerticalOptions="Start" />
 
+        <!--  Brand Popup overlay  -->
+        <controls:BrandViewPopup
+            x:Name="CenterPopup"
+            Grid.RowSpan="4"
+            Grid.ColumnSpan="4"
+            HorizontalOptions="Fill"
+            Saved="Brands_Saved"
+            VerticalOptions="Fill" />
     </Grid>
-</ContentPage>
+</ContentPage> 

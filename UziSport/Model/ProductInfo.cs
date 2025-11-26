@@ -31,35 +31,13 @@ namespace UziSport.Model
 
         public string Note { get; set; } = string.Empty;
 
-        [Ignore]
-        public List<ProductComboCostInfo> ProductComboCostInfos { get; set; } = new List<ProductComboCostInfo>();
-
     }
 
-    public class ProductViewInfo : BaseModelInfo
+    public class ProductViewInfo : ProductInfo
     {
-        public int ProductId { get; set; }
-
-        public string ProductCode { get; set; } = string.Empty;
-
-        public string ProductName { get; set; } = string.Empty;
-
-        public int CatalogId { get; set; }
         public string CatalogName { get; set; } = string.Empty;
 
-        public int BrandId { get; set; }
-
         public string BrandName { get; set; } = string.Empty;
-
-        public string Specification { get; set; } = string.Empty;
-
-        public decimal Cost { get; set; }
-
-        public decimal Price { get; set; }
-
-        public int Status { get; set; }
-
-        public string Note { get; set; } = string.Empty;
 
         public List<ProductComboCostInfo> ProductComboCostInfos { get; set; } = new List<ProductComboCostInfo>();
 
@@ -81,7 +59,6 @@ namespace UziSport.Model
                 CreateBy = CreateBy,
                 UpdateAt = UpdateAt,
                 UpdateBy = UpdateBy,
-                ProductComboCostInfos = ProductComboCostInfos
             };
         }
 
@@ -121,6 +98,5 @@ namespace UziSport.Model
                     .ToList() ?? new List<ProductComboCostInfo>()
             };
         }
-
     }
 }
