@@ -41,7 +41,7 @@ namespace UziSport.Model
 
         public List<ProductComboCostInfo> ProductComboCostInfos { get; set; } = new List<ProductComboCostInfo>();
 
-        public ProductInfo ConvertProductToSave()
+        public ProductInfo ToProductInfo()
         {
             return new ProductInfo()
             {

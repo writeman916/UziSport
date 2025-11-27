@@ -26,10 +26,35 @@ namespace UziSport.Model
     {
         public string ProductName { get; set; } = string.Empty;
 
-        public decimal SubTotal  { get
+        public string Specification { get; set; } = string.Empty;
+
+        public decimal Cost { get; set; }
+
+        public decimal Price { get; set; }
+
+        public decimal SubTotal 
+        { 
+            get
             {
                 return this.UnitCost * this.Quantity;
             }
+        }
+
+        public StockInDetailInfo ToStockInDetailInfo()
+        {
+            return new StockInDetailInfo
+            {
+                StockInDetailId = this.StockInDetailId,
+                StockInId = this.StockInId,
+                ProductId = this.ProductId,
+                Quantity = this.Quantity,
+                UnitCost = this.UnitCost,
+                Note = this.Note,
+                CreateAt = this.CreateAt,
+                CreateBy = this.CreateBy,
+                UpdateAt = this.UpdateAt,
+                UpdateBy = this.UpdateBy
+            };
         }
     }
 }

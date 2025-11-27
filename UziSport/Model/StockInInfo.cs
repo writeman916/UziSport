@@ -34,6 +34,25 @@ namespace UziSport.Model
 
         public string WarehouseName { get; set; } = string.Empty;
 
-        public List<StockInDetailInfo> StockInDetailInfos { get; set; } = new List<StockInDetailInfo>();
+        public List<StockInDetailViewInfo> StockInDetailInfos { get; set; } = new List<StockInDetailViewInfo>();
+
+        public StockInInfo ToStockInInfo()
+        {
+            return new StockInInfo
+            {
+                StockInId = this.StockInId,
+                StockInCode = this.StockInCode,
+                SupplierId = this.SupplierId,
+                WarehouseId = this.WarehouseId,
+                StockInDate = this.StockInDate,
+                TotalAmount = this.TotalAmount,
+                Status = this.Status,
+                Note = this.Note,
+                CreateAt = this.CreateAt,
+                CreateBy = this.CreateBy,
+                UpdateAt = this.UpdateAt,
+                UpdateBy = this.UpdateBy
+            };
+        }
     } 
 }

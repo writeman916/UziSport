@@ -14,6 +14,8 @@ namespace UziSport.Model
 
         public int ProductId { get; set; }
 
+        public int StockDetailId { get; set; }
+
         public decimal Cost { get; set; }
     }
 }

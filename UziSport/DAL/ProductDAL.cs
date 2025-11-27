@@ -118,7 +118,7 @@ namespace UziSport.DAL
         {
             await Init();
 
-            ProductInfo item = viewItem.ConvertProductToSave();
+            ProductInfo item = viewItem.ToProductInfo();
 
             int result = 0;
 
@@ -161,7 +161,7 @@ namespace UziSport.DAL
         {
             await Init();
 
-            ProductInfo item = viewItem.ConvertProductToSave();
+            ProductInfo item = viewItem.ToProductInfo();
 
             await comboCostDAL.DeleteByProductIdAsync(item.ProductId);
 
