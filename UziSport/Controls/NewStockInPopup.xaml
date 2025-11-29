@@ -1,0 +1,404 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView
+    x:Class="UziSport.Controls.NewStockInPopup"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:UziSport.Controls"
+    InputTransparent="False"
+    IsVisible="False">
+
+    <Grid
+        BackgroundColor="#80000000"
+        HorizontalOptions="Fill"
+        VerticalOptions="Fill">
+
+        <!--  Popup ở giữa  -->
+        <Frame
+            Margin="50"
+            Padding="20"
+            BackgroundColor="White"
+            CornerRadius="10"
+            HasShadow="True"
+            HorizontalOptions="Fill"
+            VerticalOptions="Fill">
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="300" />
+                    <RowDefinition Height="50" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="40" />
+                </Grid.RowDefinitions>
+
+                <!--  HEADER  -->
+                <Grid
+                    x:Name="ProductDetail"
+                    Grid.Row="0"
+                    Margin="30,10,10,10"
+                    ColumnDefinitions="*,*,*"
+                    ColumnSpacing="10"
+                    RowDefinitions="*,*,*,*">
+
+                    <HorizontalStackLayout
+                        Grid.Row="0"
+                        Grid.Column="0"
+                        Spacing="10">
+                        <Label>Mã Hóa Đơn</Label>
+                        <Entry
+                            x:Name="BarcodeEntry"
+                            HeightRequest="50"
+                            IsReadOnly="true"
+                            Placeholder="Mã Hóa Đơn"
+                            Text="{Binding CurrentStockInInfo.StockInCode}"
+                            WidthRequest="200 " />
+                    </HorizontalStackLayout>
+
+                    <HorizontalStackLayout
+                        Grid.Row="0"
+                        Grid.Column="1"
+                        Spacing="10">
+                        <Label>Ngày Nhập</Label>
+                        <DatePicker
+                            x:Name="StockInDatePicker"
+                            Date="{Binding CurrentStockInInfo.StockInDate}"
+                            HeightRequest="50"
+                            WidthRequest="200" />
+                    </HorizontalStackLayout>
+
+                    <HorizontalStackLayout
+                        Grid.Row="1"
+                        Grid.Column="0"
+                        Grid.ColumnSpan="2"
+                        Spacing="10">
+                        <Label>Kho</Label>
+                        <Picker
+                            x:Name="WareHousePicker"
+                            HeightRequest="50"
+                            ItemDisplayBinding="{Binding WarehouseName}"
+                            ItemsSource="{Binding Warehouses}"
+                            WidthRequest="200 " />
+                        <Label Margin="20,0,0,0">Nhà cung cấp</Label>
+                        <Picker
+                            x:Name="SupplierPicker"
+                            HeightRequest="50"
+                            ItemDisplayBinding="{Binding SupplierName}"
+                            ItemsSource="{Binding Suppliers}"
+                            WidthRequest="200" />
+                    </HorizontalStackLayout>
+
+                    <HorizontalStackLayout
+                        Grid.Row="2"
+                        Grid.RowSpan="2"
+                        Grid.Column="0"
+                        Grid.ColumnSpan="2"
+                        Spacing="10">
+                        <Label>Ghi Chú</Label>
+                        <Editor
+                            x:Name="NoteEntry"
+                            HeightRequest="125"
+                            WidthRequest="650" />
+                    </HorizontalStackLayout>
+
+                    <HorizontalStackLayout
+                        Grid.Row="3"
+                        Grid.Column="3"
+                        Spacing="10">
+                        <Label>Tổng tiền</Label>
+                        <controls:NumericEntry
+                            x:Name="TotalAmountEntry"
+                            HeightRequest="50"
+                            IsReadOnly="True"
+                            Text="{Binding CurrentStockInInfo.TotalAmount}"
+                            WidthRequest="250" />
+                    </HorizontalStackLayout>
+
+                    <Frame
+                        Grid.Row="0"
+                        Grid.Column="3"
+                        Padding="-5,0,0,0"
+                        BackgroundColor="Transparent"
+                        CornerRadius="25"
+                        HeightRequest="50"
+                        HorizontalOptions="End"
+                        WidthRequest="200">
+                        <controls:ImportStatusPicker
+                            FontSize="18"
+                            HeightRequest="52"
+                            SelectedStatus="{Binding ImportStatus}"
+                            VerticalOptions="Fill"
+                            WidthRequest="202" />
+                    </Frame>
+                </Grid>
+
+                <!--  Search to New  -->
+                <Grid Grid.Row="1">
+                    <!--  Search  -->
+                    <HorizontalStackLayout Grid.Column="0" Spacing="20">
+                        <Frame
+                            Margin="20,0,0,0"
+                            Padding="0"
+                            BackgroundColor="Transparent"
+                            BorderColor="{StaticResource Secondary}"
+                            CornerRadius="15"
+                            HeightRequest="35"
+                            HorizontalOptions="Start"
+                            WidthRequest="300">
+                            <Entry
+                                x:Name="SearchEntry"
+                                HeightRequest="35"
+                                Placeholder="Tìm kiếm"
+                                Text="{Binding SearchString}"
+                                TextChanged="SearchEntry_TextChanged"
+                                WidthRequest="300" />
+                        </Frame>
+                        <Button
+                            x:Name="BtnThem"
+                            Clicked="BtnThem_Clicked"
+                            CornerRadius="15"
+                            HeightRequest="35"
+                            Text="Thêm" />
+
+                        <!--  Search Result  -->
+                        <CollectionView
+                            x:Name="SearchResultList"
+                            ItemsLayout="HorizontalList"
+                            ItemsSource="{Binding SearchResults}"
+                            SelectionMode="None">
+
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate>
+                                    <Button
+                                        Margin="5,0,0,10"
+                                        Padding="0"
+                                        BackgroundColor="{StaticResource Gray200}"
+                                        BorderColor="{StaticResource Secondary}"
+                                        Clicked="SearchResultButton_Clicked"
+                                        CornerRadius="15"
+                                        FontSize="16"
+                                        HeightRequest="40"
+                                        LineBreakMode="TailTruncation"
+                                        Text="{Binding SearchResultString}"
+                                        TextColor="{StaticResource Secondary}"
+                                        VerticalOptions="Center"
+                                        WidthRequest="350">
+                                        <VisualStateManager.VisualStateGroups>
+                                            <VisualStateGroup Name="CommonStates">
+                                                <VisualState Name="Normal">
+                                                    <VisualState.Setters>
+                                                        <Setter Property="BackgroundColor" Value="{StaticResource Gray200}" />
+                                                        <Setter Property="TextColor" Value="{StaticResource Secondary}" />
+                                                    </VisualState.Setters>
+                                                </VisualState>
+                                                <VisualState x:Name="PointerOver">
+                                                    <VisualState.Setters>
+                                                        <Setter Property="BackgroundColor" Value="{StaticResource Secondary}" />
+                                                    </VisualState.Setters>
+                                                </VisualState>
+                                            </VisualStateGroup>
+                                        </VisualStateManager.VisualStateGroups>
+                                    </Button>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                    </HorizontalStackLayout>
+
+
+
+                </Grid>
+                <!--  Stock Detail List  -->
+                <Frame
+                    Grid.Row="2"
+                    Margin="5"
+                    BackgroundColor="Transparent"
+                    BorderColor="{StaticResource Secondary}"
+                    CornerRadius="10">
+
+                    <Grid RowDefinitions="Auto,Auto,*">
+
+                        <!--  Header: tiêu đề cột  -->
+                        <HorizontalStackLayout Grid.Row="0">
+                            <Label HorizontalTextAlignment="Center" WidthRequest="80">Barcode</Label>
+                            <Line
+                                Stroke="{StaticResource Secondary}"
+                                StrokeThickness="1"
+                                X1="0"
+                                X2="0"
+                                Y1="0"
+                                Y2="30" />
+                            <Label HorizontalTextAlignment="Center" WidthRequest="280">Tên Sản Phẩm</Label>
+                            <Line
+                                Stroke="{StaticResource Secondary}"
+                                StrokeThickness="1"
+                                X1="0"
+                                X2="0"
+                                Y1="0"
+                                Y2="30" />
+                            <Label HorizontalTextAlignment="Center" WidthRequest="130">Danh mục</Label>
+                            <Line
+                                Stroke="{StaticResource Secondary}"
+                                StrokeThickness="1"
+                                X1="0"
+                                X2="0"
+                                Y1="0"
+                                Y2="30" />
+                            <Label HorizontalTextAlignment="Center" WidthRequest="130">Hãng</Label>
+                            <Line
+                                Stroke="{StaticResource Secondary}"
+                                StrokeThickness="1"
+                                X1="0"
+                                X2="0"
+                                Y1="0"
+                                Y2="30" />
+                            <Label HorizontalTextAlignment="Center" WidthRequest="200">Thông số</Label>
+                            <Line
+                                Stroke="{StaticResource Secondary}"
+                                StrokeThickness="1"
+                                X1="0"
+                                X2="0"
+                                Y1="0"
+                                Y2="30" />
+                            <Label HorizontalTextAlignment="Center" WidthRequest="170">Giá vốn</Label>
+                            <Line
+                                Stroke="{StaticResource Secondary}"
+                                StrokeThickness="1"
+                                X1="0"
+                                X2="0"
+                                Y1="0"
+                                Y2="30" />
+                            <Label HorizontalTextAlignment="Center" WidthRequest="100">Số lượng</Label>
+                        </HorizontalStackLayout>
+                        <!--  Line ngang  -->
+                        <Line
+                            Grid.Row="1"
+                            Aspect="Fill"
+                            HeightRequest="1"
+                            HorizontalOptions="Fill"
+                            Stroke="{StaticResource Secondary}"
+                            StrokeThickness="1"
+                            X1="0"
+                            X2="1"
+                            Y1="0"
+                            Y2="0" />
+
+                        <CollectionView
+                            Grid.Row="2"
+                            ItemsSource="{Binding StockInDetailInfos}"
+                            SelectionMode="Single">
+
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate>
+                                    <HorizontalStackLayout HeightRequest="40">
+                                        <Label
+                                            HorizontalTextAlignment="Center"
+                                            Text="{Binding ProductCode}"
+                                            WidthRequest="80" />
+                                        <Line
+                                            Stroke="{StaticResource Secondary}"
+                                            StrokeThickness="1"
+                                            X1="0"
+                                            X2="0"
+                                            Y1="0"
+                                            Y2="40" />
+
+                                        <Label
+                                            HorizontalTextAlignment="Center"
+                                            Text="{Binding ProductName}"
+                                            WidthRequest="280" />
+                                        <Line
+                                            Stroke="{StaticResource Secondary}"
+                                            StrokeThickness="1"
+                                            X1="0"
+                                            X2="0"
+                                            Y1="0"
+                                            Y2="40" />
+                                        <Label
+                                            HorizontalTextAlignment="Center"
+                                            Text="{Binding CatalogName}"
+                                            WidthRequest="130" />
+                                        <Line
+                                            Stroke="{StaticResource Secondary}"
+                                            StrokeThickness="1"
+                                            X1="0"
+                                            X2="0"
+                                            Y1="0"
+                                            Y2="40" />
+                                        <Label
+                                            HorizontalTextAlignment="Center"
+                                            Text="{Binding BrandName}"
+                                            WidthRequest="130" />
+                                        <Line
+                                            Stroke="{StaticResource Secondary}"
+                                            StrokeThickness="1"
+                                            X1="0"
+                                            X2="0"
+                                            Y1="0"
+                                            Y2="40" />
+                                        <Label
+                                            HorizontalTextAlignment="Center"
+                                            Text="{Binding Specification}"
+                                            WidthRequest="200" />
+                                        <Line
+                                            Stroke="{StaticResource Secondary}"
+                                            StrokeThickness="1"
+                                            X1="0"
+                                            X2="0"
+                                            Y1="0"
+                                            Y2="40" />
+
+                                        <controls:NumericEntry
+                                            Margin="5,0,5,0"
+                                            Completed="CostOrQuantity_Completed"
+                                            HorizontalTextAlignment="Center"
+                                            Loaded="CostEntry_Loaded"
+                                            Text="{Binding UnitCost, StringFormat='{}{0:N0}'}"
+                                            Unfocused="CostOrQuanity_UnFocused"
+                                            WidthRequest="160" />
+                                        <Line
+                                            Stroke="{StaticResource Secondary}"
+                                            StrokeThickness="1"
+                                            X1="0"
+                                            X2="0"
+                                            Y1="0"
+                                            Y2="40" />
+
+                                        <controls:NumericEntry
+                                            Margin="5,0,5,0"
+                                            Completed="CostOrQuantity_Completed"
+                                            HorizontalTextAlignment="Center"
+                                            Loaded="QuantityEntry_Loaded"
+                                            Placeholder="Số lượng"
+                                            Text="{Binding Quantity}"
+                                            Unfocused="CostOrQuanity_UnFocused"
+                                            WidthRequest="90" />
+                                        <Button
+                                            Margin="0,0,0,0"
+                                            BackgroundColor="Transparent"
+                                            Clicked="DeleteStockInDetailButton_Clicked"
+                                            FontSize="18"
+                                            Text="✕"
+                                            TextColor="Red"
+                                            WidthRequest="45" />
+                                        <VisualStateManager.VisualStateGroups>
+                                            <VisualStateGroup x:Name="CommonStates">
+                                                <VisualState x:Name="Normal">
+                                                    <VisualState.Setters>
+                                                        <Setter Property="BackgroundColor" Value="Transparent" />
+                                                    </VisualState.Setters>
+                                                </VisualState>
+                                                <VisualState x:Name="Selected">
+                                                    <VisualState.Setters>
+                                                        <Setter Property="BackgroundColor" Value="{StaticResource Gray300}" />
+                                                    </VisualState.Setters>
+                                                </VisualState>
+                                            </VisualStateGroup>
+                                        </VisualStateManager.VisualStateGroups>
+                                    </HorizontalStackLayout>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                    </Grid>
+                </Frame>
+            </Grid>
+        </Frame>
+    </Grid>
+</ContentView>

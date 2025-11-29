@@ -29,7 +29,7 @@
         <Setter Property="BorderWidth" Value="0" />
         <Setter Property="CornerRadius" Value="8" />
         <Setter Property="Padding" Value="14,10" />
-        <Setter Property="MinimumHeightRequest" Value="30" />
+        <Setter Property="MinimumHeightRequest" Value="20" />
         <Setter Property="MinimumWidthRequest" Value="30" />
         <Setter Property="VisualStateManager.VisualStateGroups">
             <VisualStateGroupList>
@@ -67,15 +67,22 @@
 
     <Style TargetType="DatePicker">
         <Setter Property="TextColor" Value="{StaticResource PrimaryDarkText}" />
-        <Setter Property="BackgroundColor" Value="Transparent" />
+        <Setter Property="BackgroundColor" Value="{StaticResource Gray200}" />
         <Setter Property="FontFamily" Value="OpenSansRegular" />
-        <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontSize" Value="16" />
         <Setter Property="MinimumHeightRequest" Value="44" />
         <Setter Property="MinimumWidthRequest" Value="44" />
+        <Setter Property="Format" Value="dd/MM/yyyy" />
         <Setter Property="VisualStateManager.VisualStateGroups">
             <VisualStateGroupList>
                 <VisualStateGroup x:Name="CommonStates">
                     <VisualState x:Name="Normal" />
+                    <VisualState x:Name="Selected">
+                        <VisualState.Setters>
+                            <Setter Property="TextColor" Value="Blue" />
+                        </VisualState.Setters>
+                    </VisualState>
+
                     <VisualState x:Name="Disabled">
                         <VisualState.Setters>
                             <Setter Property="TextColor" Value="{StaticResource Gray300}" />

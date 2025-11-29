@@ -41,6 +41,14 @@ namespace UziSport.Model
 
         public List<ProductComboCostInfo> ProductComboCostInfos { get; set; } = new List<ProductComboCostInfo>();
 
+        public string SearchResultString 
+        {
+            get 
+            {
+                return $"{ProductCode}|{ProductName}|{BrandName}|{CatalogName}|{Specification}";
+            }
+        }
+
         public ProductInfo ToProductInfo()
         {
             return new ProductInfo()

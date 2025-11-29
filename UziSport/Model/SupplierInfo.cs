@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 
 namespace UziSport.Model
 {
-    public class WarehouseInfo
+    public class SupplierInfo
     {
         [PrimaryKey, AutoIncrement]
 
-        public int WarehouseId { get; set; }
+        public int SupplierId { get; set; }
 
-        public string WarehouseName { get; set; } = string.Empty;
+        public string SupplierName { get; set; } = string.Empty;
     }
 }

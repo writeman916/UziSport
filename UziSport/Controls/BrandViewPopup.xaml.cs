@@ -14,7 +14,7 @@ namespace UziSport.Controls
 
         public ObservableCollection<BrandInfo> Brands { get; } = new();
 
-        public List<BrandInfo> DeletedBrands { get; } = new();
+        private List<BrandInfo> _deletedBrands { get; } = new();
 
         public BrandViewPopup()
         {
@@ -56,12 +56,12 @@ namespace UziSport.Controls
         {
             var dal = new BrandDAL();
 
-            foreach (var brand in DeletedBrands)
+            foreach (var brand in _deletedBrands)
             {
                 await dal.DeleteItemAsync(brand);
             }
 
-            foreach (var brand in Brands.Where(x => x.BrandId == 0))
+            foreach (var brand in Brands)
             {
                 await dal.SaveItemAsync(brand);
             }
@@ -83,7 +83,7 @@ namespace UziSport.Controls
 
                     if (brandsProp?.GetValue(BindingContext) is ICollection<BrandInfo> brands)
                     {
-                        DeletedBrands.Add(brand);
+                        _deletedBrands.Add(brand);
                         brands.Remove(brand);
                     }
                 }

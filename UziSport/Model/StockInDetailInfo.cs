@@ -24,9 +24,15 @@ namespace UziSport.Model
 
     public class StockInDetailViewInfo : StockInDetailInfo
     {
+        public string ProductCode { get; set; } = string.Empty;
+
         public string ProductName { get; set; } = string.Empty;
 
         public string Specification { get; set; } = string.Empty;
+
+        public string BrandName { get; set; } = string.Empty;
+
+        public string CatalogName { get; set; } = string.Empty;
 
         public decimal Cost { get; set; }
 

@@ -7,49 +7,35 @@
     FlyoutBehavior="Locked"
     FlyoutWidth="250">
 
-    <!-- PHẦN 1: Header trên Flyout (tên + logo) -->
+    <!--  PHẦN 1: Header trên Flyout (tên + logo)  -->
     <Shell.FlyoutHeader>
         <Grid Padding="16">
             <VerticalStackLayout Spacing="12" VerticalOptions="Center">
-                <Image Source="icon_uzi.jpg"
-                       WidthRequest="200"
-                       HeightRequest="200"
-                       Aspect="AspectFit" />
-                <Label Text="UziSport"
-                       FontSize="24"
-                       FontAttributes="Bold"
-                       HorizontalOptions="Center" />
+                <Image
+                    Aspect="AspectFit"
+                    HeightRequest="200"
+                    Source="icon_uzi.jpg"
+                    WidthRequest="200" />
+                <Label
+                    FontAttributes="Bold"
+                    FontSize="24"
+                    HorizontalOptions="Center"
+                    Text="UziSport" />
             </VerticalStackLayout>
         </Grid>
     </Shell.FlyoutHeader>
 
-    <!-- PHẦN 2: Nội dung chính (MainPage, màn hình chính của app) -->
     <FlyoutItem Title="Trang chính" Icon="dotnet_bot.png">
-        <Tab Title="Trang chính" Icon="dotnet_bot.png">
-            <ShellContent
-                Title="MainPage"
-                Icon="dotnet_bot.png"
-                ContentTemplate="{DataTemplate views:MainPage}" />
-        </Tab>
+        <ShellContent Title="MainPage" ContentTemplate="{DataTemplate views:MainPage}" />
     </FlyoutItem>
 
-    <!-- PHẦN 3: Nhóm QUẢN LÝ (dropdown dạng nhiều mục con trong flyout) -->
-    <!-- FlyoutDisplayOptions="AsMultipleItems" sẽ hiển thị từng ShellContent như item con -->
-    <FlyoutItem Title="Quản lý"
-                FlyoutDisplayOptions="AsMultipleItems">
 
-        <!-- Mục con 1: Quản lý sản phẩm -->
-        <ShellContent
-            Title="Quản lý sản phẩm"
-            Icon="dotnet_bot.png"
-            ContentTemplate="{DataTemplate views:ProductManage}" />
-
-        <!-- Sau này bạn có thể thêm các mục con khác kiểu: 
-        <ShellContent
-            Title="Quản lý khách hàng"
-            Icon="some_icon.png"
-            ContentTemplate="{DataTemplate views:QuanLyKhachHangPage}" />
-        -->
+    <!--  Các màn hình con, xuất hiện ngay bên dưới  -->
+    <FlyoutItem Title="Quản lý sản phẩm" Icon="dotnet_bot.png">
+        <ShellContent Title="Quản lý sản phẩm" ContentTemplate="{DataTemplate views:ProductManage}" />
     </FlyoutItem>
 
+    <FlyoutItem Title="Quản lý nhập kho" Icon="dotnet_bot.png">
+        <ShellContent Title="Quản lý nhập kho" ContentTemplate="{DataTemplate views:StockInManage}" />
+    </FlyoutItem>
 </Shell>

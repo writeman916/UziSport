@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="UziSport.StockInManage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:UziSport.Controls"
+    Shell.NavBarIsVisible="False">
+    <Grid>
+        <Button
+            x:Name="BtnTao"
+            Clicked="BtnTao_Clicked"
+            Text="+ Tạo" />
+
+        <controls:NewStockInPopup
+            x:Name="NewStockInPopup"
+            Grid.RowSpan="4"
+            Grid.ColumnSpan="4"
+            HorizontalOptions="Fill"
+            
+            VerticalOptions="Fill" />
+    </Grid>
+</ContentPage>

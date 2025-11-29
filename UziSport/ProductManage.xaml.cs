@@ -44,10 +44,8 @@ public partial class ProductManage : ContentPage
         BindingContext = this;
     }
 
-    private void ClearInput()
+    private void ClearInput(bool screanOnly = false)
     {
-        _selectedProduct = null;
-
         this.BarcodeEntry.Text = string.Empty;
         this.ProductNameEntry.Text = string.Empty;
         this.CatalogPicker.SelectedIndex = -1;
@@ -55,11 +53,15 @@ public partial class ProductManage : ContentPage
         this.SpecificationEntry.Text = string.Empty;
         this.CostEntry.Text = string.Empty;
         this.PriceEntry.Text = string.Empty;
-
         ComboCosts.Clear();
 
-        CurrentProduct = new ProductViewInfo();
-        OnPropertyChanged(nameof(CurrentProduct));
+        if (screanOnly!)
+        {
+            _selectedProduct = null;
+
+            CurrentProduct = new ProductViewInfo();
+            OnPropertyChanged(nameof(CurrentProduct));
+        }
     }
 
 
@@ -149,6 +151,8 @@ public partial class ProductManage : ContentPage
 
     private async void ProductList_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
+        this.ClearInput(true);
+
         var selected = e.CurrentSelection.FirstOrDefault() as ProductViewInfo;
         if (selected == null)
             return;
@@ -210,6 +214,8 @@ public partial class ProductManage : ContentPage
 
         ViewProductInfos = await _productDal.GetProductsAsync();
         _allProductInfos = ViewProductInfos.ToList();
+
+        this.BarcodeEntry.Focus();
     }
 
     private async void BtnXoa_Clicked(object sender, EventArgs e)

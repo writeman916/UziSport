@@ -14,7 +14,7 @@ public partial class CatalogViewPopup : ContentView
 
     public ObservableCollection<CatalogInfo> Catalogs { get; } = new();
 
-    public List<CatalogInfo> DeletedCatalogs { get; } = new();
+    private List<CatalogInfo> _deletedCatalogs { get; } = new();
 
     public CatalogViewPopup()
     {
@@ -56,12 +56,12 @@ public partial class CatalogViewPopup : ContentView
     {
         var dal = new CatalogDAL();
 
-        foreach (var Catalog in DeletedCatalogs)
+        foreach (var Catalog in _deletedCatalogs)
         {
             await dal.DeleteItemAsync(Catalog);
         }
 
-        foreach (var Catalog in Catalogs.Where(x => x.CatalogId == 0))
+        foreach (var Catalog in Catalogs)
         {
             await dal.SaveItemAsync(Catalog);
         }
@@ -83,7 +83,7 @@ public partial class CatalogViewPopup : ContentView
 
                 if (CatalogsProp?.GetValue(BindingContext) is ICollection<CatalogInfo> Catalogs)
                 {
-                    DeletedCatalogs.Add(Catalog);
+                    _deletedCatalogs.Add(Catalog);
                     Catalogs.Remove(Catalog);
                 }
             }

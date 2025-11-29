@@ -20,13 +20,7 @@ namespace UziSport.DAL
             // enable multi-threaded database access
             SQLite.SQLiteOpenFlags.SharedCache;
 
-#if DEBUG
         public static string DatabasePath =>
-            Path.Combine(FileSystem.AppDataDirectory, DatabaseFilename);
-#else
-            public static string DatabasePath =>
                 Path.Combine(DatabaseFolder, DatabaseFilename);
-#endif
-
     }
 }
