@@ -23,9 +23,9 @@ namespace UziSport.Model
 
         public string Specification { get; set; } = string.Empty;
 
-        public decimal Cost { get; set; }
+        public decimal? Cost { get; set; }
 
-        public decimal Price { get; set; }
+        public decimal? Price { get; set; }
 
         public int Status { get; set; }
 

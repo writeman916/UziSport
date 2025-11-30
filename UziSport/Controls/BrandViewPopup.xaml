@@ -56,12 +56,11 @@
                     <CollectionView.ItemTemplate>
                         <DataTemplate>
                             <!--  Mỗi record: Tên hãng + nút X  -->
-                            <Grid ColumnDefinitions="*,Auto" RowSpacing="2">
-                                <HorizontalStackLayout
-                                    Grid.Column="0"
+                            <Grid RowSpacing="2">
+                                <Grid
                                     Margin="0,3,0,3"
-                                    HeightRequest="35"
-                                    VerticalOptions="Center">
+                                    ColumnDefinitions="*,Auto"
+                                    HeightRequest="35">
 
                                     <Entry
                                         Grid.Column="0"
@@ -70,7 +69,6 @@
                                         Text="{Binding BrandName}"
                                         VerticalTextAlignment="Center" />
 
-                                    <!--  Nút Xóa  -->
                                     <Button
                                         Grid.Column="1"
                                         Margin="6,0,0,0"
@@ -80,7 +78,7 @@
                                         Text="✕"
                                         TextColor="Red"
                                         WidthRequest="40" />
-                                </HorizontalStackLayout>
+                                </Grid>
                             </Grid>
                         </DataTemplate>
                     </CollectionView.ItemTemplate>

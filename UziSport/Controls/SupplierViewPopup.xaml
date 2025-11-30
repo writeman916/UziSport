@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentView
-    x:Class="UziSport.Controls.CatalogViewPopup"
+    x:Class="UziSport.Controls.SupplierViewPopup"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     InputTransparent="False"
     IsVisible="False">
+
     <Grid
         BackgroundColor="#80000000"
         HorizontalOptions="Fill"
@@ -29,17 +30,17 @@
                         FontAttributes="Bold"
                         FontSize="18"
                         HorizontalOptions="Center"
-                        Text="Thêm danh mục" />
+                        Text="Thêm nhà cung cấp" />
                     <Entry
-                        x:Name="CatalogNameEntry"
-                        Completed="CatalogNameEntry_Completed"
-                        Placeholder="Tên danh mục" />
+                        x:Name="SupplierNameEntry"
+                        Completed="SupplierNameEntry_Completed"
+                        Placeholder="Tên nhà cung cấp" />
                     <Label
-                        x:Name="CatalogExistsLabel"
+                        x:Name="SupplierExistsLabel"
                         FontSize="18"
                         HorizontalOptions="Center"
                         IsVisible="False"
-                        Text="Danh mục này đã tồn tại!"
+                        Text="Hãng này đã tồn tại!"
                         TextColor="Red" />
                     <!--  Line ngăn cách  -->
                     <BoxView
@@ -47,13 +48,14 @@
                         HeightRequest="1"
                         HorizontalOptions="Fill" />
                 </VerticalStackLayout>
-                <!--  Danh sách danh mục hiện có  -->
+                <!--  Danh sách nhà cung cấp hiện có  -->
                 <CollectionView
                     Grid.Row="1"
                     Margin="0,8,0,0"
-                    ItemsSource="{Binding Catalogs}">
+                    ItemsSource="{Binding Suppliers}">
                     <CollectionView.ItemTemplate>
                         <DataTemplate>
+                            <!--  Mỗi record: Tên nhà cung cấp + nút X  -->
                             <Grid RowSpacing="2">
                                 <Grid
                                     Margin="0,3,0,3"
@@ -64,14 +66,14 @@
                                         Grid.Column="0"
                                         Margin="2,0,0,0"
                                         HorizontalTextAlignment="Start"
-                                        Text="{Binding CatalogName}"
+                                        Text="{Binding SupplierName}"
                                         VerticalTextAlignment="Center" />
 
                                     <Button
                                         Grid.Column="1"
                                         Margin="6,0,0,0"
                                         BackgroundColor="Transparent"
-                                        Clicked="DeleteCatalogButton_Clicked"
+                                        Clicked="DeleteSupplierButton_Clicked"
                                         FontSize="16"
                                         Text="✕"
                                         TextColor="Red"

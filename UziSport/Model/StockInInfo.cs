@@ -20,7 +20,7 @@ namespace UziSport.Model
 
         public DateTime StockInDate { get; set; }
 
-        public decimal TotalAmount { get; set; }
+        public decimal? TotalAmount { get; set; }
 
         public int Status { get; set; }
 

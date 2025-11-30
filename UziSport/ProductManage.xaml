@@ -111,8 +111,8 @@
                     HeightRequest="50"
                     Keyboard="Numeric"
                     Placeholder="Giá vốn"
-                    Text="{Binding CurrentProduct.Cost}"
-                    WidthRequest="200" />
+                    WidthRequest="200"
+                    Value="{Binding CurrentProduct.Cost, Mode=TwoWay}" />
             </HorizontalStackLayout>
 
             <HorizontalStackLayout
@@ -125,8 +125,8 @@
                     HeightRequest="50"
                     Keyboard="Numeric"
                     Placeholder="Giá bán"
-                    Text="{Binding CurrentProduct.Price}"
-                    WidthRequest="200" />
+                    WidthRequest="200"
+                    Value="{Binding CurrentProduct.Price, Mode=TwoWay}" />
             </HorizontalStackLayout>
 
             <HorizontalStackLayout

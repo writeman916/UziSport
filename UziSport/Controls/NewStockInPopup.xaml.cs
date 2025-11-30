@@ -1,4 +1,7 @@
 ﻿using System.Collections.ObjectModel;
+using System.Globalization;
+using System.Text;
+using System.Threading.Tasks;
 using UziSport.DAL;
 using UziSport.Model;
 
@@ -23,8 +26,6 @@ public partial class NewStockInPopup : ContentView
     public ObservableCollection<WarehouseInfo> Warehouses { get; } = new();
     public ObservableCollection<SupplierInfo> Suppliers { get; } = new();
     public StockInViewInfo CurrentStockInInfo { get; set; } = new StockInViewInfo();
-    public string SearchString { get; }
-
 
     private List<ProductViewInfo> _searchResults = new();
     public List<ProductViewInfo> SearchResults
@@ -83,11 +84,15 @@ public partial class NewStockInPopup : ContentView
         foreach (var b in suppliers)
             Suppliers.Add(b);
 
+        this.ClearInputs();
+
         await this.FadeTo(1, 150);
     }
 
     public async Task HideAsync()
     {
+        this.ClearInputs();
+
         await this.FadeTo(0, 150);
         IsVisible = false;
     }
@@ -101,7 +106,7 @@ public partial class NewStockInPopup : ContentView
 
         if (string.IsNullOrWhiteSpace(text))
         {
-            SearchResults = Products.ToList();
+            SearchResults = new List<ProductViewInfo>();
             return;
         }
 
@@ -119,15 +124,56 @@ public partial class NewStockInPopup : ContentView
         SearchResults = filtered;
     }
 
+    private void NewStockInDetailViewInfos(ProductViewInfo product)
+    {
+        var newDetail = new StockInDetailViewInfo
+        {
+            ProductId = product.ProductId,
+            ProductName = product.ProductName,
+            ProductCode = product.ProductCode,
+            Specification = product.Specification,
+            BrandName = product.BrandName,
+            CatalogName = product.CatalogName,
+            UnitCost = product.Cost,
+            CreateAt = DateTime.Now,
+            CreateBy = Environment.UserName
+        };
+
+        StockInDetailInfos.Add(newDetail);
+
+        _pendingFocusItem = newDetail;
+
+        this.SearchEntry.Text = string.Empty;
+        this.SearchResults = new List<ProductViewInfo>();
+    }
+
     private void SearchResultButton_Clicked(object sender, EventArgs e)
     {
-        if (sender is Button btn && btn.BindingContext is ProductViewInfo item)
+        if (sender is not Button btn || btn.BindingContext is not ProductViewInfo item)
+            return;
+
+        NewStockInDetailViewInfos(item);
+    }
+
+
+    private void ClearInputs(bool isScreenOnly = false)
+    {
+        this.SearchEntry.Text = string.Empty;
+        this.StockInDetailInfos.Clear();
+        this.BarcodeEntry.Text = string.Empty;
+        this.StockInDatePicker.Date = DateTime.Now;
+        this.WareHousePicker.SelectedIndex = 0;
+        this.SupplierPicker.SelectedIndex = -1;
+        this.NoteEntry.Text = string.Empty;
+        this.TotalAmountEntry.Value = 0;
+
+        if (isScreenOnly)
         {
-            // Xử lý chọn item ở đây
-            // Ví dụ:
-            // ViewModel.SelectedSearchResult = item;
+            CurrentStockInInfo = new StockInViewInfo();
+            OnPropertyChanged(nameof(CurrentStockInInfo));
         }
     }
+
     private void BtnThem_Clicked(object sender, EventArgs e)
     {
         if(SearchResults.Count == 0)
@@ -135,23 +181,7 @@ public partial class NewStockInPopup : ContentView
 
         var firstItem = SearchResults[0];
 
-        var newDetail = new StockInDetailViewInfo()
-        {
-            ProductId = firstItem.ProductId,
-            ProductName = firstItem.ProductName,
-            ProductCode = firstItem.ProductCode,
-            Specification = firstItem.Specification,
-            BrandName = firstItem.BrandName,
-            CatalogName = firstItem.CatalogName,
-            UnitCost = firstItem.Cost,
-            CreateAt = DateTime.Now,
-            CreateBy = Environment.UserName
-        };
-
-        StockInDetailInfos.Add(newDetail);
-
-        // Ghi nhớ item vừa thêm để lát nữa focus vào ô Quantity của nó
-        _pendingFocusItem = newDetail;
+        this.NewStockInDetailViewInfos(firstItem);
     }
 
     private void QuantityEntry_Loaded(object sender, EventArgs e)
@@ -237,6 +267,42 @@ public partial class NewStockInPopup : ContentView
         TotalAmountEntry.Value = Convert.ToInt32(total);
     }
 
+    private static string RemoveDiacriticsAndNonAlphanumeric(string input)
+    {
+        if (string.IsNullOrWhiteSpace(input))
+            return string.Empty;
+
+        var normalizedString = input.Normalize(NormalizationForm.FormD);
+        var sb = new StringBuilder();
+
+        foreach (var ch in normalizedString)
+        {
+            var unicodeCategory = CharUnicodeInfo.GetUnicodeCategory(ch);
+
+            if (unicodeCategory != UnicodeCategory.NonSpacingMark && char.IsLetterOrDigit(ch))
+            {
+                sb.Append(ch);
+            }
+        }
+
+        return sb.ToString().Normalize(NormalizationForm.FormC);
+    }
+
+    private static string GenerateNewStockInCode()
+    {
+        var userName = Environment.UserName ?? "USER";
+
+        var userPart = RemoveDiacriticsAndNonAlphanumeric(userName);
+
+        if (string.IsNullOrWhiteSpace(userPart))
+            userPart = "USER";
+
+        var timePart = DateTime.Now.ToString("yyyyMMddHHmmss");
+
+        return $"{userPart}_{timePart}";
+    }
+
+
     private void CostEntry_Loaded(object sender, EventArgs e)
     {
         if (sender is not Entry entry)
@@ -256,5 +322,41 @@ public partial class NewStockInPopup : ContentView
     private void CostOrQuanity_UnFocused(object sender, FocusEventArgs e)
     {
         RecalculateTotalAmount();
+    }
+
+    private void BtnLuu_Clicked(object sender, EventArgs e)
+    {
+
+    }
+
+    private void BtnXoa_Clicked(object sender, EventArgs e)
+    {
+
+    }
+
+    private async void BtnAddWarehouse_Clicked(object sender, EventArgs e)
+    {
+        await WarehousePopup.ShowAsync();
+    }
+
+    private async void Warehouses_Saved(object sender, EventArgs e)
+    {
+        var warehouses = await WarehouseDAL.Instance.GetWarehousesAsync(forceRefresh: true);
+        Warehouses.Clear();
+        foreach (var b in warehouses)
+            Warehouses.Add(b);
+    }
+
+    private async void BtnAddSupplier_Clicked(object sender, EventArgs e)
+    {
+        await SupplierPopup.ShowAsync();
+    }
+
+    private async void Suppliers_Saved(object sender, EventArgs e)
+    {
+        var suppliers = await SupplierDAL.Instance.GetSuppliersAsync(forceRefresh: true);
+        Suppliers.Clear();
+        foreach (var b in suppliers)
+            Suppliers.Add(b);
     }
 }

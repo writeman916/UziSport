@@ -17,7 +17,7 @@ namespace UziSport.Model
 
         public int Quantity { get; set; }
 
-        public decimal UnitCost { get; set; }
+        public decimal? UnitCost { get; set; }
 
         public string  Note { get; set; } = string.Empty;
     }
@@ -38,7 +38,7 @@ namespace UziSport.Model
 
         public decimal Price { get; set; }
 
-        public decimal SubTotal 
+        public decimal? SubTotal 
         { 
             get
             {
