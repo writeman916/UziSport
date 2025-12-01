@@ -26,14 +26,21 @@
             <HorizontalStackLayout
                 Grid.Row="0"
                 Grid.Column="0"
+                Grid.ColumnSpan="2"
                 Spacing="10">
                 <Label>Barcode</Label>
                 <Entry
                     x:Name="BarcodeEntry"
+                    TextChanged="BarcodeEntry_TextChanged"
                     HeightRequest="50"
                     Placeholder="Barcode"
                     Text="{Binding CurrentProduct.ProductCode}"
                     WidthRequest="200 " />
+                <Label
+                    x:Name="BarcodeWarning"
+                    IsVisible="False"
+                    Text="Barcode này đã tồn tại!"
+                    TextColor="Red" />
             </HorizontalStackLayout>
 
             <HorizontalStackLayout

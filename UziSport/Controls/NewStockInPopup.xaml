@@ -111,8 +111,8 @@
                         <Label>Ghi Chú</Label>
                         <Editor
                             x:Name="NoteEntry"
-                            Text="{Binding CurrentStockInInfo.Note}"
                             HeightRequest="125"
+                            Text="{Binding CurrentStockInInfo.Note}"
                             WidthRequest="650" />
                     </HorizontalStackLayout>
 
@@ -139,9 +139,10 @@
                         HorizontalOptions="End"
                         WidthRequest="200">
                         <controls:ImportStatusPicker
+                            x:Name="StatusPicker"
                             FontSize="18"
                             HeightRequest="52"
-                            SelectedStatus="{Binding ImportStatus}"
+                            SelectedStatus="{Binding ImportStatus, Mode=TwoWay}"
                             VerticalOptions="Fill"
                             WidthRequest="202" />
                     </Frame>
@@ -297,10 +298,10 @@
                             Y2="0" />
 
                         <CollectionView
+                            x:Name="StockInDetailInfoConntentView"
                             Grid.Row="2"
                             ItemsSource="{Binding StockInDetailInfos}"
                             SelectionMode="Single">
-
                             <CollectionView.ItemTemplate>
                                 <DataTemplate>
                                     <HorizontalStackLayout HeightRequest="40">
@@ -340,7 +341,7 @@
                                             Y2="40" />
                                         <Label
                                             HorizontalTextAlignment="Center"
-                                            Text="{Binding WarehouseName}"
+                                            Text="{Binding BrandName, Mode=TwoWay}"
                                             WidthRequest="130" />
                                         <Line
                                             Stroke="{StaticResource Secondary}"
@@ -365,6 +366,7 @@
                                             Margin="5,0,5,0"
                                             Completed="CostOrQuantity_Completed"
                                             HorizontalTextAlignment="Center"
+                                            IsReadOnly="{Binding BindingContext.IsDetailReadOnly, Source={x:Reference StockInDetailInfoConntentView}}"
                                             Loaded="CostEntry_Loaded"
                                             Text="{Binding UnitCost, StringFormat='{}{0:N0}'}"
                                             Unfocused="CostOrQuanity_UnFocused"
@@ -381,19 +383,23 @@
                                             Margin="5,0,5,0"
                                             Completed="CostOrQuantity_Completed"
                                             HorizontalTextAlignment="Center"
+                                            IsReadOnly="{Binding BindingContext.IsDetailReadOnly, Source={x:Reference StockInDetailInfoConntentView}}"
                                             Loaded="QuantityEntry_Loaded"
                                             Placeholder="Số lượng"
-                                            Text="{Binding Quantity}"
                                             Unfocused="CostOrQuanity_UnFocused"
-                                            WidthRequest="90" />
+                                            WidthRequest="90"
+                                            Value="{Binding Quantity, Mode=TwoWay}" />
+
                                         <Button
                                             Margin="0,0,0,0"
                                             BackgroundColor="Transparent"
                                             Clicked="DeleteStockInDetailButton_Clicked"
                                             FontSize="18"
+                                            IsVisible="{Binding BindingContext.IsInProgress, Source={x:Reference StockInDetailInfoConntentView}}"
                                             Text="✕"
                                             TextColor="Red"
                                             WidthRequest="45" />
+
                                         <VisualStateManager.VisualStateGroups>
                                             <VisualStateGroup x:Name="CommonStates">
                                                 <VisualState x:Name="Normal">
@@ -428,6 +434,7 @@
                         HeightRequest="45"
                         Text="Lưu"
                         WidthRequest="100" />
+
                     <Button
                         BackgroundColor="DarkRed"
                         Clicked="BtnCancel_Clicked"

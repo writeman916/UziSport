@@ -9,6 +9,8 @@ namespace UziSport.Controls;
 
 public partial class NewStockInPopup : ContentView
 {
+    public event EventHandler? Closed;
+
     public static readonly BindableProperty ProductsProperty =
             BindableProperty.Create(
                 nameof(Products),
@@ -22,7 +24,26 @@ public partial class NewStockInPopup : ContentView
         set => SetValue(ProductsProperty, value);
     }
 
-    public ImportStatus ImportStatus { get; set; } = ImportStatus.InProgress;
+    private ImportStatus _importStatus = ImportStatus.InProgress;
+    public ImportStatus ImportStatus
+    {
+        get => _importStatus;
+        set
+        {
+            if (_importStatus != value)
+            {
+                _importStatus = value;
+                OnPropertyChanged(nameof(ImportStatus));
+                OnPropertyChanged(nameof(IsInProgress));
+                OnPropertyChanged(nameof(IsDetailReadOnly));
+            }
+        }
+    }
+
+    // Dùng cho binding trong XAML
+    public bool IsInProgress => ImportStatus == ImportStatus.InProgress;
+    public bool IsDetailReadOnly => !IsInProgress;
+
     public ObservableCollection<WarehouseInfo> Warehouses { get; } = new();
     public ObservableCollection<SupplierInfo> Suppliers { get; } = new();
     public StockInViewInfo CurrentStockInInfo { get; set; } = new StockInViewInfo();
@@ -61,6 +82,14 @@ public partial class NewStockInPopup : ContentView
         Cancel,
         Delete,
     }
+
+    private enum ProcessMode
+    {
+        New,
+        Edit
+    }
+
+    private ProcessMode _currentMode = ProcessMode.New;
 
     public StockInPopupResults Result { get; private set; }
 
@@ -113,17 +142,57 @@ public partial class NewStockInPopup : ContentView
         foreach (var b in suppliers)
             Suppliers.Add(b);
 
-        this.ClearInputs();
+        if (CurrentStockInInfo.StockInId == 0)
+        {
+            _currentMode = ProcessMode.New;
 
-        if(CurrentStockInInfo.StockInId == 0)
+            // Phiếu mới: mặc định InProgress
+            ImportStatus = ImportStatus.InProgress;
+
             this.StockInCodeEntry.Text = GenerateNewStockInCode();
+        }
+        else
+        {
+            _currentMode = ProcessMode.Edit;
+
+            OnPropertyChanged(nameof(CurrentStockInInfo));
+
+            // Set WarehousesPicker
+            var warehouse = Warehouses.FirstOrDefault(c => c.WarehouseId == CurrentStockInInfo.WarehouseId);
+            if (warehouse != null)
+                WareHousePicker.SelectedItem = warehouse;
+
+            // Set SupplierPicker
+            var supplier = Suppliers.FirstOrDefault(c => c.SupplierId == CurrentStockInInfo.SupplierId);
+            if (supplier != null)
+                SupplierPicker.SelectedItem = supplier;
+
+            // Đồng bộ ImportStatus với dữ liệu đang có
+            ImportStatus = CurrentStockInInfo.ImportStatus ?? ImportStatus.InProgress;
+        }
+
+        // Enable/disable header + nút Lưu
+        this.SetEnableAllControl(IsInProgress);
 
         await this.FadeTo(1, 150);
+    }
+
+    private void SetEnableAllControl(bool isEnable)
+    {
+        this.StockInDatePicker.IsEnabled = isEnable;
+        this.WareHousePicker.IsEnabled = isEnable;
+        this.SupplierPicker.IsEnabled = isEnable;
+        this.NoteEntry.IsEnabled = isEnable;
+        this.StatusPicker.IsEnabled = isEnable;
+        this.SaveButton.IsEnabled = isEnable;
+        this.BtnThem.IsEnabled = isEnable;
+        this.SearchEntry.IsEnabled = isEnable;
     }
 
     public async Task HideAsync()
     {
         this.ClearInputs();
+        Closed?.Invoke(this, EventArgs.Empty);
 
         await this.FadeTo(0, 150);
         IsVisible = false;
@@ -359,6 +428,9 @@ public partial class NewStockInPopup : ContentView
 
     private async void BtnLuu_Clicked(object sender, EventArgs e)
     {
+        if (_currentMode != ProcessMode.Edit)
+            return;
+
         if(CheckInputs() == false)
             return;
 
@@ -399,6 +471,24 @@ public partial class NewStockInPopup : ContentView
             var warehouseDetailDAL = new WarehouseDetailDAL();
 
             await warehouseDetailDAL.SaveItemAsync(saveStockInInfo.StockInDetailInfos, saveStockInInfo.WarehouseId);
+
+            // Cập nhật giá theo combo nếu có
+            var productComboCostDAL = new ProductComboCostDAL();
+
+            foreach(var detail in saveStockInInfo.StockInDetailInfos)
+            {
+                if (detail.Cost != detail.UnitCost)
+                {
+                    await productComboCostDAL.InsertItemByProductId(detail.ProductId, new ProductComboCostInfo()
+                    {
+                        ProductId = detail.ProductId,
+                        StockDetailId = detail.StockInDetailId,
+                        Cost = detail.UnitCost.GetValueOrDefault(),
+                        CreateAt = DateTime.Now,
+                        CreateBy = Environment.UserName
+                    });
+                }
+            }
         }
 
         //Close Popup

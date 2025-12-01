@@ -31,7 +31,10 @@ namespace UziSport.DAL
                     sd.StockInDetailId,
                     sd.StockInId,
                     sd.ProductId,
+                    p.ProductCode,
                     p.ProductName,
+                    b.BrandName,
+                    c.CatalogName,  
                     p.Specification,
                     p.Cost,
                     p.Price,    
@@ -44,6 +47,8 @@ namespace UziSport.DAL
                     sd.UpdateAt
                 FROM StockInDetailInfo sd
                 LEFT JOIN ProductInfo p ON sd.ProductId = p.ProductId
+                LEFT JOIN BrandInfo b ON p.BrandId = b.BrandId
+                LEFT JOIN CatalogInfo c ON p.CatalogId = c.CatalogId
                 WHERE sd.StockInId = {stockInId}
                 ORDER BY sd.CreateAt, sd.UpdateAt;
             ";

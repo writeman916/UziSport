@@ -54,8 +54,9 @@ public partial class ProductManage : ContentPage
         this.CostEntry.Text = string.Empty;
         this.PriceEntry.Text = string.Empty;
         ComboCosts.Clear();
+        this.BarcodeEntry.IsReadOnly = false;
 
-        if (screanOnly!)
+        if (!screanOnly)
         {
             _selectedProduct = null;
 
@@ -74,12 +75,12 @@ public partial class ProductManage : ContentPage
             return false;
         }
 
-        if (CurrentProduct.ProductId == 0 && this._viewProductInfos.Any(x => x.ProductCode == this.BarcodeEntry.Text))
-        {
-            _ = AppToast.ShowAsync(Controls.ToastView.ToastKind.Error, "Barcode này đã tồn tại !", 3000);
-            this.BarcodeEntry.Focus();
-            return false;
-        }
+        //if (CurrentProduct.ProductId == 0 && this._viewProductInfos.Any(x => x.ProductCode == this.BarcodeEntry.Text))
+        //{
+        //    _ = AppToast.ShowAsync(Controls.ToastView.ToastKind.Error, "Barcode này đã tồn tại !", 3000);
+        //    this.BarcodeEntry.Focus();
+        //    return false;
+        //}
 
         if (string.IsNullOrWhiteSpace(ProductNameEntry.Text))
         {
@@ -152,6 +153,8 @@ public partial class ProductManage : ContentPage
     private async void ProductList_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         this.ClearInput(true);
+
+        this.BarcodeEntry.IsReadOnly = true;
 
         var selected = e.CurrentSelection.FirstOrDefault() as ProductViewInfo;
         if (selected == null)
@@ -315,5 +318,20 @@ public partial class ProductManage : ContentPage
         Catalogs.Clear();
         foreach (var b in catalogs)
             Catalogs.Add(b);
+    }
+
+    private void BarcodeEntry_TextChanged(object sender, TextChangedEventArgs e)
+    {
+        if (_allProductInfos == null)
+            return;
+
+        if (_allProductInfos.Any(p => p.ProductCode == this.BarcodeEntry.Text))
+        {
+            this.BarcodeWarning.IsVisible = true;
+        }
+        else
+        {
+            this.BarcodeWarning.IsVisible = false;
+        }
     }
 }

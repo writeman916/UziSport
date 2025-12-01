@@ -85,7 +85,7 @@
 
                     <VisualState x:Name="Disabled">
                         <VisualState.Setters>
-                            <Setter Property="TextColor" Value="{StaticResource Gray300}" />
+                            <Setter Property="TextColor" Value="{StaticResource PrimaryDarkText}" />
                         </VisualState.Setters>
                     </VisualState>
                 </VisualStateGroup>
@@ -115,7 +115,7 @@
                     <VisualState x:Name="Normal" />
                     <VisualState x:Name="Disabled">
                         <VisualState.Setters>
-                            <Setter Property="TextColor" Value="{StaticResource Gray300}" />
+                            <Setter Property="TextColor" Value="{StaticResource PrimaryDarkText}" />
                         </VisualState.Setters>
                     </VisualState>
                 </VisualStateGroup>
@@ -137,7 +137,7 @@
                     <VisualState x:Name="Normal" />
                     <VisualState x:Name="Disabled">
                         <VisualState.Setters>
-                            <Setter Property="TextColor" Value="{StaticResource Gray300}" />
+                            <Setter Property="TextColor" Value="{StaticResource Black}" />
                         </VisualState.Setters>
                     </VisualState>
                 </VisualStateGroup>
@@ -186,7 +186,7 @@
                     <VisualState x:Name="Normal" />
                     <VisualState x:Name="Disabled">
                         <VisualState.Setters>
-                            <Setter Property="TextColor" Value="{StaticResource Gray300}" />
+                            <Setter Property="TextColor" Value="{StaticResource PrimaryDarkText}" />
                         </VisualState.Setters>
                     </VisualState>
                 </VisualStateGroup>
@@ -231,8 +231,8 @@
                     <VisualState x:Name="Normal" />
                     <VisualState x:Name="Disabled">
                         <VisualState.Setters>
-                            <Setter Property="TextColor" Value="{StaticResource Gray300}" />
-                            <Setter Property="TitleColor" Value="{StaticResource Gray300}" />
+                            <Setter Property="TextColor" Value="{StaticResource PrimaryDarkText}" />
+                            <Setter Property="TitleColor" Value="{StaticResource PrimaryDarkText}" />
                         </VisualState.Setters>
                     </VisualState>
                 </VisualStateGroup>

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UziSport.Controls;
 
 namespace UziSport.Model
 {
@@ -35,6 +36,13 @@ namespace UziSport.Model
         public string WarehouseName { get; set; } = string.Empty;
 
         public List<StockInDetailViewInfo> StockInDetailInfos { get; set; } = new List<StockInDetailViewInfo>();
+
+        public ImportStatus? ImportStatus
+        {
+            get => Status == 0 ? null : (ImportStatus?)Status;
+            set => Status = value.HasValue ? (int)value.Value : 0;
+        }
+
 
         public StockInInfo ToStockInInfo()
         {

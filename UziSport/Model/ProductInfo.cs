@@ -12,7 +12,6 @@ namespace UziSport.Model
         [PrimaryKey, AutoIncrement]
         public int ProductId { get; set; }
 
-        [Unique]
         public string ProductCode { get; set; } = string.Empty;
 
         public string ProductName { get; set; } = string.Empty;

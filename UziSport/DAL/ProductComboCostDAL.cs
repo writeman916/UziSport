@@ -53,6 +53,13 @@ namespace UziSport.DAL
             return await database.InsertAllAsync(infos);
         }
 
+        public async Task<int> InsertItemByProductId(int productId, ProductComboCostInfo info)
+        {
+            await Init();
+            info.ProductId = productId;
+            return await database.InsertAsync(info);
+        }
+
         public async Task<int> DeleteByProductIdAsync(int productId)
         {
             await Init();

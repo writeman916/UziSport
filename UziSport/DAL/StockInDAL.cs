@@ -34,9 +34,9 @@ namespace UziSport.DAL
                     s.StockInId,
                     s.StockInCode,
                     s.SupplierId,
-                    --sup.SupplierName,
-                    --s.WarehouseId,
-                    --wh.WarehouseName,
+                    sup.SupplierName,
+                    s.WarehouseId,
+                    wh.WarehouseName,
                     s.StockInDate,
                     s.TotalAmount,
                     s.Status,
@@ -46,8 +46,9 @@ namespace UziSport.DAL
                     s.UpdateBy,
                     s.UpdateAt
                 FROM StockInInfo s
-                --LEFT JOIN WarehouseInfo wh ON wh.WarehouseId = s.WarehouseId
-                ORDER BY sd.CreateAt, sd.UpdateAt DESC;
+                LEFT JOIN WarehouseInfo wh ON wh.WarehouseId = s.WarehouseId
+                LEFT JOIN SupplierInfo sup ON sup.SupplierId = s.SupplierId
+                ORDER BY s.CreateAt, s.UpdateAt DESC;
             ";
 
             var list = await database.QueryAsync<StockInViewInfo>(sql);
