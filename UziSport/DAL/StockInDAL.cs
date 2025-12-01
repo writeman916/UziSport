@@ -79,7 +79,7 @@ namespace UziSport.DAL
                 WHERE s.StockInId = {stockInId}
                 ORDER BY sd.CreateAt, sd.UpdateAt DESC;
             ";
-            var item = (await database.QueryAsync<StockInViewInfo>(sql)).FirstOrDefault();
+            var item = (await database.QueryAsync<StockInViewInfo >(sql)).FirstOrDefault();
             return item;
         }
 
@@ -107,7 +107,11 @@ namespace UziSport.DAL
 
                 if (viewItem.StockInDetailInfos != null && viewItem.StockInDetailInfos.Count > 0)
                 {
-                    
+                    foreach (var detail in viewItem.StockInDetailInfos)
+                    {
+                        detail.StockInId = item.StockInId;
+                    }
+
                     detailDAL.SaveItemInTransaction(conn, viewItem.StockInDetailInfos);
                 }else
                 {

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SQLite;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Metadata.Ecma335;
@@ -9,6 +10,7 @@ namespace UziSport.Model
 {
     public class StockInDetailInfo : BaseModelInfo
     {
+        [PrimaryKey, AutoIncrement]
         public int StockInDetailId { get; set; }
 
         public int StockInId { get; set; }
@@ -56,6 +58,21 @@ namespace UziSport.Model
                 Quantity = this.Quantity,
                 UnitCost = this.UnitCost,
                 Note = this.Note,
+                CreateAt = this.CreateAt,
+                CreateBy = this.CreateBy,
+                UpdateAt = this.UpdateAt,
+                UpdateBy = this.UpdateBy
+            };
+        }
+
+        public WarehouseDetailInfo ToWarehouseDetailInfo(int warehouseId)
+        {
+            return new WarehouseDetailInfo
+            {
+                WarehouseId = warehouseId,
+                StockInDetailId = this.StockInDetailId,
+                ProductId = this.ProductId,
+                Quantity = this.Quantity,
                 CreateAt = this.CreateAt,
                 CreateBy = this.CreateBy,
                 UpdateAt = this.UpdateAt,

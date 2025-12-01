@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SQLite;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,7 +9,10 @@ namespace UziSport.Model
 {
     public class WarehouseDetailInfo : BaseModelInfo
     {
+        [PrimaryKey, AutoIncrement]
         public int WarehouseDetailId { get; set; }
+
+        public int StockInDetailId { get; set; }
 
         public int WarehouseId { get; set; }
 

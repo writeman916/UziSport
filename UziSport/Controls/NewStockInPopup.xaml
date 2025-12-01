@@ -45,7 +45,7 @@
                         Spacing="10">
                         <Label>Mã Hóa Đơn</Label>
                         <Entry
-                            x:Name="BarcodeEntry"
+                            x:Name="StockInCodeEntry"
                             HeightRequest="50"
                             IsReadOnly="true"
                             Placeholder="Mã Hóa Đơn"
@@ -111,6 +111,7 @@
                         <Label>Ghi Chú</Label>
                         <Editor
                             x:Name="NoteEntry"
+                            Text="{Binding CurrentStockInInfo.Note}"
                             HeightRequest="125"
                             WidthRequest="650" />
                     </HorizontalStackLayout>
@@ -429,15 +430,21 @@
                         WidthRequest="100" />
                     <Button
                         BackgroundColor="DarkRed"
-                        Clicked="BtnXoa_Clicked"
+                        Clicked="BtnCancel_Clicked"
                         HeightRequest="45"
-                        Text="Xóa"
+                        Text="Hủy"
                         WidthRequest="100" />
                 </HorizontalStackLayout>
 
             </Grid>
         </Frame>
 
+        <!--  Toast overlay  -->
+        <controls:ToastView
+            x:Name="AppToast"
+            HorizontalOptions="End"
+            InputTransparent="True"
+            VerticalOptions="Start" />
         <!--  Warehouse Popup overlay  -->
         <controls:WarehouseViewPopup
             x:Name="WarehousePopup"

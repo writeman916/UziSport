@@ -55,6 +55,15 @@ public partial class NewStockInPopup : ContentView
         }
     }
 
+    public enum StockInPopupResults
+    {
+        Saved,
+        Cancel,
+        Delete,
+    }
+
+    public StockInPopupResults Result { get; private set; }
+
     private StockInDetailViewInfo? _pendingFocusItem;
     private List<StockInDetailViewInfo> _deletedStockInDetailInfos = new();
 
@@ -66,6 +75,26 @@ public partial class NewStockInPopup : ContentView
         IsVisible = false;
         Opacity = 0;
     }
+
+    private bool CheckInputs()
+    {
+        if (this.WareHousePicker.SelectedIndex == -1)
+        {
+            _ = AppToast.ShowAsync(Controls.ToastView.ToastKind.Error, "Vui lòng chọn kho !", 3000);
+            this.WareHousePicker.Focus();
+            return false;
+        }
+
+        if (StockInDetailInfos == null || StockInDetailInfos.Count == 0)
+        {
+            _ = AppToast.ShowAsync(Controls.ToastView.ToastKind.Error, "Chưa có sản phẩm nhập kho !", 3000);
+            this.SearchEntry.Focus();
+            return false;
+        }
+
+        return true;
+    }
+
 
     public async Task ShowAsync()
     {
@@ -85,6 +114,9 @@ public partial class NewStockInPopup : ContentView
             Suppliers.Add(b);
 
         this.ClearInputs();
+
+        if(CurrentStockInInfo.StockInId == 0)
+            this.StockInCodeEntry.Text = GenerateNewStockInCode();
 
         await this.FadeTo(1, 150);
     }
@@ -160,7 +192,8 @@ public partial class NewStockInPopup : ContentView
     {
         this.SearchEntry.Text = string.Empty;
         this.StockInDetailInfos.Clear();
-        this.BarcodeEntry.Text = string.Empty;
+        this.SearchResults.Clear();
+        this.StockInCodeEntry.Text = string.Empty;
         this.StockInDatePicker.Date = DateTime.Now;
         this.WareHousePicker.SelectedIndex = 0;
         this.SupplierPicker.SelectedIndex = -1;
@@ -324,14 +357,60 @@ public partial class NewStockInPopup : ContentView
         RecalculateTotalAmount();
     }
 
-    private void BtnLuu_Clicked(object sender, EventArgs e)
+    private async void BtnLuu_Clicked(object sender, EventArgs e)
     {
+        if(CheckInputs() == false)
+            return;
 
+        RecalculateTotalAmount();
+
+        //GetScreen
+        var saveStockInInfo = CurrentStockInInfo;
+
+        if (WareHousePicker.SelectedItem is WarehouseInfo selectedWarehouse)
+            CurrentStockInInfo.WarehouseId = selectedWarehouse.WarehouseId;
+
+        if (SupplierPicker.SelectedItem is SupplierInfo selectedSupplier)
+            CurrentStockInInfo.SupplierId = selectedSupplier.SupplierId;
+
+        saveStockInInfo.Status = (int)ImportStatus;
+
+        if (saveStockInInfo.StockInId == 0)
+        {
+            saveStockInInfo.CreateAt = DateTime.Now;
+            saveStockInInfo.CreateBy = Environment.UserName;
+        }else
+        {
+            saveStockInInfo.UpdateAt = DateTime.Now;
+            saveStockInInfo.UpdateBy = Environment.UserName;
+        }
+
+        //Get StockInDetailInfos
+        saveStockInInfo.StockInDetailInfos = StockInDetailInfos.ToList();
+
+        //Save StockInInfo
+        var _stockInDal = new StockInDAL();
+
+        await _stockInDal.SaveItemAsync(saveStockInInfo);
+
+        if(ImportStatus == ImportStatus.Completed)
+        {
+            // Cập nhật tồn kho
+            var warehouseDetailDAL = new WarehouseDetailDAL();
+
+            await warehouseDetailDAL.SaveItemAsync(saveStockInInfo.StockInDetailInfos, saveStockInInfo.WarehouseId);
+        }
+
+        //Close Popup
+        this.Result = StockInPopupResults.Saved;
+
+        await this.HideAsync();
     }
 
-    private void BtnXoa_Clicked(object sender, EventArgs e)
+    private async void BtnCancel_Clicked(object sender, EventArgs e)
     {
-
+        this.Result = StockInPopupResults.Cancel;
+        await HideAsync();
     }
 
     private async void BtnAddWarehouse_Clicked(object sender, EventArgs e)

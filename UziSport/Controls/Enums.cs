@@ -8,8 +8,8 @@ namespace UziSport.Controls
 {
     public enum ImportStatus
     {
-        InProgress, // Đang xử lý
-        Completed,  // Hoàn thành
-        Cancelled   // Hủy
+        InProgress = 1, // Đang xử lý
+        Completed = 2,  // Hoàn thành
+        Cancelled = 3   // Hủy
     }
 }

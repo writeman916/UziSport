@@ -58,23 +58,23 @@ namespace UziSport.DAL
             if (infos == null || infos.Count == 0)
                 return;
 
+            var newItems = infos.Where(s => s.StockInDetailId == 0).ToList();
+            var updateItems = infos.Where(s => s.StockInDetailId != 0).ToList();
 
-            var insertInfos = infos.Where(s => s.StockInDetailId == 0).Select(i => i.ToStockInDetailInfo()).ToList();
-            var updateInfos = infos.Where(s => s.StockInDetailId != 0).Select(i => i.ToStockInDetailInfo()).ToList();
-
-
-            if(insertInfos.Count > 0)
+            foreach (var viewItem in newItems)
             {
-                conn.InsertAll(insertInfos);
+                var entity = viewItem.ToStockInDetailInfo();
+
+                conn.Insert(entity);
+
+                viewItem.StockInDetailId = entity.StockInDetailId;
             }
 
-            if(updateInfos.Count > 0)
+            foreach (var viewItem in updateItems)
             {
-                foreach(var info in updateInfos)
-                {
-                    conn.Update(info);
-                }
-            }   
+                var entity = viewItem.ToStockInDetailInfo();
+                conn.Update(entity);
+            }
         }
 
         public void DeleteByStockInIdInTransaction(SQLiteConnection conn, int stockInId)
