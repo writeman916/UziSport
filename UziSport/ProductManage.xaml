@@ -153,13 +153,6 @@
                 </Grid>
             </HorizontalStackLayout>
 
-            <HorizontalStackLayout Grid.Row="2" Grid.Column="2">
-                <!--  Checkbox điều khiển ẩn/hiện  -->
-                <CheckBox IsChecked="{Binding IsCostHidden, Mode=TwoWay}" VerticalOptions="Center" />
-
-                <Label Text="Ẩn giá vốn" VerticalTextAlignment="Center" />
-            </HorizontalStackLayout>
-
             <HorizontalStackLayout
                 Grid.Row="1"
                 Grid.Column="2"
@@ -318,16 +311,25 @@
                     TextChanged="SearchEntry_TextChanged"
                     WidthRequest="300" />
             </Frame>
-            <StackLayout
+            <HorizontalStackLayout
                 Grid.Column="1"
                 Margin="0,0,10,0"
-                HorizontalOptions="End">
+                HorizontalOptions="End"
+                Spacing="50">
+                <HorizontalStackLayout>
+                    <CheckBox
+                        x:Name="CostHiddenCheckBox"
+                        CheckedChanged="CostHiddenCheckBox_CheckedChanged"
+                        IsChecked="True"
+                        VerticalOptions="Center" />
+                    <Label Text="Ẩn giá vốn" VerticalTextAlignment="Center" />
+                </HorizontalStackLayout>
                 <Button
                     x:Name="BtnTao"
                     Clicked="BtnTao_Clicked"
                     Text="+ Tạo mới" />
 
-            </StackLayout>
+            </HorizontalStackLayout>
         </Grid>
         <!--  Product List  -->
         <Frame
@@ -569,6 +571,15 @@
             Grid.ColumnSpan="4"
             HorizontalOptions="Fill"
             Saved="Catalogs_Saved"
+            VerticalOptions="Fill" />
+
+        <!--  Admin Password Popup overlay  -->
+        <controls:AdminPasswordPopup
+            x:Name="AdminPasswordPopupView"
+            Grid.RowSpan="4"
+            Grid.ColumnSpan="4"
+            HorizontalOptions="Fill"
+            IsVisible="False"
             VerticalOptions="Fill" />
     </Grid>
 </ContentPage>
