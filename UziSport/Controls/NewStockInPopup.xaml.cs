@@ -214,7 +214,7 @@ public partial class NewStockInPopup : ContentView
             || (!string.IsNullOrEmpty(p.BrandName) && p.BrandName.Contains(text, StringComparison.OrdinalIgnoreCase))
             || (!string.IsNullOrEmpty(p.Specification) && p.Specification.Contains(text, StringComparison.OrdinalIgnoreCase))
             || (!string.IsNullOrEmpty(p.Note) && p.Note.Contains(text, StringComparison.OrdinalIgnoreCase))
-        ).ToList();
+        ).Take(3).ToList();
 
         SearchResults = filtered;
     }
@@ -461,11 +461,6 @@ public partial class NewStockInPopup : ContentView
 
         if(ImportStatus == ImportStatus.Completed)
         {
-            // Cập nhật tồn kho
-            var warehouseDetailDAL = new WarehouseDetailDAL();
-
-            await warehouseDetailDAL.SaveItemAsync(saveStockInInfo.StockInDetailInfos, saveStockInInfo.WarehouseId);
-
             // Cập nhật giá theo combo nếu có
             var productComboCostDAL = new ProductComboCostDAL();
 

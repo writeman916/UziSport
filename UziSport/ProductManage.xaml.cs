@@ -32,13 +32,26 @@ public partial class ProductManage : ContentPage
         }
     }
 
-    public string SearchString { get; }
-
     private bool _isInitialized;
 
     private ProductDAL _productDal = new ProductDAL();
 
     private bool _isFrameSetting = false;
+
+    private bool _isCostHidden;
+
+    public bool IsCostHidden
+    {
+        get => _isCostHidden;
+        set
+        {
+            if (_isCostHidden != value)
+            {
+                _isCostHidden = value;
+                OnPropertyChanged(nameof(IsCostHidden));
+            }
+        }
+    }
 
     public ProductManage()
     {
@@ -128,26 +141,35 @@ public partial class ProductManage : ContentPage
     {
         base.OnAppearing();
 
-        if (_isInitialized)
-            return;
+        try
+        {
+            if (_isInitialized)
+                return;
 
-        // Load Catalog
-        var catalogs = await CatalogDAL.Instance.GetCatalogsAsync();
-        Catalogs.Clear();
-        foreach (var c in catalogs)
-            Catalogs.Add(c);
+            // Load Catalog
+            var catalogs = await CatalogDAL.Instance.GetCatalogsAsync();
+            Catalogs.Clear();
+            foreach (var c in catalogs)
+                Catalogs.Add(c);
 
-        // Load Brand
-        var brands = await BrandDAL.Instance.GetBrandsAsync();
-        Brands.Clear();
-        foreach (var b in brands)
-            Brands.Add(b);
+            // Load Brand
+            var brands = await BrandDAL.Instance.GetBrandsAsync();
+            Brands.Clear();
+            foreach (var b in brands)
+                Brands.Add(b);
 
-        // Load Product List
-        _allProductInfos = await _productDal.GetProductsAsync();
-        ViewProductInfos = _allProductInfos.ToList();
-
-        _isInitialized = true;
+            // Load Product List
+            _allProductInfos = await _productDal.GetProductsAsync();
+            ViewProductInfos = _allProductInfos.ToList();
+        }
+        catch (Exception)
+        {
+            throw;
+        }
+        finally
+        {
+            _isInitialized = true;
+        }
     }
 
 
@@ -191,7 +213,7 @@ public partial class ProductManage : ContentPage
 
     private async void BtnLuu_Clicked(object sender, EventArgs e)
     {
-        if(CheckInputs() == false)
+        if (CheckInputs() == false)
             return;
 
         CurrentProduct.ProductComboCostInfos = ComboCosts.ToList();
@@ -206,7 +228,8 @@ public partial class ProductManage : ContentPage
         {
             this.CurrentProduct.CreateBy = "admin";
             this.CurrentProduct.CreateAt = DateTime.Now;
-        }else
+        }
+        else
         {
             this.CurrentProduct.UpdateBy = "admin";
             this.CurrentProduct.UpdateAt = DateTime.Now;
@@ -325,7 +348,7 @@ public partial class ProductManage : ContentPage
 
     private void BarcodeEntry_TextChanged(object sender, TextChangedEventArgs e)
     {
-        if(_isFrameSetting)
+        if (_isFrameSetting)
             return;
 
         if (_allProductInfos == null)

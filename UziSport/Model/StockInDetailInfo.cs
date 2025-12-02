@@ -64,20 +64,5 @@ namespace UziSport.Model
                 UpdateBy = this.UpdateBy
             };
         }
-
-        public WarehouseDetailInfo ToWarehouseDetailInfo(int warehouseId)
-        {
-            return new WarehouseDetailInfo
-            {
-                WarehouseId = warehouseId,
-                StockInDetailId = this.StockInDetailId,
-                ProductId = this.ProductId,
-                Quantity = this.Quantity,
-                CreateAt = this.CreateAt,
-                CreateBy = this.CreateBy,
-                UpdateAt = this.UpdateAt,
-                UpdateBy = this.UpdateBy
-            };
-        }
     }
 }

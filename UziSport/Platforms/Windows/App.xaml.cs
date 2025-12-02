@@ -17,6 +17,16 @@ namespace UziSport.WinUI
         public App()
         {
             this.InitializeComponent();
+            this.UnhandledException += App_UnhandledException;
+        }
+        private void App_UnhandledException(object sender, Microsoft.UI.Xaml.UnhandledExceptionEventArgs e)
+        {
+            // Không cho app crash ngay
+            e.Handled = true;
+
+            // Ghi log
+            System.Diagnostics.Debug.WriteLine(
+                $"Unhandled exception: {e.Exception}");
         }
 
         protected override MauiApp CreateMauiApp() => MauiProgram.CreateMauiApp();

@@ -41,45 +41,47 @@ public partial class StockInManage : ContentPage
     {
         base.OnAppearing();
 
-        if (_products == null)
+        try
         {
-            await LoadProductsAsync();
-        }
+            if (_products == null)
+            {
+                await LoadProductsAsync();
+            }
 
-        StockInInfos = await _stockInDal.GetAllStockInAsync();
+            StockInInfos = await _stockInDal.GetAllStockInAsync();
+        }
+        catch (Exception)
+        {
+
+            throw;
+        }
     }
 
     private async Task LoadProductsAsync()
     {
-        // L?y list s?n ph?m 1 l?n ? ?ây
         var productDal = new ProductDAL();
         var list = await productDal.GetProductsAsync();
 
         _products = new ObservableCollection<ProductViewInfo>(list);
 
-        // Gán cho popup, t? gi? popup xài l?i list này
         NewStockInPopup.Products = _products;
     }
 
     private async void StockInItem_DoubleTapped(object sender, TappedEventArgs e)
     {
-        // Lấy StockInViewInfo tương ứng dòng được double click
         if (sender is not Layout layout || layout.BindingContext is not StockInViewInfo item)
             return;
 
-        // Load chi tiết nhập kho
         var detailDal = new StockInDetailDAL();
         var details = await detailDal.GetDetailByStockInIdAsync(item.StockInId);
 
-        // Đổ dữ liệu vào popup
         NewStockInPopup.StockInDetailInfos.Clear();
+
         foreach (var d in details)
             NewStockInPopup.StockInDetailInfos.Add(d);
 
-        // Gán header hiện tại cho popup
         NewStockInPopup.CurrentStockInInfo = item;
 
-        // Hiển thị popup
         await NewStockInPopup.ShowAsync();
     }
 
@@ -87,8 +89,6 @@ public partial class StockInManage : ContentPage
     {
         if( sender is NewStockInPopup popup && popup.Result == NewStockInPopup.StockInPopupResults.Saved)
         {
-            await LoadProductsAsync();
-
             StockInInfos = await _stockInDal.GetAllStockInAsync();
         }
     }
