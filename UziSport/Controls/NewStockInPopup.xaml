@@ -234,7 +234,7 @@
 
                         <!--  Header: tiêu đề cột  -->
                         <HorizontalStackLayout Grid.Row="0">
-                            <Label HorizontalTextAlignment="Center" WidthRequest="80">Barcode</Label>
+                            <Label HorizontalTextAlignment="Center" WidthRequest="260">Barcode</Label>
                             <Line
                                 Stroke="{StaticResource Secondary}"
                                 StrokeThickness="1"
@@ -308,7 +308,7 @@
                                         <Label
                                             HorizontalTextAlignment="Center"
                                             Text="{Binding ProductCode}"
-                                            WidthRequest="80" />
+                                            WidthRequest="260" />
                                         <Line
                                             Stroke="{StaticResource Secondary}"
                                             StrokeThickness="1"
@@ -368,7 +368,7 @@
                                             HorizontalTextAlignment="Center"
                                             IsReadOnly="{Binding BindingContext.IsDetailReadOnly, Source={x:Reference StockInDetailInfoConntentView}}"
                                             Loaded="CostEntry_Loaded"
-                                            Text="{Binding UnitCost, StringFormat='{}{0:N0}'}"
+                                            Value="{Binding UnitCost, Mode=TwoWay}"
                                             Unfocused="CostOrQuanity_UnFocused"
                                             WidthRequest="160" />
                                         <Line

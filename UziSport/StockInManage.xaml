@@ -28,7 +28,7 @@
 
                 <!--  Header: tiêu đề cột  -->
                 <HorizontalStackLayout Grid.Row="0">
-                    <Label HorizontalTextAlignment="Center" WidthRequest="250">Mã nhập kho</Label>
+                    <Label HorizontalTextAlignment="Center" WidthRequest="300">Mã nhập kho</Label>
                     <Line
                         Stroke="{StaticResource Secondary}"
                         StrokeThickness="1"
@@ -44,7 +44,7 @@
                         X2="0"
                         Y1="0"
                         Y2="30" />
-                    <Label HorizontalTextAlignment="Center" WidthRequest="200">Kho</Label>
+                    <Label HorizontalTextAlignment="Center" WidthRequest="300">Kho</Label>
                     <Line
                         Stroke="{StaticResource Secondary}"
                         StrokeThickness="1"
@@ -52,7 +52,7 @@
                         X2="0"
                         Y1="0"
                         Y2="30" />
-                    <Label HorizontalTextAlignment="Center" WidthRequest="200">Nhà cung cấp</Label>
+                    <Label HorizontalTextAlignment="Center" WidthRequest="250">Nhà cung cấp</Label>
                     <Line
                         Stroke="{StaticResource Secondary}"
                         StrokeThickness="1"
@@ -100,7 +100,7 @@
                                 <Label
                                     HorizontalTextAlignment="Center"
                                     Text="{Binding StockInCode}"
-                                    WidthRequest="250" />
+                                    WidthRequest="300" />
                                 <Line
                                     Stroke="{StaticResource Secondary}"
                                     StrokeThickness="1"
@@ -124,7 +124,7 @@
                                 <Label
                                     HorizontalTextAlignment="Center"
                                     Text="{Binding WarehouseName}"
-                                    WidthRequest="200" />
+                                    WidthRequest="300" />
                                 <Line
                                     Stroke="{StaticResource Secondary}"
                                     StrokeThickness="1"
@@ -136,7 +136,7 @@
                                 <Label
                                     HorizontalTextAlignment="Center"
                                     Text="{Binding SupplierName}"
-                                    WidthRequest="200" />
+                                    WidthRequest="250" />
                                 <Line
                                     Stroke="{StaticResource Secondary}"
                                     StrokeThickness="1"

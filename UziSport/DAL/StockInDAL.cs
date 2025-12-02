@@ -23,6 +23,9 @@ namespace UziSport.DAL
 
             var result = await database.CreateTableAsync<StockInInfo>();
             await database.CreateTableAsync<StockInDetailInfo>();
+            await database.CreateTableAsync<WarehouseInfo>();
+            await database.CreateTableAsync<SupplierInfo>();
+
         }
 
         public async Task<List<StockInViewInfo>> GetAllStockInAsync()

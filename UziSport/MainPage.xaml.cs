@@ -5,13 +5,11 @@ namespace UziSport
     public partial class MainPage : ContentPage
     {
         int count = 0;
-        private readonly ProductDAL _productDal;
 
         public MainPage()
         {
             InitializeComponent();
 
-            _productDal = new ProductDAL();
 
         }
 

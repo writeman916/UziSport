@@ -28,7 +28,7 @@ public partial class App : Application
             var appWindow = Microsoft.UI.Windowing.AppWindow.GetFromWindowId(windowId);
 
             // KÍCH THƯỚC CỐ ĐỊNH
-            int width = 1600;
+            int width = 1800;
             int height = 1000;
             appWindow.Resize(new Windows.Graphics.SizeInt32(width, height));
 

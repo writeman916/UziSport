@@ -31,11 +31,11 @@
                 <Label>Barcode</Label>
                 <Entry
                     x:Name="BarcodeEntry"
-                    TextChanged="BarcodeEntry_TextChanged"
                     HeightRequest="50"
                     Placeholder="Barcode"
                     Text="{Binding CurrentProduct.ProductCode}"
-                    WidthRequest="200 " />
+                    TextChanged="BarcodeEntry_TextChanged"
+                    WidthRequest="280 " />
                 <Label
                     x:Name="BarcodeWarning"
                     IsVisible="False"
@@ -277,7 +277,7 @@
 
                 <!--  Header: tiêu đề cột  -->
                 <HorizontalStackLayout Grid.Row="0">
-                    <Label HorizontalTextAlignment="Center" WidthRequest="100">Barcode</Label>
+                    <Label HorizontalTextAlignment="Center" WidthRequest="280">Barcode</Label>
                     <Line
                         Stroke="{StaticResource Secondary}"
                         StrokeThickness="1"
@@ -354,7 +354,7 @@
                                 <Label
                                     HorizontalTextAlignment="Center"
                                     Text="{Binding ProductCode}"
-                                    WidthRequest="100" />
+                                    WidthRequest="280" />
                                 <Line
                                     Stroke="{StaticResource Secondary}"
                                     StrokeThickness="1"

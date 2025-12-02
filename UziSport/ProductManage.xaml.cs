@@ -38,6 +38,8 @@ public partial class ProductManage : ContentPage
 
     private ProductDAL _productDal = new ProductDAL();
 
+    private bool _isFrameSetting = false;
+
     public ProductManage()
     {
         this.InitializeComponent();
@@ -54,7 +56,6 @@ public partial class ProductManage : ContentPage
         this.CostEntry.Text = string.Empty;
         this.PriceEntry.Text = string.Empty;
         ComboCosts.Clear();
-        this.BarcodeEntry.IsReadOnly = false;
 
         if (!screanOnly)
         {
@@ -152,9 +153,9 @@ public partial class ProductManage : ContentPage
 
     private async void ProductList_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        this.ClearInput(true);
+        _isFrameSetting = true;
 
-        this.BarcodeEntry.IsReadOnly = true;
+        this.ClearInput(true);
 
         var selected = e.CurrentSelection.FirstOrDefault() as ProductViewInfo;
         if (selected == null)
@@ -182,6 +183,8 @@ public partial class ProductManage : ContentPage
         var combos = await new ProductComboCostDAL().GetItemByProductIdAsync(CurrentProduct.ProductId);
         foreach (var combo in combos)
             ComboCosts.Add(combo);
+
+        _isFrameSetting = false;
     }
 
 
@@ -322,10 +325,13 @@ public partial class ProductManage : ContentPage
 
     private void BarcodeEntry_TextChanged(object sender, TextChangedEventArgs e)
     {
+        if(_isFrameSetting)
+            return;
+
         if (_allProductInfos == null)
             return;
 
-        if (_allProductInfos.Any(p => p.ProductCode == this.BarcodeEntry.Text))
+        if (_allProductInfos.Count(p => p.ProductCode == this.BarcodeEntry.Text) > 0)
         {
             this.BarcodeWarning.IsVisible = true;
         }

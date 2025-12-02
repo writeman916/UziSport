@@ -89,8 +89,6 @@ public partial class NewStockInPopup : ContentView
         Edit
     }
 
-    private ProcessMode _currentMode = ProcessMode.New;
-
     public StockInPopupResults Result { get; private set; }
 
     private StockInDetailViewInfo? _pendingFocusItem;
@@ -144,8 +142,6 @@ public partial class NewStockInPopup : ContentView
 
         if (CurrentStockInInfo.StockInId == 0)
         {
-            _currentMode = ProcessMode.New;
-
             // Phiếu mới: mặc định InProgress
             ImportStatus = ImportStatus.InProgress;
 
@@ -153,8 +149,6 @@ public partial class NewStockInPopup : ContentView
         }
         else
         {
-            _currentMode = ProcessMode.Edit;
-
             OnPropertyChanged(nameof(CurrentStockInInfo));
 
             // Set WarehousesPicker
@@ -428,7 +422,7 @@ public partial class NewStockInPopup : ContentView
 
     private async void BtnLuu_Clicked(object sender, EventArgs e)
     {
-        if (_currentMode != ProcessMode.Edit)
+        if (ImportStatus != ImportStatus.InProgress)
             return;
 
         if(CheckInputs() == false)
