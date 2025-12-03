@@ -13,7 +13,6 @@
         VerticalOptions="Fill">
 
         <!--  Popup ở giữa  -->
-        <!--  Popup ở giữa  -->
         <Frame
             Margin="50"
             Padding="20,20,20,10"

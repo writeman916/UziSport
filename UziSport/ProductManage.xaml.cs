@@ -69,7 +69,7 @@ namespace UziSport
             BindingContext = this;
         }
 
-        private void ClearInput(bool screanOnly = false)
+        private void ClearInputs(bool screanOnly = false)
         {
             this.BarcodeEntry.Text = string.Empty;
             this.ProductNameEntry.Text = string.Empty;
@@ -191,7 +191,7 @@ namespace UziSport
         {
             _isFrameSetting = true;
 
-            this.ClearInput(true);
+            this.ClearInputs(true);
 
             var selected = e.CurrentSelection.FirstOrDefault() as ProductViewInfo;
             if (selected == null)
@@ -256,7 +256,7 @@ namespace UziSport
 
             _ = AppToast.ShowAsync(Controls.ToastView.ToastKind.Success, "Đã lưu sản phẩm thành công", 2000);
 
-            this.ClearInput();
+            this.ClearInputs();
 
             ViewProductInfos = await _productDal.GetProductsAsync();
             _allProductInfos = ViewProductInfos.ToList();
@@ -286,7 +286,7 @@ namespace UziSport
             _ = AppToast.ShowAsync(Controls.ToastView.ToastKind.Success, "Đã xóa sản phẩm thành công", 2000);
 
             // Reset form nhập
-            this.ClearInput();
+            this.ClearInputs();
 
             ViewProductInfos = await _productDal.GetProductsAsync();
             _allProductInfos = ViewProductInfos.ToList();
@@ -321,7 +321,7 @@ namespace UziSport
 
         private void BtnTao_Clicked(object sender, EventArgs e)
         {
-            this.ClearInput();
+            this.ClearInputs();
             ViewProductInfos = _allProductInfos.ToList();
             this.BarcodeEntry.Focus();
         }
@@ -330,7 +330,7 @@ namespace UziSport
         {
             base.OnDisappearing();
 
-            ClearInput();
+            ClearInputs();
         }
 
         private async void BtnAddBrand_Clicked(object sender, EventArgs e)

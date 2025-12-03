@@ -172,6 +172,8 @@ public partial class NewStockInPopup : ContentView
 
             // Đồng bộ ImportStatus với dữ liệu đang có
             ImportStatus = CurrentStockInInfo.ImportStatus ?? ImportStatus.InProgress;
+
+            RecalculateTotalAmount();
         }
 
         // Enable/disable header + nút Lưu
@@ -284,7 +286,7 @@ public partial class NewStockInPopup : ContentView
         this.NoteEntry.Text = string.Empty;
         this.TotalAmountEntry.Value = 0;
 
-        if (isScreenOnly)
+        if (!isScreenOnly)
         {
             this.StockInDetailInfos.Clear();
             CurrentStockInInfo = new StockInViewInfo();
