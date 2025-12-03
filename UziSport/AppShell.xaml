@@ -4,7 +4,6 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:views="clr-namespace:UziSport"
-    FlyoutBehavior="Locked"
     FlyoutWidth="250">
 
     <!--  PHẦN 1: Header trên Flyout (tên + logo)  -->
@@ -29,7 +28,6 @@
         <ShellContent Title="MainPage" ContentTemplate="{DataTemplate views:MainPage}" />
     </FlyoutItem>
 
-
     <!--  Các màn hình con, xuất hiện ngay bên dưới  -->
     <FlyoutItem Title="Quản lý sản phẩm" Icon="dotnet_bot.png">
         <ShellContent Title="Quản lý sản phẩm" ContentTemplate="{DataTemplate views:ProductManage}" />
@@ -38,4 +36,5 @@
     <FlyoutItem Title="Quản lý nhập kho" Icon="dotnet_bot.png">
         <ShellContent Title="Quản lý nhập kho" ContentTemplate="{DataTemplate views:StockInManage}" />
     </FlyoutItem>
+
 </Shell>

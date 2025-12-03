@@ -54,13 +54,20 @@ public partial class NewStockInPopup : ContentView
         get => _searchResults;
         set
         {
-            if (_searchResults != value)
+            var newValue = value ?? new List<ProductViewInfo>();
+
+            if (_searchResults != newValue)
             {
-                _searchResults = value;
+                _searchResults = newValue;
                 OnPropertyChanged(nameof(SearchResults));
+                OnPropertyChanged(nameof(HasSearchResults));
             }
         }
     }
+
+    // Dùng cho việc ẩn/hiện dropdown
+    public bool HasSearchResults => SearchResults != null && SearchResults.Count > 0;
+
 
     private ObservableCollection<StockInDetailViewInfo> _stockInDetailInfos = new();
     public ObservableCollection<StockInDetailViewInfo> StockInDetailInfos
@@ -127,6 +134,8 @@ public partial class NewStockInPopup : ContentView
     {
         IsVisible = true;
         Opacity = 0;
+
+        this.ClearInputs(true);
 
         // Load Warehouses
         var warehouses = await WarehouseDAL.Instance.GetWarehousesAsync();
@@ -214,10 +223,23 @@ public partial class NewStockInPopup : ContentView
             || (!string.IsNullOrEmpty(p.BrandName) && p.BrandName.Contains(text, StringComparison.OrdinalIgnoreCase))
             || (!string.IsNullOrEmpty(p.Specification) && p.Specification.Contains(text, StringComparison.OrdinalIgnoreCase))
             || (!string.IsNullOrEmpty(p.Note) && p.Note.Contains(text, StringComparison.OrdinalIgnoreCase))
-        ).Take(3).ToList();
+        )
+        .Take(20)
+        .ToList();
 
         SearchResults = filtered;
     }
+
+    private void SearchEntry_Completed(object sender, EventArgs e)
+    {
+        // Khi người dùng nhấn Enter trong ô search
+        if (HasSearchResults)
+        {
+            var firstItem = SearchResults[0];
+            NewStockInDetailViewInfos(firstItem);
+        }
+    }
+
 
     private void NewStockInDetailViewInfos(ProductViewInfo product)
     {
@@ -254,8 +276,7 @@ public partial class NewStockInPopup : ContentView
     private void ClearInputs(bool isScreenOnly = false)
     {
         this.SearchEntry.Text = string.Empty;
-        this.StockInDetailInfos.Clear();
-        this.SearchResults.Clear();
+        this.SearchResults = new List<ProductViewInfo>(); // để HasSearchResults update
         this.StockInCodeEntry.Text = string.Empty;
         this.StockInDatePicker.Date = DateTime.Now;
         this.WareHousePicker.SelectedIndex = 0;
@@ -265,6 +286,7 @@ public partial class NewStockInPopup : ContentView
 
         if (isScreenOnly)
         {
+            this.StockInDetailInfos.Clear();
             CurrentStockInInfo = new StockInViewInfo();
             OnPropertyChanged(nameof(CurrentStockInInfo));
         }

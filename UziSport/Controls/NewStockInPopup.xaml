@@ -13,6 +13,7 @@
         VerticalOptions="Fill">
 
         <!--  Popup ở giữa  -->
+        <!--  Popup ở giữa  -->
         <Frame
             Margin="50"
             Padding="20,20,20,10"
@@ -25,9 +26,13 @@
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="300" />
-                    <RowDefinition Height="50" />
+                    <!--  HEADER  -->
+                    <RowDefinition Height="35" />
+                    <!--  Thanh search cố định 35  -->
                     <RowDefinition Height="*" />
+                    <!--  Stock Detail List, luôn full  -->
                     <RowDefinition Height="50" />
+                    <!--  Nút Lưu / Hủy  -->
                 </Grid.RowDefinitions>
 
                 <!--  HEADER  -->
@@ -148,80 +153,38 @@
                     </Frame>
                 </Grid>
 
-                <!--  Search to New  -->
-                <Grid Grid.Row="1">
-                    <!--  Search  -->
-                    <HorizontalStackLayout Grid.Column="0" Spacing="20">
-                        <Frame
-                            Margin="20,0,0,0"
-                            Padding="0"
-                            BackgroundColor="Transparent"
-                            BorderColor="{StaticResource Secondary}"
-                            CornerRadius="15"
+                <!--  Search bar (chỉ thanh search, không chứa dropdown)  -->
+                <HorizontalStackLayout
+                    Grid.Row="1"
+                    Margin="20,0,0,0"
+                    Spacing="20">
+
+                    <Frame
+                        Padding="0"
+                        BackgroundColor="Transparent"
+                        BorderColor="{StaticResource Secondary}"
+                        CornerRadius="15"
+                        HeightRequest="35"
+                        HorizontalOptions="Start"
+                        WidthRequest="300">
+
+                        <Entry
+                            x:Name="SearchEntry"
+                            Completed="SearchEntry_Completed"
                             HeightRequest="35"
-                            HorizontalOptions="Start"
-                            WidthRequest="300">
-                            <Entry
-                                x:Name="SearchEntry"
-                                HeightRequest="35"
-                                Placeholder="Tìm kiếm"
-                                TextChanged="SearchEntry_TextChanged"
-                                WidthRequest="300" />
-                        </Frame>
-                        <Button
-                            x:Name="BtnThem"
-                            Clicked="BtnThem_Clicked"
-                            CornerRadius="15"
-                            HeightRequest="35"
-                            Text="Thêm" />
+                            Placeholder="Tìm kiếm"
+                            TextChanged="SearchEntry_TextChanged"
+                            WidthRequest="300" />
+                    </Frame>
 
-                        <!--  Search Result  -->
-                        <CollectionView
-                            x:Name="SearchResultList"
-                            ItemsLayout="HorizontalList"
-                            ItemsSource="{Binding SearchResults}"
-                            SelectionMode="None">
+                    <Button
+                        x:Name="BtnThem"
+                        Clicked="BtnThem_Clicked"
+                        CornerRadius="15"
+                        HeightRequest="35"
+                        Text="Thêm" />
+                </HorizontalStackLayout>
 
-                            <CollectionView.ItemTemplate>
-                                <DataTemplate>
-                                    <Button
-                                        Margin="5,0,0,10"
-                                        Padding="0"
-                                        BackgroundColor="{StaticResource Gray200}"
-                                        BorderColor="{StaticResource Secondary}"
-                                        Clicked="SearchResultButton_Clicked"
-                                        CornerRadius="15"
-                                        FontSize="16"
-                                        HeightRequest="40"
-                                        LineBreakMode="TailTruncation"
-                                        Text="{Binding SearchResultString}"
-                                        TextColor="{StaticResource Secondary}"
-                                        VerticalOptions="Center"
-                                        WidthRequest="350">
-                                        <VisualStateManager.VisualStateGroups>
-                                            <VisualStateGroup Name="CommonStates">
-                                                <VisualState Name="Normal">
-                                                    <VisualState.Setters>
-                                                        <Setter Property="BackgroundColor" Value="{StaticResource Gray200}" />
-                                                        <Setter Property="TextColor" Value="{StaticResource Secondary}" />
-                                                    </VisualState.Setters>
-                                                </VisualState>
-                                                <VisualState x:Name="PointerOver">
-                                                    <VisualState.Setters>
-                                                        <Setter Property="BackgroundColor" Value="{StaticResource Secondary}" />
-                                                    </VisualState.Setters>
-                                                </VisualState>
-                                            </VisualStateGroup>
-                                        </VisualStateManager.VisualStateGroups>
-                                    </Button>
-                                </DataTemplate>
-                            </CollectionView.ItemTemplate>
-                        </CollectionView>
-                    </HorizontalStackLayout>
-
-
-
-                </Grid>
                 <!--  Stock Detail List  -->
                 <Frame
                     Grid.Row="2"
@@ -368,9 +331,9 @@
                                             HorizontalTextAlignment="Center"
                                             IsReadOnly="{Binding BindingContext.IsDetailReadOnly, Source={x:Reference StockInDetailInfoConntentView}}"
                                             Loaded="CostEntry_Loaded"
-                                            Value="{Binding UnitCost, Mode=TwoWay}"
                                             Unfocused="CostOrQuanity_UnFocused"
-                                            WidthRequest="160" />
+                                            WidthRequest="160"
+                                            Value="{Binding UnitCost, Mode=TwoWay}" />
                                         <Line
                                             Stroke="{StaticResource Secondary}"
                                             StrokeThickness="1"
@@ -421,9 +384,9 @@
                     </Grid>
                 </Frame>
 
+                <!--  Nút Lưu / Hủy  -->
                 <HorizontalStackLayout
-                    Grid.Row="4"
-                    Grid.Column="2"
+                    Grid.Row="3"
                     Margin="10"
                     HorizontalOptions="End"
                     Spacing="10">
@@ -442,6 +405,55 @@
                         Text="Hủy"
                         WidthRequest="100" />
                 </HorizontalStackLayout>
+
+                <!--  Search Result DropDown Overlay: vẽ ĐÈ lên hàng 1 + 2, che luôn list nhưng KHÔNG làm co layout  -->
+                <Frame
+                    Grid.Row="2"
+                    Margin="0"
+                    Padding="0"
+                    BackgroundColor="Transparent"
+                    HasShadow="False"
+                    IsVisible="{Binding HasSearchResults}"
+                    VerticalOptions="Fill">
+
+                    <!--  dropdown sẽ nằm dưới ô search  -->
+                    <Grid Margin="20,0,20,0">
+                        <Frame
+                            Padding="0"
+                            BackgroundColor="{StaticResource PrimaryDark}"
+                            BorderColor="{StaticResource Secondary}"
+                            HasShadow="True"
+                            HorizontalOptions="Start"
+                            WidthRequest="700">
+
+                            <CollectionView
+                                x:Name="SearchResultList"
+                                BackgroundColor="{StaticResource PrimaryDark}"
+                                ItemsSource="{Binding SearchResults}"
+                                SelectionMode="None">
+
+                                <CollectionView.ItemTemplate>
+                                    <DataTemplate>
+                                        <Button
+                                            Margin="0,0,0,1"
+                                            Padding="10,5"
+                                            BackgroundColor="{StaticResource Gray500}"
+                                            BorderColor="Transparent"
+                                            Clicked="SearchResultButton_Clicked"
+                                            CornerRadius="0"
+                                            FontSize="16"
+                                            HeightRequest="40"
+                                            HorizontalOptions="Fill"
+                                            LineBreakMode="TailTruncation"
+                                            Text="{Binding SearchResultString}"
+                                            TextColor="White"
+                                            VerticalOptions="Center" />
+                                    </DataTemplate>
+                                </CollectionView.ItemTemplate>
+                            </CollectionView>
+                        </Frame>
+                    </Grid>
+                </Frame>
 
             </Grid>
         </Frame>
