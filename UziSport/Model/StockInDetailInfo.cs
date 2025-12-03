@@ -48,6 +48,8 @@ namespace UziSport.Model
             }
         }
 
+        public bool Deleted { get; set; } = false;
+
         public StockInDetailInfo ToStockInDetailInfo()
         {
             return new StockInDetailInfo

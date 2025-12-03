@@ -1,4 +1,5 @@
-﻿using SQLite;
+﻿using Microsoft.Win32.SafeHandles;
+using SQLite;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -63,8 +64,9 @@ namespace UziSport.DAL
             if (infos == null || infos.Count == 0)
                 return;
 
-            var newItems = infos.Where(s => s.StockInDetailId == 0).ToList();
-            var updateItems = infos.Where(s => s.StockInDetailId != 0).ToList();
+            var newItems = infos.Where(s => s.StockInDetailId == 0 && !s.Deleted).ToList();
+            var updateItems = infos.Where(s => s.StockInDetailId != 0 && !s.Deleted).ToList();
+            var deleteItems = infos.Where(s => s.StockInDetailId != 0 && s.Deleted).ToList();
 
             foreach (var viewItem in newItems)
             {
@@ -79,6 +81,12 @@ namespace UziSport.DAL
             {
                 var entity = viewItem.ToStockInDetailInfo();
                 conn.Update(entity);
+            }
+
+            foreach (var viewItem in deleteItems)
+            {
+                conn.Execute("DELETE FROM StockInDetailInfo WHERE StockInDetailId = ?", viewItem.StockInDetailId);
+                conn.Execute("DELETE FROM ProductComboCostInfo WHERE StockDetailId = ?", viewItem.StockInDetailId);
             }
         }
 

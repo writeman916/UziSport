@@ -37,6 +37,8 @@ namespace UziSport.Model
 
         public List<StockInDetailViewInfo> StockInDetailInfos { get; set; } = new List<StockInDetailViewInfo>();
 
+        public bool Deleted { get; set; } = false;
+
         public ImportStatus? ImportStatus
         {
             get => Status == 0 ? null : (ImportStatus?)Status;

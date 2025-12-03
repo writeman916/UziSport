@@ -357,11 +357,16 @@ public partial class NewStockInPopup : ContentView
 
                 if (StockInDetailInfosProp?.GetValue(BindingContext) is ICollection<StockInDetailViewInfo> StockInDetailInfos)
                 {
-                    if(stockInDetail.StockInDetailId != 0)
+                    if (stockInDetail.StockInDetailId != 0)
+                    {
+                        stockInDetail.Deleted = true;
                         _deletedStockInDetailInfos.Add(stockInDetail);
+                    }
 
                     StockInDetailInfos.Remove(stockInDetail);
                 }
+
+                RecalculateTotalAmount();
             }
         }
     }
@@ -478,10 +483,13 @@ public partial class NewStockInPopup : ContentView
         //Get StockInDetailInfos
         saveStockInInfo.StockInDetailInfos = StockInDetailInfos.ToList();
 
+        saveStockInInfo.StockInDetailInfos.AddRange(_deletedStockInDetailInfos);
+
         //Save StockInInfo
         var _stockInDal = new StockInDAL();
 
         await _stockInDal.SaveItemAsync(saveStockInInfo);
+
 
         if(ImportStatus == ImportStatus.Completed)
         {
