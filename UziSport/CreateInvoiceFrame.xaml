@@ -349,7 +349,8 @@
                                             <controls:NumericEntry
                                                 Margin="15,0,0,0"
                                                 WidthRequest="40"
-                                                Value="{Binding SaleQty}" />
+                                                Value="{Binding SaleQty}" 
+                                                TextChanged="SaleQty_TextChanged"/>
                                             <Button
                                                 Margin="6,0,0,0"
                                                 BackgroundColor="Transparent"

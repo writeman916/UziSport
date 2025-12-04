@@ -432,4 +432,18 @@ public partial class CreateInvoiceFrame : ContentPage
             await DisplayAlert("Lỗi", ex.Message, "OK");
         }
     }
+
+    private void SaleQty_TextChanged(object sender, TextChangedEventArgs e)
+    {
+        if (sender is NumericEntry numericEntry)
+        {
+            // Khi text bị xóa hết (rỗng / toàn khoảng trắng) thì set lại Value = 0
+            if (string.IsNullOrWhiteSpace(e.NewTextValue))
+            {
+                numericEntry.Value = (int?)0m; // 0m = decimal 0
+            }
+
+            TotalAmout = ViewProductInBills.Sum(x => x.SalePrice);
+        }
+    }
 }
