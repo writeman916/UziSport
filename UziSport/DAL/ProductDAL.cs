@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UziSport.Controls;
 using UziSport.Model;
 
 namespace UziSport.DAL
@@ -27,6 +28,7 @@ namespace UziSport.DAL
             await database.CreateTableAsync<CatalogInfo>();
             await database.CreateTableAsync<BrandInfo>();
             await database.CreateTableAsync<ProductComboCostInfo>();
+            await database.CreateTableAsync<StockOutDetailInfo>();
         }
 
         public async Task<ProductInfo> GetItemByIdAsync(int productId)
@@ -155,6 +157,61 @@ namespace UziSport.DAL
 
             return result;
         }
+        public async Task<List<ProductStockViewInfo>> GetProductsWithStockAsync()
+        {
+            await Init();
+
+            var completedStatus = (int)ImportStatus.Completed; // = 2
+
+            var sql = @"
+                SELECT 
+                    p.ProductId,
+                    p.ProductCode,
+                    p.ProductName,
+                    p.CatalogId,
+                    c.CatalogName AS CatalogName,
+                    p.BrandId,
+                    b.BrandName AS BrandName,
+                    p.Specification,
+                    p.Cost,
+                    p.Price,
+                    p.Status,
+                    p.Note,
+                    p.CreateBy,
+                    p.CreateAt,
+                    p.UpdateBy,    
+                    p.UpdateAt,
+                    IFNULL(ins.TotalIn, 0)  AS TotalIn,
+                    IFNULL(outs.TotalOut, 0) AS TotalOut,
+                    IFNULL(ins.TotalIn, 0) - IFNULL(outs.TotalOut, 0) AS StockQty
+                FROM ProductInfo p
+                LEFT JOIN BrandInfo b   ON p.BrandId   = b.BrandId
+                LEFT JOIN CatalogInfo c ON p.CatalogId = c.CatalogId
+                LEFT JOIN (
+                    SELECT 
+                        d.ProductId,
+                        SUM(d.Quantity) AS TotalIn
+                    FROM StockInDetailInfo d
+                    INNER JOIN StockInInfo h ON h.StockInId = d.StockInId
+                    WHERE h.Status = ?
+                    GROUP BY d.ProductId
+                ) AS ins ON ins.ProductId = p.ProductId
+                LEFT JOIN (
+                    SELECT 
+                        d.ProductId,
+                        SUM(d.Quantity) AS TotalOut
+                    FROM StockOutDetailInfo d
+                    GROUP BY d.ProductId
+                ) AS outs ON outs.ProductId = p.ProductId
+                ORDER BY p.ProductName;
+            ";
+
+            // truyền completedStatus vào dấu ? trong SQL
+            var list = await database.QueryAsync<ProductStockViewInfo>(sql, completedStatus);
+
+            return list;
+        }
+
 
 
         public async Task<int> DeleteItemAsync(ProductViewInfo viewItem)

@@ -24,11 +24,10 @@
         </Grid>
     </Shell.FlyoutHeader>
 
-    <FlyoutItem Title="Trang chính" Icon="dotnet_bot.png">
-        <ShellContent Title="MainPage" ContentTemplate="{DataTemplate views:MainPage}" />
+    <FlyoutItem Title="Bán hàng" Icon="dotnet_bot.png">
+        <ShellContent Title="Bán hàng" ContentTemplate="{DataTemplate views:CreateInvoiceFrame}" />
     </FlyoutItem>
 
-    <!--  Các màn hình con, xuất hiện ngay bên dưới  -->
     <FlyoutItem Title="Quản lý sản phẩm" Icon="dotnet_bot.png">
         <ShellContent Title="Quản lý sản phẩm" ContentTemplate="{DataTemplate views:ProductManage}" />
     </FlyoutItem>

@@ -90,6 +90,9 @@
     <MauiXaml Update="Controls\WarehouseViewPopup.xaml">
       <Generator>MSBuild:Compile</Generator>
     </MauiXaml>
+    <MauiXaml Update="CreateInvoiceFrame.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </MauiXaml>
     <MauiXaml Update="ProductManage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </MauiXaml>

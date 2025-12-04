@@ -68,6 +68,23 @@ namespace UziSport.DAL
                                  .DeleteAsync(x => x.ProductId == productId);
         }
 
+        public async Task<int> DeleteByProductComboCostIdAsync(List<int> productComboCostIds)
+        {
+            await Init();
+
+            if (productComboCostIds == null || productComboCostIds.Count == 0)
+                return 0;
+
+            // Tạo list ?,?,?,... tương ứng với số lượng id
+            var placeholders = string.Join(",", productComboCostIds.Select(_ => "?"));
+
+            var sql = $"DELETE FROM ProductComboCostInfo WHERE ProductComboCostId IN ({placeholders});";
+
+            // ExecuteAsync nhận params object[]
+            return await database.ExecuteAsync(sql, productComboCostIds.Cast<object>().ToArray());
+        }
+
+
         internal void SaveItemInTransaction(SQLiteConnection conn, List<ProductComboCostInfo> infos)
         {
             if (infos == null || infos.Count == 0)
@@ -84,5 +101,12 @@ namespace UziSport.DAL
         {
             conn.Execute("DELETE FROM ProductComboCostInfo WHERE ProductId = ?", productId);
         }
+
+        public void DeleteByProductComboCostIdInTransaction(SQLiteConnection conn, int productComboCostId)
+        {
+            conn.Execute("DELETE FROM ProductComboCostInfo WHERE ProductComboCostId = ?", productComboCostId);
+        }
+
+
     }
 }

@@ -1,6 +1,7 @@
 ﻿using SQLite;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -105,5 +106,71 @@ namespace UziSport.Model
                     .ToList() ?? new List<ProductComboCostInfo>()
             };
         }
+    }
+
+    public class ProductStockViewInfo : ProductViewInfo
+    {
+        public decimal TotalIn { get; set; }
+        public decimal TotalOut { get; set; }
+        public decimal StockQty { get; set; }
+        public decimal SaleQty { get; set; }
+
+        public decimal LineDiscountRate { get; set; }
+        public string LineDiscountRateString {
+            get 
+            { 
+                if(LineDiscountRate == 0)
+                    return string.Empty;
+
+                return this.LineDiscountRate.ToString() + "%"; 
+            } 
+        }
+        public bool IsComboCostPriority { get; set; } = true;
+
+        public decimal SalePrice
+        {
+            get
+            {
+                decimal price = this.Price ?? 0;
+                return (decimal)((price - (price * LineDiscountRate / 100)) * SaleQty); 
+            }
+        }
+
+        public ProductStockViewInfo Clone()
+        {
+            // Clone phần base (ProductViewInfo) – đã clone sâu ProductComboCostInfos
+            var baseClone = this.CloneProduct();
+
+            return new ProductStockViewInfo
+            {
+                // Base fields
+                ProductId = baseClone.ProductId,
+                ProductCode = baseClone.ProductCode,
+                ProductName = baseClone.ProductName,
+                CatalogId = baseClone.CatalogId,
+                CatalogName = baseClone.CatalogName,
+                BrandId = baseClone.BrandId,
+                BrandName = baseClone.BrandName,
+                Specification = baseClone.Specification,
+                Cost = baseClone.Cost,
+                Price = baseClone.Price,
+                Status = baseClone.Status,
+                Note = baseClone.Note,
+                CreateBy = baseClone.CreateBy,
+                CreateAt = baseClone.CreateAt,
+                UpdateBy = baseClone.UpdateBy,
+                UpdateAt = baseClone.UpdateAt,
+                ProductComboCostInfos = baseClone.ProductComboCostInfos,
+
+                // Fields riêng của ProductStockViewInfo
+                TotalIn = this.TotalIn,
+                TotalOut = this.TotalOut,
+                StockQty = this.StockQty,
+                SaleQty = this.SaleQty,
+                LineDiscountRate = this.LineDiscountRate,
+                IsComboCostPriority = this.IsComboCostPriority
+            };
+        }
+
     }
 }

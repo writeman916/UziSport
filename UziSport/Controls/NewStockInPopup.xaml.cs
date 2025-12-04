@@ -35,14 +35,28 @@ public partial class NewStockInPopup : ContentView
                 _importStatus = value;
                 OnPropertyChanged(nameof(ImportStatus));
                 OnPropertyChanged(nameof(IsInProgress));
-                OnPropertyChanged(nameof(IsDetailReadOnly));
             }
         }
     }
 
     // Dùng cho binding trong XAML
     public bool IsInProgress => ImportStatus == ImportStatus.InProgress;
-    public bool IsDetailReadOnly => !IsInProgress;
+
+    // Chi tiết chỉ readonly khi màn hình đang ở chế độ chỉ xem
+    public bool IsDetailReadOnly => _isReadOnlyMode;
+
+    // Cho phép show/hide nút X xoá dòng
+    public bool CanEditDetails => !_isReadOnlyMode;
+
+    private void SetReadOnlyMode(bool isReadOnly)
+    {
+        if (_isReadOnlyMode != isReadOnly)
+        {
+            _isReadOnlyMode = isReadOnly;
+            OnPropertyChanged(nameof(IsDetailReadOnly));
+            OnPropertyChanged(nameof(CanEditDetails));
+        }
+    }
 
     public ObservableCollection<WarehouseInfo> Warehouses { get; } = new();
     public ObservableCollection<SupplierInfo> Suppliers { get; } = new();
@@ -100,6 +114,7 @@ public partial class NewStockInPopup : ContentView
 
     private StockInDetailViewInfo? _pendingFocusItem;
     private List<StockInDetailViewInfo> _deletedStockInDetailInfos = new();
+    private bool _isReadOnlyMode; // true = chỉ xem, false = cho phép chỉnh sửa
 
     public NewStockInPopup()
 	{
@@ -135,7 +150,8 @@ public partial class NewStockInPopup : ContentView
         IsVisible = true;
         Opacity = 0;
 
-        this.ClearInputs(true);
+        // Chỉ clear phần search, không đụng vào dữ liệu đang edit
+        ClearInputs(isScreenOnly: true);
 
         // Load Warehouses
         var warehouses = await WarehouseDAL.Instance.GetWarehousesAsync();
@@ -149,15 +165,22 @@ public partial class NewStockInPopup : ContentView
         foreach (var b in suppliers)
             Suppliers.Add(b);
 
-        if (CurrentStockInInfo.StockInId == 0)
+        bool isEdit = CurrentStockInInfo.StockInId != 0;
+
+        if (!isEdit)
         {
-            // Phiếu mới: mặc định InProgress
+            // Phiếu mới
             ImportStatus = ImportStatus.InProgress;
 
+            // Ngày mặc định là hôm nay
+            StockInDatePicker.Date = DateTime.Now;
+
+            // Mã phiếu mới
             this.StockInCodeEntry.Text = GenerateNewStockInCode();
         }
         else
         {
+            // Phiếu đã có -> bind lại thông tin lên UI
             OnPropertyChanged(nameof(CurrentStockInInfo));
 
             // Set WarehousesPicker
@@ -176,11 +199,19 @@ public partial class NewStockInPopup : ContentView
             RecalculateTotalAmount();
         }
 
-        // Enable/disable header + nút Lưu
-        this.SetEnableAllControl(IsInProgress);
+        // Màn hình chỉ đọc nếu:
+        //  - đang mở ở chế độ EDIT
+        //  - và trạng thái BAN ĐẦU của phiếu != InProgress (tức là đã Hoàn thành hoặc Hủy)
+        bool readOnly = isEdit && ImportStatus != ImportStatus.InProgress;
+
+        SetReadOnlyMode(readOnly);
+
+        // Enable/disable header + nút Lưu, Search... theo chế độ
+        SetEnableAllControl(!readOnly);
 
         await this.FadeTo(1, 150);
     }
+
 
     private void SetEnableAllControl(bool isEnable)
     {
@@ -277,8 +308,17 @@ public partial class NewStockInPopup : ContentView
 
     private void ClearInputs(bool isScreenOnly = false)
     {
+        // Luôn clear phần tìm kiếm
         this.SearchEntry.Text = string.Empty;
         this.SearchResults = new List<ProductViewInfo>(); // để HasSearchResults update
+
+        if (isScreenOnly)
+        {
+            // Không đụng đến dữ liệu đang edit
+            return;
+        }
+
+        // Clear hoàn toàn khi đóng popup
         this.StockInCodeEntry.Text = string.Empty;
         this.StockInDatePicker.Date = DateTime.Now;
         this.WareHousePicker.SelectedIndex = 0;
@@ -286,13 +326,15 @@ public partial class NewStockInPopup : ContentView
         this.NoteEntry.Text = string.Empty;
         this.TotalAmountEntry.Value = 0;
 
-        if (!isScreenOnly)
-        {
-            this.StockInDetailInfos.Clear();
-            CurrentStockInInfo = new StockInViewInfo();
-            OnPropertyChanged(nameof(CurrentStockInInfo));
-        }
+        this.StockInDetailInfos.Clear();
+        CurrentStockInInfo = new StockInViewInfo();
+        OnPropertyChanged(nameof(CurrentStockInInfo));
+
+        // Reset trạng thái
+        SetReadOnlyMode(false);
+        ImportStatus = ImportStatus.InProgress;
     }
+
 
     private void BtnThem_Clicked(object sender, EventArgs e)
     {
@@ -451,10 +493,10 @@ public partial class NewStockInPopup : ContentView
 
     private async void BtnLuu_Clicked(object sender, EventArgs e)
     {
-        if (ImportStatus != ImportStatus.InProgress)
+        if (_isReadOnlyMode)
             return;
 
-        if(CheckInputs() == false)
+        if (CheckInputs() == false)
             return;
 
         RecalculateTotalAmount();

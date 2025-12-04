@@ -357,10 +357,11 @@
                                             BackgroundColor="Transparent"
                                             Clicked="DeleteStockInDetailButton_Clicked"
                                             FontSize="18"
-                                            IsVisible="{Binding BindingContext.IsInProgress, Source={x:Reference StockInDetailInfoConntentView}}"
+                                            IsVisible="{Binding BindingContext.CanEditDetails, Source={x:Reference StockInDetailInfoConntentView}}"
                                             Text="✕"
                                             TextColor="Red"
                                             WidthRequest="45" />
+
 
                                         <VisualStateManager.VisualStateGroups>
                                             <VisualStateGroup x:Name="CommonStates">
