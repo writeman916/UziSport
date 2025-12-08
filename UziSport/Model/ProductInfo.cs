@@ -116,6 +116,15 @@ namespace UziSport.Model
         public decimal SaleQty { get; set; }
 
         public decimal LineDiscountRate { get; set; }
+        public decimal LineDiscountAmount 
+        {
+            get
+            {
+                decimal price = this.Price ?? 0;
+                return (price * LineDiscountRate / 100) * SaleQty;
+            }
+        }
+
         public string LineDiscountRateString {
             get 
             { 
@@ -125,14 +134,33 @@ namespace UziSport.Model
                 return this.LineDiscountRate.ToString() + "%"; 
             } 
         }
+
+        public decimal AfterDiscountPrice
+        {
+            get
+            {
+                decimal price = this.Price ?? 0;
+                return (price - (price * LineDiscountRate / 100));
+            }
+        }
+
         public bool IsComboCostPriority { get; set; } = true;
 
-        public decimal SalePrice
+        public decimal LineAfterDiscountSaleAmout
         {
             get
             {
                 decimal price = this.Price ?? 0;
                 return (decimal)((price - (price * LineDiscountRate / 100)) * SaleQty); 
+            }
+        }
+
+        public decimal LineSaleAmount
+        {
+            get
+            {
+                decimal price = this.Price ?? 0;
+                return (decimal)(price * SaleQty);
             }
         }
 

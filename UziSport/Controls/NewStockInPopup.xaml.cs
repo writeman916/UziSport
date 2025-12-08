@@ -286,7 +286,7 @@ public partial class NewStockInPopup : ContentView
             CatalogName = product.CatalogName,
             UnitCost = product.Cost,
             CreateAt = DateTime.Now,
-            CreateBy = Environment.UserName
+            CreateBy = Constants.AdminCode
         };
 
         StockInDetailInfos.Add(newDetail);
@@ -434,39 +434,11 @@ public partial class NewStockInPopup : ContentView
         TotalAmountEntry.Value = Convert.ToInt32(total);
     }
 
-    private static string RemoveDiacriticsAndNonAlphanumeric(string input)
-    {
-        if (string.IsNullOrWhiteSpace(input))
-            return string.Empty;
-
-        var normalizedString = input.Normalize(NormalizationForm.FormD);
-        var sb = new StringBuilder();
-
-        foreach (var ch in normalizedString)
-        {
-            var unicodeCategory = CharUnicodeInfo.GetUnicodeCategory(ch);
-
-            if (unicodeCategory != UnicodeCategory.NonSpacingMark && char.IsLetterOrDigit(ch))
-            {
-                sb.Append(ch);
-            }
-        }
-
-        return sb.ToString().Normalize(NormalizationForm.FormC);
-    }
-
     private static string GenerateNewStockInCode()
     {
-        var userName = Environment.UserName ?? "USER";
-
-        var userPart = RemoveDiacriticsAndNonAlphanumeric(userName);
-
-        if (string.IsNullOrWhiteSpace(userPart))
-            userPart = "USER";
-
         var timePart = DateTime.Now.ToString("yyyyMMddHHmmss");
 
-        return $"{userPart}_{timePart}";
+        return $"{Constants.AdminCode}_{timePart}";
     }
 
 
@@ -515,11 +487,11 @@ public partial class NewStockInPopup : ContentView
         if (saveStockInInfo.StockInId == 0)
         {
             saveStockInInfo.CreateAt = DateTime.Now;
-            saveStockInInfo.CreateBy = Environment.UserName;
+            saveStockInInfo.CreateBy = Constants.AdminCode;
         }else
         {
             saveStockInInfo.UpdateAt = DateTime.Now;
-            saveStockInInfo.UpdateBy = Environment.UserName;
+            saveStockInInfo.UpdateBy = Constants.AdminCode;
         }
 
         //Get StockInDetailInfos
@@ -548,7 +520,7 @@ public partial class NewStockInPopup : ContentView
                         StockDetailId = detail.StockInDetailId,
                         Cost = detail.UnitCost.GetValueOrDefault(),
                         CreateAt = DateTime.Now,
-                        CreateBy = Environment.UserName
+                        CreateBy = Constants.AdminCode
                     });
                 }
             }

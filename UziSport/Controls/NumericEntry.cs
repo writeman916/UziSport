@@ -19,7 +19,7 @@ namespace UziSport.Controls
                 propertyChanged: OnValueChanged);
 
         /// <summary>
-        /// Giá trị số (0..999,999,999). Null nếu rỗng.
+        /// Giá trị số (0..999,999,999). Text rỗng => Value = 0.
         /// </summary>
         public int? Value
         {
@@ -52,6 +52,7 @@ namespace UziSport.Controls
             }
             else
             {
+                // Nếu Value = null từ ViewModel thì cho text rỗng
                 control.Text = string.Empty;
             }
 
@@ -65,22 +66,24 @@ namespace UziSport.Controls
 
             var text = e.NewTextValue;
 
+            // Khi text rỗng => Value = 0
             if (string.IsNullOrWhiteSpace(text))
             {
                 _isInternalUpdate = true;
                 Text = string.Empty;
-                Value = null;
+                Value = 0;   // <-- đổi từ null thành 0
                 _isInternalUpdate = false;
                 return;
             }
 
             var digitsOnly = new string(text.Where(char.IsDigit).ToArray());
 
+            // Không còn số nào hợp lệ => Value = 0
             if (string.IsNullOrEmpty(digitsOnly))
             {
                 _isInternalUpdate = true;
                 Text = string.Empty;
-                Value = null;
+                Value = 0;   // <-- đổi từ null thành 0
                 _isInternalUpdate = false;
                 return;
             }

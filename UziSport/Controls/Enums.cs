@@ -12,4 +12,11 @@ namespace UziSport.Controls
         Completed = 2,  // Hoàn thành
         Cancelled = 3   // Hủy
     }
+
+    public static class Constants
+    {
+        public const string DateFormat = "dd/MM/yyyy";
+
+        public const string AdminCode = "UZI";
+    }
 }

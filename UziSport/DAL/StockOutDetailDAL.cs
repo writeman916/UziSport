@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UziSport.Controls;
 using UziSport.Model;
 
 namespace UziSport.DAL
@@ -84,6 +85,8 @@ namespace UziSport.DAL
             foreach (var viewItem in newItems)
             {
                 var entity = viewItem.ToStockOutDetailInfo();
+                entity.CreateAt = DateTime.Now;
+                entity.CreateBy = Constants.AdminCode;
                 conn.Insert(entity);
                 viewItem.StockOutDetailId = entity.StockOutDetailId;
             }
@@ -92,6 +95,8 @@ namespace UziSport.DAL
             foreach (var viewItem in updateItems)
             {
                 var entity = viewItem.ToStockOutDetailInfo();
+                entity.CreateAt = DateTime.Now;
+                entity.CreateBy = Constants.AdminCode;
                 conn.Update(entity);
             }
 

@@ -56,6 +56,34 @@ public partial class CreateInvoiceFrame : ContentPage
         }
     }
 
+    private decimal _totalSaleAmount = 0;
+    public decimal TotalSaleAmout
+    {
+        get => _totalSaleAmount;
+        set
+        {
+            if (_totalSaleAmount != value)
+            {
+                _totalSaleAmount = value;
+                OnPropertyChanged(nameof(TotalSaleAmout));
+            }
+        }
+    }
+
+    private decimal _totalDiscountAmount = 0;
+    public decimal TotalDiscountAmount
+    {
+        get => _totalDiscountAmount;
+        set
+        {
+            if (_totalDiscountAmount != value)
+            {
+                _totalDiscountAmount = value;
+                OnPropertyChanged(nameof(TotalDiscountAmount));
+            }
+        }
+    }
+
     private ProductDAL _productDal = new ProductDAL();
 
     private ProductComboCostDAL _productComboCostDal = new ProductComboCostDAL();
@@ -84,6 +112,15 @@ public partial class CreateInvoiceFrame : ContentPage
         }
     }
 
+    private void ReCalculateBillTotal()
+    {
+        TotalAmout = ViewProductInBills.Sum(x => x.LineAfterDiscountSaleAmout);
+        TotalDiscountAmount = ViewProductInBills.Sum(x => x.LineDiscountAmount); 
+        TotalSaleAmout = ViewProductInBills.Sum(x => x.LineSaleAmount);
+
+        this.ActualIncomeEntry.Value = (int?)(Math.Round(TotalAmout / 1000m, 0, MidpointRounding.AwayFromZero) * 1000m); ;
+    }
+
     private void BtnThem_Clicked(object sender, EventArgs e)
     {
         if (sender is Button button && button.BindingContext is ProductStockViewInfo product)
@@ -105,7 +142,7 @@ public partial class CreateInvoiceFrame : ContentPage
             ViewProductInBills = newList;
 
             // Tính lại tổng tiền (giả sử Price là decimal? trong ProductStockViewInfo)
-            TotalAmout = ViewProductInBills.Sum(x => x.SalePrice);
+            ReCalculateBillTotal();
         }
     }
 
@@ -117,6 +154,10 @@ public partial class CreateInvoiceFrame : ContentPage
         this.DiscountRateEntry.Text = string.Empty;
         this.ViewProductInBills = new List<ProductStockViewInfo>();
         this.TotalAmout = 0;
+        this.TotalSaleAmout = 0;
+        this.TotalDiscountAmount = 0;
+        this.ActualIncomeEntry.Value = 0;
+        this.CurrentStockOutInfo = new StockOutViewInfo();
 
         if (reGetProductlist)
         {
@@ -126,39 +167,11 @@ public partial class CreateInvoiceFrame : ContentPage
         }
     }
 
-    private static string RemoveDiacriticsAndNonAlphanumeric(string input)
-    {
-        if (string.IsNullOrWhiteSpace(input))
-            return string.Empty;
-
-        var normalizedString = input.Normalize(NormalizationForm.FormD);
-        var sb = new StringBuilder();
-
-        foreach (var ch in normalizedString)
-        {
-            var unicodeCategory = CharUnicodeInfo.GetUnicodeCategory(ch);
-
-            if (unicodeCategory != UnicodeCategory.NonSpacingMark && char.IsLetterOrDigit(ch))
-            {
-                sb.Append(ch);
-            }
-        }
-
-        return sb.ToString().Normalize(NormalizationForm.FormC);
-    }
-
     private string GenerateNewStockOutCode()
     {
-        var userName = Environment.UserName ?? "USER";
-
-        var userPart = RemoveDiacriticsAndNonAlphanumeric(userName);
-
-        if (string.IsNullOrWhiteSpace(userPart))
-            userPart = "USER";
-
         var timePart = DateTime.Now.ToString("yyyyMMddHHmmss");
 
-        return $"{userPart}_{timePart}";
+        return $"{Constants.AdminCode}_{timePart}";
     }
 
     private void LineDiscountRate_TextChanged(object sender, TextChangedEventArgs e)
@@ -187,7 +200,7 @@ public partial class CreateInvoiceFrame : ContentPage
             ViewProductInBills = newList;
 
             // Tính lại tổng tiền
-            TotalAmout = ViewProductInBills.Sum(x => x.SalePrice);
+            ReCalculateBillTotal();
         }
     }
 
@@ -413,6 +426,9 @@ public partial class CreateInvoiceFrame : ContentPage
 
             // Đồng bộ với property TotalAmout đang bind ra UI
             TotalAmout = CurrentStockOutInfo.TotalAmount;
+            
+            CurrentStockOutInfo.ActualIncome = this.ActualIncomeEntry.Value ?? 0m;
+            CurrentStockOutInfo.StockOutCode = this.StockOutCodeEntry.Text;
 
             var dal = new StockOutDAL();
             await dal.SaveItemAsync(CurrentStockOutInfo);
@@ -443,7 +459,7 @@ public partial class CreateInvoiceFrame : ContentPage
                 numericEntry.Value = (int?)0m; // 0m = decimal 0
             }
 
-            TotalAmout = ViewProductInBills.Sum(x => x.SalePrice);
+            ReCalculateBillTotal();
         }
     }
 }

@@ -23,6 +23,9 @@ namespace UziSport.Model
         public decimal InvoiceDiscountAmount { get; set; }
 
         public decimal TotalAmount { get; set; }
+
+        public decimal ActualIncome { get; set; }
+    
     }
 
     public  class StockOutViewInfo : StockOutInfo
@@ -33,5 +36,24 @@ namespace UziSport.Model
         public decimal InvoiceDiscountRate { get; set; }
 
         public bool Deleted { get; set; } = false;
+
+        public StockOutInfo ToStockOutInfo()
+        {
+            return new StockOutInfo
+            {
+                StockOutId = this.StockOutId,
+                StockOutCode = this.StockOutCode,
+                StockOutDate = this.StockOutDate,
+                CustomerId = this.CustomerId,
+                ActualIncome = this.ActualIncome,
+                Note = this.Note,
+                InvoiceDiscountAmount = this.InvoiceDiscountAmount,
+                TotalAmount = this.TotalAmount,
+                CreateBy = this.CreateBy,
+                CreateAt = this.CreateAt,
+                UpdateBy = this.UpdateBy,
+                UpdateAt = this.UpdateAt
+            };
+        }
     }
 }

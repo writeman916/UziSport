@@ -308,7 +308,7 @@
                 CornerRadius="10"
                 HasShadow="True">
 
-                <Grid RowDefinitions="800, *">
+                <Grid RowDefinitions="700, *">
                     <HorizontalStackLayout Grid.Row="0">
                         <CollectionView
                             Grid.Row="2"
@@ -316,7 +316,7 @@
                             SelectionMode="Single">
                             <CollectionView.ItemTemplate>
                                 <DataTemplate>
-                                    <VerticalStackLayout HeightRequest="40" WidthRequest="500">
+                                    <VerticalStackLayout HeightRequest="70" WidthRequest="500">
                                         <Line
                                             Aspect="Fill"
                                             HeightRequest="2"
@@ -329,7 +329,7 @@
                                             X2="2"
                                             Y1="0"
                                             Y2="0" />
-                                        <HorizontalStackLayout HeightRequest="40" HorizontalOptions="Fill">
+                                        <HorizontalStackLayout HeightRequest="25" HorizontalOptions="Fill">
                                             <Label
                                                 FontSize="15"
                                                 HorizontalTextAlignment="Start"
@@ -341,16 +341,35 @@
                                                 HorizontalTextAlignment="End"
                                                 Text="{Binding Price, StringFormat='{}{0:N0}'}"
                                                 WidthRequest="100" />
+
+                                        </HorizontalStackLayout>
+                                        <HorizontalStackLayout
+                                            HeightRequest="40"
+                                            HorizontalOptions="Fill"
+                                            VerticalOptions="Start">
                                             <Label
+                                                Margin="100,0,0,0"
                                                 FontSize="15"
                                                 HorizontalTextAlignment="End"
                                                 Text="{Binding LineDiscountRateString}"
                                                 WidthRequest="80" />
+                                            <Label
+                                                FontSize="15"
+                                                HorizontalTextAlignment="End"
+                                                Text="{Binding AfterDiscountPrice, StringFormat='{}{0:N0}'}"
+                                                WidthRequest="100" />
                                             <controls:NumericEntry
                                                 Margin="15,0,0,0"
+                                                HeightRequest="35"
+                                                TextChanged="SaleQty_TextChanged"
                                                 WidthRequest="40"
-                                                Value="{Binding SaleQty}" 
-                                                TextChanged="SaleQty_TextChanged"/>
+                                                Value="{Binding SaleQty}" />
+                                            <Label
+                                                FontAttributes="Bold"
+                                                FontSize="15"
+                                                HorizontalTextAlignment="End"
+                                                Text="{Binding LineAfterDiscountSaleAmout, StringFormat='{}{0:N0}'}"
+                                                WidthRequest="100" />
                                             <Button
                                                 Margin="6,0,0,0"
                                                 BackgroundColor="Transparent"
@@ -379,12 +398,50 @@
                             Y1="0"
                             Y2="0" />
                         <HorizontalStackLayout>
-                            <Label FontSize="30">Tổng tiền :</Label>
+                            <Label FontSize="20" WidthRequest="280">Tổng tiền :</Label>
                             <Label
+                                FontSize="20"
+                                HorizontalTextAlignment="End"
+                                Text="{Binding TotalSaleAmout, StringFormat='{}{0:N0}'}"
+                                WidthRequest="200" />
+                        </HorizontalStackLayout>
+                        <HorizontalStackLayout>
+                            <Label FontSize="20" WidthRequest="280">Khuyến mãi:</Label>
+                            <Label
+                                FontSize="20"
+                                HorizontalTextAlignment="End"
+                                Text="{Binding TotalDiscountAmount, StringFormat='{}{0:N0}'}"
+                                WidthRequest="200" />
+                        </HorizontalStackLayout>
+                        <HorizontalStackLayout>
+                            <Label
+                                FontAttributes="Bold"
+                                FontSize="30"
+                                WidthRequest="280">
+                                Thành tiền:
+                            </Label>
+                            <Label
+                                FontAttributes="Bold"
                                 FontSize="30"
                                 HorizontalTextAlignment="End"
                                 Text="{Binding TotalAmout, StringFormat='{}{0:N0}'}"
-                                WidthRequest="300" />
+                                WidthRequest="200" />
+                        </HorizontalStackLayout>
+                        <HorizontalStackLayout HeightRequest="50">
+                            <Label
+                                FontAttributes="Bold"
+                                FontSize="30"
+                                WidthRequest="280">
+                                Thực thu:
+                            </Label>
+                            <controls:NumericEntry
+                                x:Name="ActualIncomeEntry"
+                                FontAttributes="Bold"
+                                FontSize="30"
+                                HeightRequest="45"
+                                VerticalTextAlignment="Start"
+                                HorizontalTextAlignment="End"
+                                WidthRequest="200" />
                         </HorizontalStackLayout>
                     </VerticalStackLayout>
                 </Grid>

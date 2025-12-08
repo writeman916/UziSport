@@ -2,8 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
+using UziSport.Controls;
 using UziSport.Model;
 
 namespace UziSport.DAL
@@ -46,30 +48,20 @@ namespace UziSport.DAL
                 }
 
                 // Map View → Entity header
-                var header = new StockOutInfo
-                {
-                    StockOutId = viewItem.StockOutId,
-                    StockOutCode = viewItem.StockOutCode,
-                    StockOutDate = viewItem.StockOutDate,
-                    CustomerId = viewItem.CustomerId,
-                    Note = viewItem.Note,
-                    InvoiceDiscountAmount = viewItem.InvoiceDiscountAmount,
-                    TotalAmount = viewItem.TotalAmount,
-                    // BaseModelInfo
-                    CreateBy = viewItem.CreateBy,
-                    CreateAt = viewItem.CreateAt,
-                    UpdateBy = viewItem.UpdateBy,
-                    UpdateAt = viewItem.UpdateAt
-                };
+                var header = viewItem.ToStockOutInfo();
 
                 // Insert / Update header
                 if (header.StockOutId == 0)
                 {
+                    header.CreateAt = DateTime.Now;
+                    header.CreateBy = Constants.AdminCode;
                     result = conn.Insert(header);
-                    viewItem.StockOutId = header.StockOutId;
+                    viewItem.StockOutId = header.StockOutId;              
                 }
                 else
                 {
+                    header.UpdateAt = DateTime.Now;
+                    header.UpdateBy = Constants.AdminCode;
                     result = conn.Update(header);
 
                     if (result == 0)
