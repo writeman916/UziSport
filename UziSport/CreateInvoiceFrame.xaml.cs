@@ -494,8 +494,9 @@ public partial class CreateInvoiceFrame : ContentPage
             }
 
             decimal receivedAmount = numericEntry.Value ?? 0m;
+            decimal actualIncome = this.ActualIncomeEntry.Value ?? 0m;
 
-            decimal changeAmount = receivedAmount - TotalAmout;
+            decimal changeAmount = receivedAmount - actualIncome;
 
             this.ChangeEntry.Text = changeAmount.ToString("N0", CultureInfo.InvariantCulture);
         }

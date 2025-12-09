@@ -1,8 +1,10 @@
 ﻿using SQLite;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -108,12 +110,33 @@ namespace UziSport.Model
         }
     }
 
-    public class ProductStockViewInfo : ProductViewInfo
+    public class ProductStockViewInfo : ProductViewInfo, INotifyPropertyChanged
     {
+        public event PropertyChangedEventHandler? PropertyChanged;
+        protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
+          => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+
         public decimal TotalIn { get; set; }
         public decimal TotalOut { get; set; }
         public decimal StockQty { get; set; }
-        public decimal SaleQty { get; set; }
+
+        private decimal _saleQty;
+        public decimal SaleQty
+        {
+            get => _saleQty;
+            set
+            {
+                if (_saleQty != value)
+                {
+                    _saleQty = value;
+                    OnPropertyChanged(); // SaleQty
+                    // Các property phụ thuộc:
+                    OnPropertyChanged(nameof(LineSaleAmount));
+                    OnPropertyChanged(nameof(LineDiscountAmount));
+                    OnPropertyChanged(nameof(LineAfterDiscountSaleAmout));
+                }
+            }
+        }
 
         public decimal LineDiscountRate { get; set; }
         public decimal LineDiscountAmount 
