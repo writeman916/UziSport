@@ -13,6 +13,12 @@ namespace UziSport.Controls
         Cancelled = 3   // Hủy
     }
 
+    public enum  PaymentMethod
+    {
+        Cash = 1, //tien mat
+        Transfer = 2 //chuyen khoan
+    }
+
     public static class Constants
     {
         public const string DateFormat = "dd/MM/yyyy";

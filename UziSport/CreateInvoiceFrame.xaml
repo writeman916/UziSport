@@ -308,7 +308,7 @@
                 CornerRadius="10"
                 HasShadow="True">
 
-                <Grid RowDefinitions="700, *">
+                <Grid RowDefinitions="560, 150, *">
                     <HorizontalStackLayout Grid.Row="0">
                         <CollectionView
                             Grid.Row="2"
@@ -403,7 +403,7 @@
                                 FontSize="20"
                                 HorizontalTextAlignment="End"
                                 Text="{Binding TotalSaleAmout, StringFormat='{}{0:N0}'}"
-                                WidthRequest="200" />
+                                WidthRequest="192" />
                         </HorizontalStackLayout>
                         <HorizontalStackLayout>
                             <Label FontSize="20" WidthRequest="280">Khuyến mãi:</Label>
@@ -411,7 +411,7 @@
                                 FontSize="20"
                                 HorizontalTextAlignment="End"
                                 Text="{Binding TotalDiscountAmount, StringFormat='{}{0:N0}'}"
-                                WidthRequest="200" />
+                                WidthRequest="192" />
                         </HorizontalStackLayout>
                         <HorizontalStackLayout>
                             <Label
@@ -425,7 +425,7 @@
                                 FontSize="30"
                                 HorizontalTextAlignment="End"
                                 Text="{Binding TotalAmout, StringFormat='{}{0:N0}'}"
-                                WidthRequest="200" />
+                                WidthRequest="192" />
                         </HorizontalStackLayout>
                         <HorizontalStackLayout HeightRequest="50">
                             <Label
@@ -438,10 +438,63 @@
                                 x:Name="ActualIncomeEntry"
                                 FontAttributes="Bold"
                                 FontSize="30"
-                                HeightRequest="45"
-                                VerticalTextAlignment="Start"
+                                HeightRequest="50"
                                 HorizontalTextAlignment="End"
+                                VerticalTextAlignment="Start"
                                 WidthRequest="200" />
+                        </HorizontalStackLayout>
+                    </VerticalStackLayout>
+                    <VerticalStackLayout Grid.Row="2">
+                        <Line
+                            Aspect="Fill"
+                            HeightRequest="3"
+                            HorizontalOptions="Fill"
+                            Stroke="{StaticResource Secondary}"
+                            StrokeThickness="3"
+                            X1="0"
+                            X2="3"
+                            Y1="0"
+                            Y2="0" />
+                        <HorizontalStackLayout HeightRequest="50">
+                            <Label
+                                FontSize="30"
+                                WidthRequest="280">
+                                Phương thức:
+                            </Label>
+                            <Picker
+                                x:Name="PaymentMethodPicker"
+                                FontSize="20"
+                                HeightRequest="40"
+                                ItemDisplayBinding="{Binding MethodName}"
+                                ItemsSource="{Binding PaymentMethods}"
+                                WidthRequest="200" />
+                        </HorizontalStackLayout>
+                        <HorizontalStackLayout HeightRequest="50">
+                            <Label
+                                FontSize="30"
+                                WidthRequest="280">
+                                Nhận vào:
+                            </Label>
+                            <controls:NumericEntry
+                                x:Name="ReceivedEntry"
+                                FontSize="30"
+                                HeightRequest="50"
+                                HorizontalTextAlignment="End"
+                                TextChanged="ReceivedEntry_TextChanged"
+                                VerticalTextAlignment="Start"
+                                WidthRequest="200" />
+                        </HorizontalStackLayout>
+                        <HorizontalStackLayout>
+                            <Label
+                                FontSize="30"
+                                WidthRequest="280">
+                                Tiền thối:
+                            </Label>
+                            <Label
+                                x:Name="ChangeEntry"
+                                FontSize="30"
+                                HorizontalTextAlignment="End"
+                                WidthRequest="195" />
                         </HorizontalStackLayout>
                     </VerticalStackLayout>
                 </Grid>

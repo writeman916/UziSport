@@ -24,6 +24,8 @@ namespace UziSport.Model
 
         public decimal TotalAmount { get; set; }
 
+        public int PaymentMethod { get; set; }
+
         public decimal ActualIncome { get; set; }
     
     }
@@ -49,6 +51,7 @@ namespace UziSport.Model
                 Note = this.Note,
                 InvoiceDiscountAmount = this.InvoiceDiscountAmount,
                 TotalAmount = this.TotalAmount,
+                PaymentMethod = this.PaymentMethod,
                 CreateBy = this.CreateBy,
                 CreateAt = this.CreateAt,
                 UpdateBy = this.UpdateBy,

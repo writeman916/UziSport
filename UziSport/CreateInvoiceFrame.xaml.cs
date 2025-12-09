@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Text;
 using UziSport.Controls;
 using UziSport.DAL;
@@ -41,6 +42,8 @@ public partial class CreateInvoiceFrame : ContentPage
     }
 
     public StockOutViewInfo CurrentStockOutInfo { get; set; } = new StockOutViewInfo();
+    public ObservableCollection<PaymentMethodInfo> PaymentMethods { get; } = new();
+    
 
     private decimal _totalAmount = 0;
     public decimal TotalAmout
@@ -100,6 +103,18 @@ public partial class CreateInvoiceFrame : ContentPage
 
         try
         {
+            // Load Payment Methods
+            var paymentMethods = new ObservableCollection<PaymentMethodInfo>()
+            {
+                new PaymentMethodInfo { Method = PaymentMethod.Cash, MethodName = "Tiền mặt" },
+                new PaymentMethodInfo { Method = PaymentMethod.Transfer, MethodName = "Chuyển khoản" },
+            };
+            PaymentMethods.Clear();
+            foreach (var method in paymentMethods)
+            {
+                PaymentMethods.Add(method);
+            }
+
             await ClearInputs(true);
         }
         catch (Exception)
@@ -157,7 +172,10 @@ public partial class CreateInvoiceFrame : ContentPage
         this.TotalSaleAmout = 0;
         this.TotalDiscountAmount = 0;
         this.ActualIncomeEntry.Value = 0;
+        this.ReceivedEntry.Value = 0;
+        this.ChangeEntry.Text = "0";
         this.CurrentStockOutInfo = new StockOutViewInfo();
+        this.PaymentMethodPicker.SelectedIndex = 0;
 
         if (reGetProductlist)
         {
@@ -430,6 +448,9 @@ public partial class CreateInvoiceFrame : ContentPage
             CurrentStockOutInfo.ActualIncome = this.ActualIncomeEntry.Value ?? 0m;
             CurrentStockOutInfo.StockOutCode = this.StockOutCodeEntry.Text;
 
+            if (PaymentMethodPicker.SelectedItem is PaymentMethodInfo selectedMethod)
+                CurrentStockOutInfo.PaymentMethod = selectedMethod.MethodValue;
+
             var dal = new StockOutDAL();
             await dal.SaveItemAsync(CurrentStockOutInfo);
 
@@ -460,6 +481,23 @@ public partial class CreateInvoiceFrame : ContentPage
             }
 
             ReCalculateBillTotal();
+        }
+    }
+
+    private void ReceivedEntry_TextChanged(object sender, TextChangedEventArgs e)
+    {
+        if (sender is NumericEntry numericEntry)
+        {
+            if (string.IsNullOrWhiteSpace(e.NewTextValue))
+            {
+                numericEntry.Value = (int?)0m; // 0m = decimal 0
+            }
+
+            decimal receivedAmount = numericEntry.Value ?? 0m;
+
+            decimal changeAmount = receivedAmount - TotalAmout;
+
+            this.ChangeEntry.Text = changeAmount.ToString("N0", CultureInfo.InvariantCulture);
         }
     }
 }
