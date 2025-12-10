@@ -66,21 +66,6 @@
                     Text="{Binding CurrentStockOutInfo.Note}"
                     WidthRequest="650" />
             </HorizontalStackLayout>
-
-            <HorizontalStackLayout
-                Grid.Row="2"
-                Grid.Column="2"
-                Margin="30,0,0,0"
-                Spacing="10">
-                <Label>Giảm giá</Label>
-                <controls:NumericEntry
-                    x:Name="DiscountRateEntry"
-                    HeightRequest="50"
-                    IsReadOnly="true"
-                    WidthRequest="80 "
-                    Value="{Binding CurrentStockOutInfo.InvoiceDiscountRate, Mode=TwoWay}" />
-                <Label>%</Label>
-            </HorizontalStackLayout>
         </Grid>
 
         <!--  Product List  Frame  -->
@@ -456,9 +441,7 @@
                             Y1="0"
                             Y2="0" />
                         <HorizontalStackLayout HeightRequest="50">
-                            <Label
-                                FontSize="30"
-                                WidthRequest="280">
+                            <Label FontSize="30" WidthRequest="280">
                                 Phương thức:
                             </Label>
                             <Picker
@@ -470,9 +453,7 @@
                                 WidthRequest="200" />
                         </HorizontalStackLayout>
                         <HorizontalStackLayout HeightRequest="50">
-                            <Label
-                                FontSize="30"
-                                WidthRequest="280">
+                            <Label FontSize="30" WidthRequest="280">
                                 Nhận vào:
                             </Label>
                             <controls:NumericEntry
@@ -485,9 +466,7 @@
                                 WidthRequest="200" />
                         </HorizontalStackLayout>
                         <HorizontalStackLayout>
-                            <Label
-                                FontSize="30"
-                                WidthRequest="280">
+                            <Label FontSize="30" WidthRequest="280">
                                 Tiền thối:
                             </Label>
                             <Label
@@ -500,8 +479,7 @@
                 </Grid>
             </Frame>
             <HorizontalStackLayout
-                Grid.Row="4"
-                Grid.Column="2"
+                Grid.Row="1"
                 Margin="10"
                 HorizontalOptions="End"
                 Spacing="10">
@@ -528,5 +506,17 @@
             HorizontalOptions="End"
             InputTransparent="True"
             VerticalOptions="Start" />
+
+        <Grid
+            BackgroundColor="#80000000"
+            IsVisible="{Binding IsLoading}"
+            InputTransparent="False">
+            <ActivityIndicator
+                IsRunning="{Binding IsLoading}"
+                HorizontalOptions="Center"
+                VerticalOptions="Center"
+                WidthRequest="60"
+                HeightRequest="60" />
+        </Grid>
     </Grid>
 </ContentPage>

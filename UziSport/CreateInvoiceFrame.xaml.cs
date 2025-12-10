@@ -4,6 +4,7 @@ using System.Text;
 using UziSport.Controls;
 using UziSport.DAL;
 using UziSport.Model;
+using UziSport.Services;
 
 namespace UziSport;
 
@@ -87,6 +88,22 @@ public partial class CreateInvoiceFrame : ContentPage
         }
     }
 
+    private bool _isLoading;
+    public bool IsLoading
+    {
+        get => _isLoading;
+        set
+        {
+            if (_isLoading != value)
+            {
+                _isLoading = value;
+                OnPropertyChanged(nameof(IsLoading));
+            }
+        }
+    }
+
+    private bool _isInitialized = false;
+
     private ProductDAL _productDal = new ProductDAL();
 
     private ProductComboCostDAL _productComboCostDal = new ProductComboCostDAL();
@@ -97,35 +114,30 @@ public partial class CreateInvoiceFrame : ContentPage
         BindingContext = this;
     }
 
-    protected override async void OnAppearing()
+    protected override void OnAppearing()
     {
         base.OnAppearing();
 
-        try
-        {
-            // Load Payment Methods
-            var paymentMethods = new ObservableCollection<PaymentMethodInfo>()
-            {
-                new PaymentMethodInfo { Method = PaymentMethod.Cash, MethodName = "Tiền mặt" },
-                new PaymentMethodInfo { Method = PaymentMethod.Transfer, MethodName = "Chuyển khoản" },
-            };
-            PaymentMethods.Clear();
-            foreach (var method in paymentMethods)
-            {
-                PaymentMethods.Add(method);
-            }
+        AdminAuthService.Reset();
 
-            await ClearInputs(true);
-        }
-        catch (Exception)
+        if (!_isInitialized)
         {
-            throw;
+            _isInitialized = true;
+            _ = FirstInitAsync();
+            return;
         }
-        finally
-        {
 
+        if (ProductStateService.NeedReloadProducts)
+        {
+            ProductStateService.NeedReloadProducts = false;
+            _ = ReloadProductsAndClearAsync();
+        }
+        else
+        {
+            _ = ClearInputs(reGetProductlist: false);
         }
     }
+
 
     private void ReCalculateBillTotal()
     {
@@ -166,7 +178,6 @@ public partial class CreateInvoiceFrame : ContentPage
         this.StockOutCodeEntry.Text = this.GenerateNewStockOutCode();
         this.StockOutDatePicker.Date = DateTime.Now;
         this.NoteEntry.Text = string.Empty;
-        this.DiscountRateEntry.Text = string.Empty;
         this.ViewProductInBills = new List<ProductStockViewInfo>();
         this.TotalAmout = 0;
         this.TotalSaleAmout = 0;
@@ -179,7 +190,6 @@ public partial class CreateInvoiceFrame : ContentPage
 
         if (reGetProductlist)
         {
-            // Load Product List
             _allProductInfos = await _productDal.GetProductsWithStockAsync();
             ViewProductInfos = _allProductInfos.ToList();
         }
@@ -196,10 +206,9 @@ public partial class CreateInvoiceFrame : ContentPage
     {
         if (sender is NumericEntry numericEntry)
         {
-            // Khi text bị xóa hết (rỗng / toàn khoảng trắng) thì set lại Value = 0
             if (string.IsNullOrWhiteSpace(e.NewTextValue))
             {
-                numericEntry.Value = (int?)0m; // 0m = decimal 0
+                numericEntry.Value = (int?)0m;
             }
         }
     }
@@ -217,7 +226,6 @@ public partial class CreateInvoiceFrame : ContentPage
 
             ViewProductInBills = newList;
 
-            // Tính lại tổng tiền
             ReCalculateBillTotal();
         }
     }
@@ -459,7 +467,6 @@ public partial class CreateInvoiceFrame : ContentPage
                 await _productComboCostDal.DeleteByProductComboCostIdAsync(usedComboCostIds);
             }
 
-            // Clear màn hình
             await ClearInputs(true);
 
             _ = AppToast.ShowAsync(Controls.ToastView.ToastKind.Success, "Tạo hóa đơn thành công.", 2000);
@@ -467,6 +474,57 @@ public partial class CreateInvoiceFrame : ContentPage
         catch (Exception ex)
         {
             await DisplayAlert("Lỗi", ex.Message, "OK");
+        }
+    }
+
+    private async Task FirstInitAsync()
+    {
+        try
+        {
+            IsLoading = true;
+
+            if (PaymentMethods.Count == 0)
+            {
+                var paymentMethods = new ObservableCollection<PaymentMethodInfo>()
+            {
+                new PaymentMethodInfo { Method = PaymentMethod.Cash,     MethodName = "Tiền mặt" },
+                new PaymentMethodInfo { Method = PaymentMethod.Transfer, MethodName = "Chuyển khoản" },
+            };
+
+                PaymentMethods.Clear();
+                foreach (var method in paymentMethods)
+                {
+                    PaymentMethods.Add(method);
+                }
+            }
+
+            await ClearInputs(reGetProductlist: true);
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Lỗi", ex.Message, "OK");
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    private async Task ReloadProductsAndClearAsync()
+    {
+        try
+        {
+            IsLoading = true;
+
+            await ClearInputs(reGetProductlist: true);
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Lỗi", ex.Message, "OK");
+        }
+        finally
+        {
+            IsLoading = false;
         }
     }
 

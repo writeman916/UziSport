@@ -24,15 +24,24 @@
         </Grid>
     </Shell.FlyoutHeader>
 
-    <FlyoutItem Title="Bán hàng" Icon="dotnet_bot.png">
+    <FlyoutItem
+        Title="Bán hàng"
+        Icon="dotnet_bot.png"
+        Route="sale">
         <ShellContent Title="Bán hàng" ContentTemplate="{DataTemplate views:CreateInvoiceFrame}" />
     </FlyoutItem>
 
-    <FlyoutItem Title="Quản lý sản phẩm" Icon="dotnet_bot.png">
+    <FlyoutItem
+        Title="Quản lý sản phẩm"
+        Icon="dotnet_bot.png"
+        Route="admin-product">
         <ShellContent Title="Quản lý sản phẩm" ContentTemplate="{DataTemplate views:ProductManage}" />
     </FlyoutItem>
 
-    <FlyoutItem Title="Quản lý nhập kho" Icon="dotnet_bot.png">
+    <FlyoutItem
+        Title="Quản lý nhập kho"
+        Icon="dotnet_bot.png"
+        Route="admin-stockin">
         <ShellContent Title="Quản lý nhập kho" ContentTemplate="{DataTemplate views:StockInManage}" />
     </FlyoutItem>
 

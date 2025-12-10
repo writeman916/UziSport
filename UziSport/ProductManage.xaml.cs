@@ -1,10 +1,12 @@
-﻿using System;
+﻿using Microsoft.Maui.Controls;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using Microsoft.Maui.Controls;
-using UziSport.Model;
+using UziSport.Controls;
 using UziSport.DAL;
+using UziSport.Model;
+using UziSport.Services;
 
 namespace UziSport
 {
@@ -243,12 +245,12 @@ namespace UziSport
 
             if (CurrentProduct.ProductId == 0)
             {
-                this.CurrentProduct.CreateBy = "admin";
+                this.CurrentProduct.CreateBy = Constants.AdminCode;
                 this.CurrentProduct.CreateAt = DateTime.Now;
             }
             else
             {
-                this.CurrentProduct.UpdateBy = "admin";
+                this.CurrentProduct.UpdateBy = Constants.AdminCode;
                 this.CurrentProduct.UpdateAt = DateTime.Now;
             }
 
@@ -260,6 +262,8 @@ namespace UziSport
 
             ViewProductInfos = await _productDal.GetProductsAsync();
             _allProductInfos = ViewProductInfos.ToList();
+
+            ProductStateService.NeedReloadProducts = true;
 
             this.BarcodeEntry.Focus();
         }
@@ -290,6 +294,8 @@ namespace UziSport
 
             ViewProductInfos = await _productDal.GetProductsAsync();
             _allProductInfos = ViewProductInfos.ToList();
+
+            ProductStateService.NeedReloadProducts = true;
         }
 
         private void SearchEntry_TextChanged(object sender, TextChangedEventArgs e)

@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UziSport.DAL;
 using UziSport.Model;
+using UziSport.Services;
 
 namespace UziSport.Controls;
 
@@ -528,6 +529,7 @@ public partial class NewStockInPopup : ContentView
 
         //Close Popup
         this.Result = StockInPopupResults.Saved;
+        ProductStateService.NeedReloadProducts = true;
 
         await this.HideAsync();
     }
