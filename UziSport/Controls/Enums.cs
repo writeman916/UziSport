@@ -15,6 +15,7 @@ namespace UziSport.Controls
 
     public enum  PaymentMethod
     {
+        None = 0,
         Cash = 1, //tien mat
         Transfer = 2 //chuyen khoan
     }
@@ -24,5 +25,9 @@ namespace UziSport.Controls
         public const string DateFormat = "dd/MM/yyyy";
 
         public const string AdminCode = "UZI";
+
+        public const string PaymentMethod_Cash = "Tiền mặt";
+
+        public const string PaymentMethod_Transfer = "Chuyển khoản";
     }
 }

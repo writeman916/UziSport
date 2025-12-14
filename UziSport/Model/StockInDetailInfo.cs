@@ -21,6 +21,8 @@ namespace UziSport.Model
 
         public decimal? UnitCost { get; set; }
 
+        public decimal LineDiscountAmount { get; set; }
+
         public string  Note { get; set; } = string.Empty;
     }
 

@@ -59,4 +59,35 @@ namespace UziSport.Model
             };
         }
     }
+
+    public class StockOutHistoryInfo : StockOutInfo
+    {
+        public string PaymentMethodName 
+        {
+            get
+            {
+                switch(this.PaymentMethod)
+                {
+                    case (int)Controls.PaymentMethod.Cash:
+                        return Controls.Constants.PaymentMethod_Cash;
+                    case (int)Controls.PaymentMethod.Transfer:
+                        return Controls.Constants.PaymentMethod_Transfer;
+                    default:
+                        return string.Empty;
+                }
+            }
+        }
+
+        public decimal ProfitAmount { get; set; }
+    }
+
+    public class StockOutSearchCriteria
+    {
+        public DateTime? FromDate { get; set; }
+        public DateTime? ToDate { get; set; }
+        public string StockOutCode { get; set; } = string.Empty;
+
+        public int? PaymentMethod { get; set; }
+
+    }
 }

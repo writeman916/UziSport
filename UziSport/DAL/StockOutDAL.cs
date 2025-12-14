@@ -27,6 +27,63 @@ namespace UziSport.DAL
             await database.CreateTableAsync<StockOutDetailInfo>();
         }
 
+        public async Task<List<StockOutHistoryInfo>> GetStockOutHistorysAsync(StockOutSearchCriteria search)
+        {
+            await Init();
+
+            StringBuilder sb = new StringBuilder();
+
+            sb.AppendLine(@"
+                SELECT 
+                soi.StockOutId,
+                soi.StockOutCode,
+                soi.StockOutDate,
+                soi.TotalAmount,
+                soi.ActualIncome,
+                soi.PaymentMethod,
+                soi.Note,
+                SUM(sod.Quantity * (sod.UnitPrice - sod.UnitCost) - sod.LineDiscountAmount) AS ProfitAmount
+
+                FROM StockOutInfo        AS soi
+                JOIN StockOutDetailInfo  AS sod 
+                    ON sod.StockOutId = soi.StockOutId
+                WHERE 1=1 ");
+
+            if(search.FromDate != null)
+            {
+                sb.AppendLine($" AND soi.StockOutDate >= {search.FromDate.GetValueOrDefault().Ticks} ");
+            }
+
+            if(search.ToDate != null)
+            {
+                sb.AppendLine($" AND soi.StockOutDate <= {search.ToDate.GetValueOrDefault().Ticks} ");
+            }
+            
+            if(search.PaymentMethod != null)
+            {
+                sb.AppendLine($" AND soi.PaymentMethod = {search.PaymentMethod.GetValueOrDefault()} ");
+            }
+
+            sb.AppendLine(@"GROUP BY 
+                    soi.StockOutId,
+                    soi.StockOutCode,
+                    soi.StockOutDate,
+                    soi.TotalAmount,
+                    soi.ActualIncome,
+                    soi.PaymentMethod,
+                    soi.Note
+
+                ORDER BY 
+                    soi.StockOutDate DESC,
+                    soi.StockOutId DESC; ");
+
+            var sql = sb.ToString();
+
+            var list = await database.QueryAsync<StockOutHistoryInfo>(sql);
+
+            return list;
+        }
+
         public async Task<int> SaveItemAsync(StockOutViewInfo viewItem)
         {
             if (viewItem == null)
@@ -38,7 +95,6 @@ namespace UziSport.DAL
 
             await database.RunInTransactionAsync(conn =>
             {
-                // Nếu đánh dấu xóa và đã có Id → xóa luôn
                 if (viewItem.Deleted && viewItem.StockOutId != 0)
                 {
                     stockOutDetailDAL.DeleteByStockOutIdInTransaction(conn, viewItem.StockOutId);
@@ -47,10 +103,8 @@ namespace UziSport.DAL
                     return;
                 }
 
-                // Map View → Entity header
                 var header = viewItem.ToStockOutInfo();
 
-                // Insert / Update header
                 if (header.StockOutId == 0)
                 {
                     header.CreateAt = DateTime.Now;
@@ -70,7 +124,6 @@ namespace UziSport.DAL
                     }
                 }
 
-                // Lưu detail
                 if (viewItem.StockOutDetailInfos != null && viewItem.StockOutDetailInfos.Count > 0)
                 {
                     foreach (var d in viewItem.StockOutDetailInfos)

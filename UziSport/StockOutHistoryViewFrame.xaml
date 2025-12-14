@@ -1,0 +1,520 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="UziSport.StockOutHistoryViewFrame"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:UziSport.Controls"
+    xmlns:converters="clr-namespace:UziSport.Converters"
+    Shell.NavBarIsVisible="False">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converters:NegativeNumberToColorConverter
+                x:Key="NegToColor"
+                NegativeColor="Red"
+                NonNegativeColor="{StaticResource Secondary}" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="80" />
+            <RowDefinition Height="190" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1000" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+
+        <!--  Search bar  -->
+        <Grid
+            Grid.Row="0"
+            Grid.Column="0"
+            Margin="10,10,10,10"
+            ColumnSpacing="10"
+            HeightRequest="70"
+            VerticalOptions="Center">
+
+            <Frame
+                BackgroundColor="Transparent"
+                BorderColor="{StaticResource Secondary}"
+                CornerRadius="15"
+                HeightRequest="70">
+                <HorizontalStackLayout Spacing="10" VerticalOptions="Fill">
+                    <Label>Từ</Label>
+                    <DatePicker
+                        x:Name="SearchDateFromPicker"
+                        HeightRequest="50"
+                        WidthRequest="150" />
+                    <Label>đến</Label>
+                    <DatePicker
+                        x:Name="SearchDateToPicker"
+                        HeightRequest="50"
+                        WidthRequest="150" />
+                    <HorizontalStackLayout HeightRequest="50">
+                        <Label>Phương thức</Label>
+                        <Picker
+                            x:Name="PaymentMethodPicker"
+                            Margin="10,0,0,0"
+                            HeightRequest="50"
+                            ItemDisplayBinding="{Binding MethodName}"
+                            ItemsSource="{Binding PaymentMethods}"
+                            WidthRequest="200" />
+                    </HorizontalStackLayout>
+                    <Button
+                        Clicked="BtnSearch_Clicked"
+                        HeightRequest="40"
+                        Text="Tìm kiếm" />
+                </HorizontalStackLayout>
+            </Frame>
+        </Grid>
+
+        <!--  Total Amount of Result  -->
+        <HorizontalStackLayout
+            Grid.Row="1"
+            Grid.Column="0"
+            Margin="30">
+            <Label FontSize="30">Doanh thu :</Label>
+            <Label
+                x:Name="ResultTotalAmountLabel"
+                Margin="30"
+                FontSize="30"
+                HorizontalTextAlignment="End"
+                WidthRequest="200">
+                100,000,000
+            </Label>
+
+            <Label Margin="100,0,0,0" FontSize="30">Lợi nhuận :</Label>
+            <Label
+                x:Name="ResultProfitAmountLabel"
+                Margin="30"
+                FontSize="30"
+                HorizontalTextAlignment="End"
+                WidthRequest="200">
+                100,000,000
+            </Label>
+        </HorizontalStackLayout>
+
+        <!--  StockOut List  -->
+        <Grid Grid.Row="2">
+            <Frame
+                Margin="5"
+                BackgroundColor="Transparent"
+                BorderColor="{StaticResource Secondary}"
+                CornerRadius="10">
+                <Grid RowDefinitions="Auto,Auto,*">
+
+                    <!--  Header: tiêu đề cột  -->
+                    <HorizontalStackLayout Grid.Row="0">
+                        <Label HorizontalTextAlignment="Center" WidthRequest="100">Ngày nhập</Label>
+                        <Line
+                            Stroke="{StaticResource Secondary}"
+                            StrokeThickness="1"
+                            X1="0"
+                            X2="0"
+                            Y1="0"
+                            Y2="58" />
+                        <Label HorizontalTextAlignment="Center" WidthRequest="180">Mã hóa đơn</Label>
+                        <Line
+                            Stroke="{StaticResource Secondary}"
+                            StrokeThickness="1"
+                            X1="0"
+                            X2="0"
+                            Y1="0"
+                            Y2="58" />
+                        <Label HorizontalTextAlignment="Center" WidthRequest="220">Ghi chú</Label>
+                        <Line
+                            Stroke="{StaticResource Secondary}"
+                            StrokeThickness="1"
+                            X1="0"
+                            X2="0"
+                            Y1="0"
+                            Y2="58" />
+                        <Label HorizontalTextAlignment="Center" WidthRequest="105">Tổng hóa đơn</Label>
+                        <Line
+                            Stroke="{StaticResource Secondary}"
+                            StrokeThickness="1"
+                            X1="0"
+                            X2="0"
+                            Y1="0"
+                            Y2="58" />
+                        <Label HorizontalTextAlignment="Center" WidthRequest="105">
+                            Thực thu
+                        </Label>
+                        <Line
+                            Stroke="{StaticResource Secondary}"
+                            StrokeThickness="1"
+                            X1="0"
+                            X2="0"
+                            Y1="0"
+                            Y2="58" />
+                        <Label HorizontalTextAlignment="Center" WidthRequest="105">
+                            Lợi nhuận
+                        </Label>
+                        <Line
+                            Stroke="{StaticResource Secondary}"
+                            StrokeThickness="1"
+                            X1="0"
+                            X2="0"
+                            Y1="0"
+                            Y2="58" />
+                        <Label HorizontalTextAlignment="Center" WidthRequest="120">
+                            Phương thức
+                        </Label>
+                    </HorizontalStackLayout>
+
+                    <!--  Line ngang  -->
+                    <Line
+                        Grid.Row="1"
+                        Aspect="Fill"
+                        HeightRequest="1"
+                        HorizontalOptions="Fill"
+                        Stroke="{StaticResource Secondary}"
+                        StrokeThickness="1"
+                        X1="0"
+                        X2="1"
+                        Y1="0"
+                        Y2="0" />
+
+                    <!--  CollectionView sẽ scroll trong hàng * này  -->
+                    <CollectionView
+                        Grid.Row="2"
+                        ItemsSource="{Binding ViewStockOutHistoryInfos}"
+                        SelectionChanged="StockOutList_SelectionChanged"
+                        SelectionMode="Single">
+
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <HorizontalStackLayout HeightRequest="40">
+                                    <Label
+                                        HorizontalTextAlignment="Center"
+                                        Text="{Binding StockOutDate, StringFormat='{0:dd/MM/yyyy}'}"
+                                        WidthRequest="100" />
+                                    <Line
+                                        Stroke="{StaticResource Secondary}"
+                                        StrokeThickness="1"
+                                        X1="0"
+                                        X2="0"
+                                        Y1="0"
+                                        Y2="40" />
+
+                                    <Label
+                                        HorizontalTextAlignment="Center"
+                                        Text="{Binding StockOutCode}"
+                                        WidthRequest="180" />
+                                    <Line
+                                        Stroke="{StaticResource Secondary}"
+                                        StrokeThickness="1"
+                                        X1="0"
+                                        X2="0"
+                                        Y1="0"
+                                        Y2="40" />
+
+                                    <Label
+                                        HorizontalTextAlignment="Center"
+                                        Text="{Binding Note}"
+                                        WidthRequest="220" />
+                                    <Line
+                                        Stroke="{StaticResource Secondary}"
+                                        StrokeThickness="1"
+                                        X1="0"
+                                        X2="0"
+                                        Y1="0"
+                                        Y2="40" />
+                                    <Label
+                                        HorizontalTextAlignment="Center"
+                                        Text="{Binding TotalAmount, StringFormat='{}{0:N0}'}"
+                                        WidthRequest="105" />
+                                    <Line
+                                        Stroke="{StaticResource Secondary}"
+                                        StrokeThickness="1"
+                                        X1="0"
+                                        X2="0"
+                                        Y1="0"
+                                        Y2="40" />
+                                    <Label
+                                        HorizontalTextAlignment="Center"
+                                        Text="{Binding ActualIncome, StringFormat='{}{0:N0}'}"
+                                        WidthRequest="105" />
+                                    <Line
+                                        Stroke="{StaticResource Secondary}"
+                                        StrokeThickness="1"
+                                        X1="0"
+                                        X2="0"
+                                        Y1="0"
+                                        Y2="40" />
+                                    <Label
+                                        HorizontalTextAlignment="Center"
+                                        Text="{Binding ProfitAmount, StringFormat='{}{0:N0}'}"
+                                        TextColor="{Binding ProfitAmount, Converter={StaticResource NegToColor}}"
+                                        WidthRequest="105" />
+                                    <Line
+                                        Stroke="{StaticResource Secondary}"
+                                        StrokeThickness="1"
+                                        X1="0"
+                                        X2="0"
+                                        Y1="0"
+                                        Y2="40" />
+                                    <Label
+                                        HorizontalTextAlignment="Center"
+                                        Text="{Binding PaymentMethodName}"
+                                        WidthRequest="120">
+
+                                        <Label.Triggers>
+                                            <DataTrigger
+                                                Binding="{Binding PaymentMethodName}"
+                                                TargetType="Label"
+                                                Value="{x:Static controls:Constants.PaymentMethod_Cash}">
+                                                <Setter Property="TextColor" Value="DarkGreen" />
+                                            </DataTrigger>
+
+                                            <DataTrigger
+                                                Binding="{Binding PaymentMethodName}"
+                                                TargetType="Label"
+                                                Value="{x:Static controls:Constants.PaymentMethod_Transfer}">
+                                                <Setter Property="TextColor" Value="Orange" />
+                                            </DataTrigger>
+                                        </Label.Triggers>
+                                    </Label>
+                                    <VisualStateManager.VisualStateGroups>
+                                        <VisualStateGroup x:Name="CommonStates">
+                                            <VisualState x:Name="Normal">
+                                                <VisualState.Setters>
+                                                    <Setter Property="BackgroundColor" Value="Transparent" />
+                                                </VisualState.Setters>
+                                            </VisualState>
+                                            <VisualState x:Name="Selected">
+                                                <VisualState.Setters>
+                                                    <Setter Property="BackgroundColor" Value="{StaticResource Gray300}" />
+                                                </VisualState.Setters>
+                                            </VisualState>
+                                        </VisualStateGroup>
+                                    </VisualStateManager.VisualStateGroups>
+                                </HorizontalStackLayout>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </Grid>
+            </Frame>
+        </Grid>
+
+        <!--  StockOut Info  -->
+        <VerticalStackLayout
+            Grid.Row="0"
+            Grid.RowSpan="2"
+            Grid.Column="1"
+            Margin="10,10,10,10">
+
+            <HorizontalStackLayout Spacing="10">
+                <Label>Mã Hóa Đơn</Label>
+                <Entry
+                    x:Name="StockOutCodeEntry"
+                    HeightRequest="50"
+                    IsReadOnly="true"
+                    Placeholder="Mã Hóa Đơn"
+                    Text="{Binding CurrentStockOutInfo.StockOutCode}"
+                    WidthRequest="200 " />
+            </HorizontalStackLayout>
+
+            <HorizontalStackLayout Spacing="10">
+                <Label>Ngày Nhập</Label>
+                <DatePicker
+                    x:Name="StockOutDatePicker"
+                    Margin="10,0,0,0"
+                    Date="{Binding CurrentStockOutInfo.StockOutDate}"
+                    HeightRequest="50"
+                    IsEnabled="False"
+                    WidthRequest="200" />
+            </HorizontalStackLayout>
+            <HorizontalStackLayout Spacing="10">
+                <Label>Ghi Chú</Label>
+                <Editor
+                    x:Name="NoteEntry"
+                    Margin="32,0,0,0"
+                    HeightRequest="140"
+                    IsReadOnly="True"
+                    Text="{Binding CurrentStockOutInfo.Note}"
+                    WidthRequest="400" />
+            </HorizontalStackLayout>
+        </VerticalStackLayout>
+
+        <!--  Bill Frame  -->
+        <Grid
+            Grid.Row="1"
+            Grid.RowSpan="2"
+            Grid.Column="1"
+            RowDefinitions="*,700">
+
+
+            <Frame
+                Grid.Row="1"
+                Margin="5"
+                BackgroundColor="Transparent"
+                BorderColor="{StaticResource Secondary}"
+                CornerRadius="10"
+                HasShadow="True">
+
+                <Grid RowDefinitions="500, 150">
+                    <HorizontalStackLayout Grid.Row="0">
+                        <CollectionView
+                            Grid.Row="2"
+                            ItemsSource="{Binding ViewProductInBills}"
+                            SelectionMode="Single">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate>
+                                    <VerticalStackLayout HeightRequest="70" WidthRequest="500">
+
+                                        <HorizontalStackLayout HeightRequest="25" HorizontalOptions="Fill">
+                                            <Label
+                                                FontSize="15"
+                                                HorizontalTextAlignment="Start"
+                                                Text="{Binding ProductName}"
+                                                WidthRequest="180" />
+                                            <Label
+                                                FontSize="15"
+                                                HorizontalTextAlignment="End"
+                                                Text="{Binding UnitPrice, StringFormat='{}{0:N0}'}"
+                                                WidthRequest="100" />
+                                            <Label
+                                                FontSize="15"
+                                                HorizontalTextAlignment="End"
+                                                Text="{Binding QuantityString}"
+                                                WidthRequest="100" />
+                                            <Label
+                                                FontAttributes="Bold"
+                                                FontSize="15"
+                                                HorizontalTextAlignment="End"
+                                                Text="{Binding LineSaleAmount, StringFormat='{}{0:N0}'}"
+                                                WidthRequest="100" />
+                                        </HorizontalStackLayout>
+
+                                        <HorizontalStackLayout
+                                            HeightRequest="40"
+                                            HorizontalOptions="Fill"
+                                            VerticalOptions="Start">
+                                            <Label
+                                                FontSize="15"
+                                                HorizontalTextAlignment="Start"
+                                                Text="{Binding UnitCost, StringFormat='{}{0:N0}'}"
+                                                WidthRequest="180" />
+                                            <Label
+                                                FontSize="15"
+                                                HorizontalTextAlignment="End"
+                                                WidthRequest="100" />
+                                            <Label
+                                                FontSize="15"
+                                                HorizontalTextAlignment="End"
+                                                Text="{Binding LineDiscountAmountString}"
+                                                WidthRequest="100" />
+
+                                            <Label
+                                                FontAttributes="Bold"
+                                                FontSize="15"
+                                                HorizontalTextAlignment="End"
+                                                Text="{Binding LineAfterDiscountSaleAmout, StringFormat='{}{0:N0}'}"
+                                                WidthRequest="100" />
+                                        </HorizontalStackLayout>
+                                        <Line
+                                            Aspect="Fill"
+                                            HeightRequest="2"
+                                            HorizontalOptions="Fill"
+                                            Stroke="{StaticResource Secondary}"
+                                            StrokeDashArray="4,4"
+                                            StrokeThickness="2"
+                                            VerticalOptions="Fill"
+                                            X1="0"
+                                            X2="2"
+                                            Y1="0"
+                                            Y2="0" />
+                                    </VerticalStackLayout>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+
+                    </HorizontalStackLayout>
+                    <!--  Total Amout  -->
+                    <VerticalStackLayout Grid.Row="1">
+                        <Line
+                            Aspect="Fill"
+                            HeightRequest="3"
+                            HorizontalOptions="Fill"
+                            Stroke="{StaticResource Secondary}"
+                            StrokeThickness="3"
+                            X1="0"
+                            X2="3"
+                            Y1="0"
+                            Y2="0" />
+                        <HorizontalStackLayout>
+                            <Label FontSize="20" WidthRequest="280">Tổng tiền :</Label>
+                            <Label
+                                FontSize="20"
+                                HorizontalTextAlignment="End"
+                                Text="{Binding TotalSaleAmout, StringFormat='{}{0:N0}'}"
+                                WidthRequest="192" />
+                        </HorizontalStackLayout>
+                        <HorizontalStackLayout>
+                            <Label FontSize="20" WidthRequest="280">Khuyến mãi:</Label>
+                            <Label
+                                FontSize="20"
+                                HorizontalTextAlignment="End"
+                                Text="{Binding TotalDiscountAmount, StringFormat='{}{0:N0}'}"
+                                WidthRequest="192" />
+                        </HorizontalStackLayout>
+                        <HorizontalStackLayout>
+                            <Label
+                                FontAttributes="Bold"
+                                FontSize="30"
+                                WidthRequest="280">
+                                Thành tiền:
+                            </Label>
+                            <Label
+                                FontAttributes="Bold"
+                                FontSize="30"
+                                HorizontalTextAlignment="End"
+                                Text="{Binding TotalAmout, StringFormat='{}{0:N0}'}"
+                                WidthRequest="192" />
+                        </HorizontalStackLayout>
+                        <HorizontalStackLayout HeightRequest="50">
+                            <Label
+                                FontAttributes="Bold"
+                                FontSize="30"
+                                WidthRequest="280">
+                                Thực thu:
+                            </Label>
+                            <Label
+                                x:Name="ActualIncomeEntry"
+                                FontAttributes="Bold"
+                                FontSize="30"
+                                HorizontalTextAlignment="End"
+                                WidthRequest="192" />
+                        </HorizontalStackLayout>
+                    </VerticalStackLayout>
+                </Grid>
+            </Frame>
+        </Grid>
+
+        <!--  Toast overlay  -->
+        <controls:ToastView
+            x:Name="AppToast"
+            Grid.Column="1"
+            HorizontalOptions="End"
+            InputTransparent="True"
+            VerticalOptions="Start" />
+
+        <Grid
+            Grid.Row="2"
+            BackgroundColor="#80000000"
+            InputTransparent="False"
+            IsVisible="{Binding IsLoading}">
+            <ActivityIndicator
+                HeightRequest="60"
+                HorizontalOptions="Center"
+                IsRunning="{Binding IsLoading}"
+                VerticalOptions="Center"
+                WidthRequest="60" />
+        </Grid>
+    </Grid>
+</ContentPage>

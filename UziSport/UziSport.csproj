@@ -69,6 +69,11 @@
     <PackageReference Include="sqlite-net-pcl" Version="1.9.172" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Update="StockOutHistoryViewFrame.xaml.cs">
+      <DependentUpon>StockOutHistoryViewFrame.xaml</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
     <MauiXaml Update="AdminPasswordPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </MauiXaml>
@@ -94,6 +99,9 @@
       <Generator>MSBuild:Compile</Generator>
     </MauiXaml>
     <MauiXaml Update="CreateInvoiceFrame.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </MauiXaml>
+    <MauiXaml Update="StockOutHistoryViewFrame.xaml">
       <Generator>MSBuild:Compile</Generator>
     </MauiXaml>
     <MauiXaml Update="ProductManage.xaml">

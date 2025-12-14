@@ -32,6 +32,13 @@
     </FlyoutItem>
 
     <FlyoutItem
+        Title="Lịch sử bán hàng"
+        Icon="dotnet_bot.png"
+        Route="admin-salehistory">
+        <ShellContent Title="Lịch sử bán hàng" ContentTemplate="{DataTemplate views:StockOutHistoryViewFrame}" />
+    </FlyoutItem>
+
+    <FlyoutItem
         Title="Quản lý sản phẩm"
         Icon="dotnet_bot.png"
         Route="admin-product">

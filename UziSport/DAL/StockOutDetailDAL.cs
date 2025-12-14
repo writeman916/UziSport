@@ -23,7 +23,7 @@ namespace UziSport.DAL
             var result = await database.CreateTableAsync<StockOutDetailInfo>();
         }
 
-        public async Task<List<StockOutDetailViewInfo>> GetDetailByStockInIdAsync(int stockOutId)
+        public async Task<List<StockOutDetailViewInfo>> GetDetailByStockOutIdAsync(int stockOutId)
         {
             await Init();
 
@@ -42,7 +42,6 @@ namespace UziSport.DAL
                     sd.Quantity,
                     sd.UnitCost,
                     sd.UnitPrice,
-                    sd.Note,
                     sd.LineDiscountAmount,
                     sd.CreateBy,
                     sd.CreateAt,

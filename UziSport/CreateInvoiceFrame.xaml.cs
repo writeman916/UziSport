@@ -487,8 +487,8 @@ public partial class CreateInvoiceFrame : ContentPage
             {
                 var paymentMethods = new ObservableCollection<PaymentMethodInfo>()
             {
-                new PaymentMethodInfo { Method = PaymentMethod.Cash,     MethodName = "Tiền mặt" },
-                new PaymentMethodInfo { Method = PaymentMethod.Transfer, MethodName = "Chuyển khoản" },
+                new PaymentMethodInfo { Method = PaymentMethod.Cash,     MethodName = Constants.PaymentMethod_Cash },
+                new PaymentMethodInfo { Method = PaymentMethod.Transfer, MethodName = Constants.PaymentMethod_Transfer },
             };
 
                 PaymentMethods.Clear();

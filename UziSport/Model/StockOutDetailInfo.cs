@@ -1,6 +1,7 @@
 ﻿using SQLite;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -45,6 +46,44 @@ namespace UziSport.Model
         public List<ProductComboCostInfo> ProductComboCostInfos { get; set; } = new List<ProductComboCostInfo>();
 
         public bool Deleted { get; set; } = false;
+        public decimal LineSaleAmount
+        {
+            get
+            {
+                decimal price = Price;
+
+                return (decimal)(price * Quantity);
+            }
+        }
+
+        public decimal LineAfterDiscountSaleAmout
+        {
+            get
+            {
+                return LineSaleAmount - LineDiscountAmount;
+            }
+        }
+
+        public string QuantityString
+        {
+            get
+            {
+                return $"x {this.Quantity}";
+            }
+        }
+
+        public string LineDiscountAmountString
+        {
+            get
+            {
+                if (this.LineDiscountAmount == 0)
+                    return string.Empty;
+
+                return $"- {this.LineDiscountAmount.ToString("N0", CultureInfo.InvariantCulture)}";
+
+            }
+        }
+
         public StockOutDetailInfo ToStockOutDetailInfo()
         {
             return new StockOutDetailInfo
