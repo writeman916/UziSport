@@ -34,6 +34,10 @@ namespace UziSport.Model
 
         public string Specification { get; set; } = string.Empty;
 
+        public int BrandId { get; set; }
+
+        public int CatalogId { get; set; }
+
         public string BrandName { get; set; } = string.Empty;
 
         public string CatalogName { get; set; } = string.Empty;

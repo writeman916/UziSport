@@ -40,13 +40,10 @@ public partial class NewStockInPopup : ContentView
         }
     }
 
-    // Dùng cho binding trong XAML
     public bool IsInProgress => ImportStatus == ImportStatus.InProgress;
 
-    // Chi tiết chỉ readonly khi màn hình đang ở chế độ chỉ xem
     public bool IsDetailReadOnly => _isReadOnlyMode;
 
-    // Cho phép show/hide nút X xoá dòng
     public bool CanEditDetails => !_isReadOnlyMode;
 
     private void SetReadOnlyMode(bool isReadOnly)
@@ -58,6 +55,8 @@ public partial class NewStockInPopup : ContentView
             OnPropertyChanged(nameof(CanEditDetails));
         }
     }
+    public ObservableCollection<CatalogInfo> Catalogs { get; } = new();
+    public ObservableCollection<BrandInfo> Brands { get; } = new();
 
     public ObservableCollection<WarehouseInfo> Warehouses { get; } = new();
     public ObservableCollection<SupplierInfo> Suppliers { get; } = new();
@@ -166,6 +165,18 @@ public partial class NewStockInPopup : ContentView
         foreach (var b in suppliers)
             Suppliers.Add(b);
 
+        // Load Catalog
+        var catalogs = await CatalogDAL.Instance.GetCatalogsAsync();
+        Catalogs.Clear();
+        foreach (var c in catalogs)
+            Catalogs.Add(c);
+
+        // Load Brand
+        var brands = await BrandDAL.Instance.GetBrandsAsync();
+        Brands.Clear();
+        foreach (var b in brands)
+            Brands.Add(b);
+
         bool isEdit = CurrentStockInInfo.StockInId != 0;
 
         if (!isEdit)
@@ -224,6 +235,8 @@ public partial class NewStockInPopup : ContentView
         this.SaveButton.IsEnabled = isEnable;
         this.BtnThem.IsEnabled = isEnable;
         this.SearchEntry.IsEnabled = isEnable;
+
+        this.NewProducFrame.IsEnabled = isEnable;
     }
 
     public async Task HideAsync()
@@ -284,7 +297,10 @@ public partial class NewStockInPopup : ContentView
             ProductCode = product.ProductCode,
             Specification = product.Specification,
             BrandName = product.BrandName,
+            BrandId = product.BrandId,
+            CatalogId = product.CatalogId,
             CatalogName = product.CatalogName,
+            Price = product.Price ?? 0m,
             UnitCost = product.Cost,
             CreateAt = DateTime.Now,
             CreateBy = Constants.AdminCode
@@ -336,6 +352,17 @@ public partial class NewStockInPopup : ContentView
         ImportStatus = ImportStatus.InProgress;
     }
 
+    private void ClearNewProduct()
+    {
+        this.BarcodeEntry.Text = string.Empty;
+        this.ProductNameEntry.Text = string.Empty;
+        this.CatalogPicker.SelectedIndex = -1;
+        this.BrandPicker.SelectedIndex = -1;
+        this.SpecificationEntry.Text = string.Empty;   
+        this.CostEntry.Text = string.Empty;
+        this.PriceEntry.Text = string.Empty;
+        this.BrandPicker.SelectedIndex = -1;
+    }
 
     private void BtnThem_Clicked(object sender, EventArgs e)
     {
@@ -400,7 +427,7 @@ public partial class NewStockInPopup : ContentView
 
                 if (StockInDetailInfosProp?.GetValue(BindingContext) is ICollection<StockInDetailViewInfo> StockInDetailInfos)
                 {
-                    if (stockInDetail.StockInDetailId != 0)
+                    if (stockInDetail.StockInDetailId != 0 && stockInDetail.ProductId != 0)
                     {
                         stockInDetail.Deleted = true;
                         _deletedStockInDetailInfos.Add(stockInDetail);
@@ -498,6 +525,27 @@ public partial class NewStockInPopup : ContentView
         //Get StockInDetailInfos
         saveStockInInfo.StockInDetailInfos = StockInDetailInfos.ToList();
 
+        foreach(var detail in saveStockInInfo.StockInDetailInfos.Where(x => x.ProductId == 0))
+        {
+            var productDAL = new ProductDAL();
+            
+            var newProduct = new ProductViewInfo()
+            {
+                ProductCode = detail.ProductCode,
+                ProductName = detail.ProductName,
+                Specification = detail.Specification,
+                Cost = detail.UnitCost,
+                BrandId = detail.BrandId,
+                CatalogId = detail.CatalogId,
+                Price = detail.Price,
+                CreateAt = DateTime.Now,
+                CreateBy = Constants.AdminCode
+            };
+
+            var newProductId = await productDAL.SaveItemAsync(newProduct);
+            detail.ProductId = newProductId;
+        }
+
         saveStockInInfo.StockInDetailInfos.AddRange(_deletedStockInDetailInfos);
 
         //Save StockInInfo
@@ -564,5 +612,33 @@ public partial class NewStockInPopup : ContentView
         Suppliers.Clear();
         foreach (var b in suppliers)
             Suppliers.Add(b);
+    }
+
+    private void BtnNewProduct_Clicked(object sender, EventArgs e)
+    {
+        var newProduct = new ProductViewInfo()
+        {
+            ProductCode = this.BarcodeEntry.Text?.Trim(),
+            ProductName = this.ProductNameEntry.Text?.Trim(),
+            Specification = this.SpecificationEntry.Text?.Trim(),
+            Cost = this.CostEntry.Value,
+            Price = this.PriceEntry.Value,
+        };
+
+        if (CatalogPicker.SelectedItem is CatalogInfo selectedCatalog)
+        {
+            newProduct.CatalogId = selectedCatalog.CatalogId;
+            newProduct.CatalogName = selectedCatalog.CatalogName;
+        }
+
+        if (BrandPicker.SelectedItem is BrandInfo selectedBrand)
+        {
+            newProduct.BrandId = selectedBrand.BrandId;
+            newProduct.BrandName = selectedBrand.BrandName;
+        }
+
+        this.NewStockInDetailViewInfos(newProduct);
+
+        ClearNewProduct();
     }
 }

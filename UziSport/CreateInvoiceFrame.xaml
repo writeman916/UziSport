@@ -508,15 +508,16 @@
             VerticalOptions="Start" />
 
         <Grid
+            Grid.Row="1"
             BackgroundColor="#80000000"
-            IsVisible="{Binding IsLoading}"
-            InputTransparent="False">
+            InputTransparent="False"
+            IsVisible="{Binding IsLoading}">
             <ActivityIndicator
-                IsRunning="{Binding IsLoading}"
+                HeightRequest="60"
                 HorizontalOptions="Center"
+                IsRunning="{Binding IsLoading}"
                 VerticalOptions="Center"
-                WidthRequest="60"
-                HeightRequest="60" />
+                WidthRequest="60" />
         </Grid>
     </Grid>
 </ContentPage>

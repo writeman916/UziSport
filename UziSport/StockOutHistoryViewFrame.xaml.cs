@@ -193,7 +193,7 @@ public partial class StockOutHistoryViewFrame : ContentPage
             this.ViewStockOutHistoryInfos = await _stockOutDAL.GetStockOutHistorysAsync(searchCondition);
 
             this.ResultProfitAmountLabel.Text = ViewStockOutHistoryInfos.Sum(x => x.ProfitAmount).ToString("N0", CultureInfo.InvariantCulture);
-            this.ResultTotalAmountLabel.Text = ViewStockOutHistoryInfos.Sum(x => x.TotalAmount).ToString("N0", CultureInfo.InvariantCulture);
+            this.ResultTotalAmountLabel.Text = ViewStockOutHistoryInfos.Sum(x => x.ActualIncome).ToString("N0", CultureInfo.InvariantCulture);
         }
         catch (Exception ex)
         {

@@ -26,7 +26,7 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="300" />
                     <!--  HEADER  -->
-                    <RowDefinition Height="35" />
+                    <RowDefinition Height="60" />
                     <!--  Thanh search cố định 35  -->
                     <RowDefinition Height="*" />
                     <!--  Stock Detail List, luôn full  -->
@@ -39,7 +39,7 @@
                     x:Name="ProductDetail"
                     Grid.Row="0"
                     Margin="30,10,10,10"
-                    ColumnDefinitions="*,*,*"
+                    ColumnDefinitions="300,430,*"
                     ColumnSpacing="10"
                     RowDefinitions="*,*,*,*">
 
@@ -60,6 +60,7 @@
                     <HorizontalStackLayout
                         Grid.Row="0"
                         Grid.Column="1"
+                        Margin="30,0,0,0"
                         Spacing="10">
                         <Label>Ngày Nhập</Label>
                         <DatePicker
@@ -119,20 +120,6 @@
                             Text="{Binding CurrentStockInInfo.Note}"
                             WidthRequest="650" />
                     </HorizontalStackLayout>
-
-                    <HorizontalStackLayout
-                        Grid.Row="3"
-                        Grid.Column="3"
-                        Spacing="10">
-                        <Label>Tổng tiền</Label>
-                        <controls:NumericEntry
-                            x:Name="TotalAmountEntry"
-                            HeightRequest="50"
-                            IsReadOnly="True"
-                            WidthRequest="250"
-                            Value="{Binding CurrentStockInInfo.TotalAmount, Mode=TwoWay}" />
-                    </HorizontalStackLayout>
-
                     <Frame
                         Grid.Row="0"
                         Grid.Column="3"
@@ -150,39 +137,132 @@
                             VerticalOptions="Fill"
                             WidthRequest="202" />
                     </Frame>
-                </Grid>
 
-                <!--  Search bar (chỉ thanh search, không chứa dropdown)  -->
-                <HorizontalStackLayout
-                    Grid.Row="1"
-                    Margin="20,0,0,0"
-                    Spacing="20">
-
+                    <!--  New Product  -->
                     <Frame
+                        x:Name="NewProducFrame"
+                        Grid.Row="1"
+                        Grid.RowSpan="3"
+                        Grid.Column="2"
                         Padding="0"
                         BackgroundColor="Transparent"
                         BorderColor="{StaticResource Secondary}"
                         CornerRadius="15"
-                        HeightRequest="35"
-                        HorizontalOptions="Start"
-                        WidthRequest="300">
+                        HorizontalOptions="Fill"
+                        VerticalOptions="Fill">
 
-                        <Entry
-                            x:Name="SearchEntry"
-                            Completed="SearchEntry_Completed"
-                            HeightRequest="35"
-                            Placeholder="Tìm kiếm"
-                            TextChanged="SearchEntry_TextChanged"
-                            WidthRequest="300" />
+                        <Grid
+                            Padding="5"
+                            ColumnDefinitions="*,*"
+                            ColumnSpacing="10">
+                            <VerticalStackLayout HorizontalOptions="Fill" Spacing="5">
+                                <Entry
+                                    x:Name="BarcodeEntry"
+                                    HeightRequest="45"
+                                    HorizontalOptions="Fill"
+                                    Placeholder="Barcode" />
+                                <Entry
+                                    x:Name="ProductNameEntry"
+                                    HeightRequest="45"
+                                    HorizontalOptions="Fill"
+                                    Placeholder="Tên Sản Phẩm" />
+                                <Picker
+                                    x:Name="CatalogPicker"
+                                    HeightRequest="45"
+                                    HorizontalOptions="Fill"
+                                    ItemDisplayBinding="{Binding CatalogName}"
+                                    ItemsSource="{Binding Catalogs}" />
+                                <Entry
+                                    x:Name="SpecificationEntry"
+                                    HeightRequest="45"
+                                    HorizontalOptions="Fill"
+                                    Placeholder="Thông số kĩ thuật" />
+                            </VerticalStackLayout>
+
+                            <VerticalStackLayout
+                                Grid.Column="2"
+                                HorizontalOptions="Fill"
+                                Spacing="5">
+                                <controls:NumericEntry
+                                    x:Name="CostEntry"
+                                    HeightRequest="45"
+                                    HorizontalOptions="Fill"
+                                    Keyboard="Numeric"
+                                    Placeholder="Giá vốn" />
+                                <controls:NumericEntry
+                                    x:Name="PriceEntry"
+                                    HeightRequest="45"
+                                    HorizontalOptions="Fill"
+                                    Keyboard="Numeric"
+                                    Placeholder="Giá bán" />
+                                <Picker
+                                    x:Name="BrandPicker"
+                                    HeightRequest="45"
+                                    HorizontalOptions="Fill"
+                                    ItemDisplayBinding="{Binding BrandName}"
+                                    ItemsSource="{Binding Brands}" />
+                                <Button
+                                    x:Name="BtnAddNewProduct"
+                                    Margin="0,3,0,0"
+                                    Clicked="BtnNewProduct_Clicked"
+                                    CornerRadius="15"
+                                    HeightRequest="40"
+                                    Text="Thêm"
+                                    WidthRequest="200" />
+                            </VerticalStackLayout>
+                        </Grid>
                     </Frame>
+                </Grid>
 
-                    <Button
-                        x:Name="BtnThem"
-                        Clicked="BtnThem_Clicked"
-                        CornerRadius="15"
-                        HeightRequest="35"
-                        Text="Thêm" />
-                </HorizontalStackLayout>
+
+                <!--  Search bar (chỉ thanh search, không chứa dropdown)  -->
+                <Grid Grid.Row="1" ColumnDefinitions="600, *">
+                    <HorizontalStackLayout
+                        Grid.Column="0"
+                        Margin="20,0,0,0"
+                        Spacing="20">
+                        <Frame
+                            Padding="0"
+                            BackgroundColor="Transparent"
+                            BorderColor="{StaticResource Secondary}"
+                            CornerRadius="15"
+                            HeightRequest="35"
+                            HorizontalOptions="Start"
+                            WidthRequest="300">
+                            <Entry
+                                x:Name="SearchEntry"
+                                Grid.Row="0"
+                                Grid.Column="0"
+                                Completed="SearchEntry_Completed"
+                                HeightRequest="35"
+                                Placeholder="Tìm kiếm"
+                                TextChanged="SearchEntry_TextChanged"
+                                WidthRequest="300" />
+                        </Frame>
+                        <Button
+                            x:Name="BtnThem"
+                            Clicked="BtnThem_Clicked"
+                            CornerRadius="15"
+                            HeightRequest="35"
+                            Text="Thêm" />
+                    </HorizontalStackLayout>
+
+
+                    <HorizontalStackLayout
+                        Grid.Column="1"
+                        Margin="0,0,20,0"
+                        HorizontalOptions="End"
+                        Spacing="10">
+                        <Label>Tổng tiền</Label>
+                        <controls:NumericEntry
+                            x:Name="TotalAmountEntry"
+                            HeightRequest="44"
+                            IsReadOnly="True"
+                            WidthRequest="250"
+                            Value="{Binding CurrentStockInInfo.TotalAmount, Mode=TwoWay}" />
+                    </HorizontalStackLayout>
+                </Grid>
+
 
                 <!--  Stock Detail List  -->
                 <Frame

@@ -128,15 +128,19 @@ namespace UziSport.DAL
             {
                 if (item.ProductId == 0)
                 {
-                    result = conn.Insert(item);
+                    conn.Insert(item);
+                    result = item.ProductId;
                 }
                 else
                 {
-                    result = conn.Update(item);
+                    conn.Update(item);
+                    result = item.ProductId;
+
 
                     if (result == 0)
                     {
-                        result = conn.Insert(item);
+                        conn.Insert(item);
+                        result = item.ProductId;
                     }
                 }
 
