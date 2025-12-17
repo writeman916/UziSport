@@ -46,7 +46,7 @@
     <GenerateTestArtifacts>True</GenerateTestArtifacts>
     <AppInstallerUri>D:\Dev Workspace\C# project\Install App\Uzi Sport</AppInstallerUri>
     <HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
-    <PackageCertificateThumbprint>F5263111BBFF287FEC9555CC41AA60C2B1DE5690</PackageCertificateThumbprint>
+    <PackageCertificateThumbprint>74336B1D410968A9D64C31035373E2910D628850</PackageCertificateThumbprint>
   </PropertyGroup>
   <ItemGroup>
     <!-- App Icon -->
