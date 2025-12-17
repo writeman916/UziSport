@@ -6,10 +6,22 @@ using UziSport.DAL;
 using UziSport.Model;
 using UziSport.Services;
 
+#if WINDOWS
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Input;
+using Windows.System;
+#endif
+
 namespace UziSport.Controls;
 
 public partial class NewStockInPopup : ContentView
 {
+
+#if WINDOWS
+    private UIElement? _winRoot;
+    private KeyEventHandler? _winKeyHandler;
+#endif
+
     public event EventHandler? Closed;
 
     public static readonly BindableProperty ProductsProperty =
@@ -221,6 +233,10 @@ public partial class NewStockInPopup : ContentView
         // Enable/disable header + nút Lưu, Search... theo chế độ
         SetEnableAllControl(!readOnly);
 
+#if WINDOWS
+        this.RegisterWinKeyHandlers();
+#endif
+
         await this.FadeTo(1, 150);
     }
 
@@ -244,6 +260,9 @@ public partial class NewStockInPopup : ContentView
         this.ClearInputs();
         Closed?.Invoke(this, EventArgs.Empty);
 
+#if WINDOWS
+        this.UnRegisterWinKeyHandlers();
+#endif
         await this.FadeTo(0, 150);
         IsVisible = false;
     }
@@ -335,6 +354,10 @@ public partial class NewStockInPopup : ContentView
             return;
         }
 
+        this.StockInDetailInfos.Clear();
+        CurrentStockInInfo = new StockInViewInfo();
+        OnPropertyChanged(nameof(CurrentStockInInfo));
+
         // Clear hoàn toàn khi đóng popup
         this.StockInCodeEntry.Text = string.Empty;
         this.StockInDatePicker.Date = DateTime.Now;
@@ -342,10 +365,6 @@ public partial class NewStockInPopup : ContentView
         this.SupplierPicker.SelectedIndex = -1;
         this.NoteEntry.Text = string.Empty;
         this.TotalAmountEntry.Value = 0;
-
-        this.StockInDetailInfos.Clear();
-        CurrentStockInInfo = new StockInViewInfo();
-        OnPropertyChanged(nameof(CurrentStockInInfo));
 
         // Reset trạng thái
         SetReadOnlyMode(false);
@@ -641,4 +660,62 @@ public partial class NewStockInPopup : ContentView
 
         ClearNewProduct();
     }
+
+#if WINDOWS
+
+    private void RegisterWinKeyHandlers()
+    {
+        if (_winKeyHandler != null) return;
+
+        _winKeyHandler = new KeyEventHandler(WinRoot_KeyDown);
+
+        var mauiWindow = Microsoft.Maui.Controls.Application.Current?.Windows?.FirstOrDefault();
+        if (mauiWindow?.Handler?.PlatformView is Microsoft.UI.Xaml.Window win)
+            _winRoot = win.Content as UIElement;
+
+        _winRoot ??= Handler?.PlatformView as UIElement;
+
+        _winRoot?.AddHandler(UIElement.KeyDownEvent, _winKeyHandler, true);
+    }
+
+    private void UnRegisterWinKeyHandlers()
+    {
+        if (_winRoot != null && _winKeyHandler != null)
+            _winRoot.RemoveHandler(UIElement.KeyDownEvent, _winKeyHandler);
+
+        _winRoot = null;
+        _winKeyHandler = null;
+    }
+
+    private async void WinRoot_KeyDown(object sender, KeyRoutedEventArgs e)
+    {
+        if (!IsVisible) return;
+
+        if (!_isReadOnlyMode)
+            return;
+
+        if (e.Key != VirtualKey.N) return;
+
+        var ctrlDown = Microsoft.UI.Input.InputKeyboardSource
+            .GetKeyStateForCurrentThread(VirtualKey.Control)
+            .HasFlag(Windows.UI.Core.CoreVirtualKeyStates.Down);
+
+        var shiftDown = Microsoft.UI.Input.InputKeyboardSource
+            .GetKeyStateForCurrentThread(VirtualKey.Shift)
+            .HasFlag(Windows.UI.Core.CoreVirtualKeyStates.Down);
+
+        if (ctrlDown && shiftDown)
+        {
+            e.Handled = true;
+
+            var stockInDAL = new StockInDAL();
+
+            await stockInDAL.UpdateStatusByIdAsync(this.CurrentStockInInfo.StockInId, ImportStatus.InProgress);
+
+            this.Result = StockInPopupResults.Saved;
+
+            await HideAsync();
+        }
+    }
+#endif
 }

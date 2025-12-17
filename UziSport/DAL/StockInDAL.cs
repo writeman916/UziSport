@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UziSport.Controls;
 using UziSport.Model;
 
 namespace UziSport.DAL
@@ -124,6 +125,21 @@ namespace UziSport.DAL
             });
 
             return result;
+        }
+
+        public async Task UpdateStatusByIdAsync(int stockInId, ImportStatus status)
+        {
+            await Init();
+
+            var item = await database.Table<StockInInfo>()
+                .Where(s => s.StockInId == stockInId)
+                .FirstOrDefaultAsync();
+
+            if (item != null)
+            {
+                item.Status = (int)status;
+                await database.UpdateAsync(item);
+            }
         }
 
         public async Task<int> DeleteByIdAsync(StockInViewInfo viewItem)
