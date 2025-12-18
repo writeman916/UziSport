@@ -5,6 +5,7 @@ using UziSport.Controls;
 using UziSport.DAL;
 using UziSport.Model;
 using UziSport.Services;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace UziSport;
 
@@ -108,6 +109,10 @@ public partial class CreateInvoiceFrame : ContentPage
 
     private ProductComboCostDAL _productComboCostDal = new ProductComboCostDAL();
 
+    private IBarcodeInput? _barcodeInput;
+    private Dictionary<string, ProductStockViewInfo> _productByCode
+        = new(StringComparer.OrdinalIgnoreCase);
+
     public CreateInvoiceFrame()
 	{
 		InitializeComponent();
@@ -119,6 +124,23 @@ public partial class CreateInvoiceFrame : ContentPage
         base.OnAppearing();
 
         AdminAuthService.Reset();
+
+#if WINDOWS
+        _barcodeInput ??= Application.Current?.Handler?.MauiContext?.Services?.GetService<IBarcodeInput>();
+        if (_barcodeInput != null)
+        {
+            // ✅ THÊM 2 DÒNG NÀY
+            _barcodeInput.BarcodeScanned -= BarcodeInput_BarcodeScanned;
+            _barcodeInput.BarcodeScanned += BarcodeInput_BarcodeScanned;
+
+            var platformWindow = (Microsoft.UI.Xaml.Window)Window.Handler.PlatformView;
+            var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(platformWindow);
+
+            _barcodeInput.Start(hwnd);
+            _barcodeInput.SetScanMode(ScanModeSwitch.IsToggled);
+        }
+#endif
+
 
         if (!_isInitialized)
         {
@@ -138,6 +160,17 @@ public partial class CreateInvoiceFrame : ContentPage
         }
     }
 
+    protected override void OnDisappearing()
+    {
+#if WINDOWS
+        if (_barcodeInput != null)
+        {
+            _barcodeInput.BarcodeScanned -= BarcodeInput_BarcodeScanned;
+            _barcodeInput.Stop();
+        }
+#endif
+        base.OnDisappearing();
+    }
 
     private void ReCalculateBillTotal()
     {
@@ -148,30 +181,34 @@ public partial class CreateInvoiceFrame : ContentPage
         this.ActualIncomeEntry.Value = (int?)(Math.Round(TotalAmout / 1000m, 0, MidpointRounding.AwayFromZero) * 1000m); ;
     }
 
+    private void AddProductToBill(ProductStockViewInfo product)
+    {
+        var newList = ViewProductInBills?.ToList() ?? new List<ProductStockViewInfo>();
+
+        var inBillProduct = newList
+            .FirstOrDefault(x => x.ProductId == product.ProductId && x.LineDiscountRate == product.LineDiscountRate);
+
+        if (inBillProduct != null)
+        {
+            inBillProduct.SaleQty++;
+        }
+        else
+        {
+            product.SaleQty = 1;
+            newList.Add(product.Clone());
+        }
+
+        ViewProductInBills = newList;
+        ReCalculateBillTotal();
+    }
+
+
     private void BtnThem_Clicked(object sender, EventArgs e)
     {
         if (sender is Button button && button.BindingContext is ProductStockViewInfo product)
-        {
-            var newList = ViewProductInBills?.ToList() ?? new List<ProductStockViewInfo>();
-
-            var inBillProduct = newList.Where(x => x.ProductId == product.ProductId && x.LineDiscountRate == product.LineDiscountRate).FirstOrDefault();
-
-            if (inBillProduct != null)
-            {
-                inBillProduct.SaleQty++;
-            }else
-            {
-                product.SaleQty = 1;
-
-                newList.Add(product.Clone());
-            }
-
-            ViewProductInBills = newList;
-
-            // Tính lại tổng tiền (giả sử Price là decimal? trong ProductStockViewInfo)
-            ReCalculateBillTotal();
-        }
+            AddProductToBill(product);
     }
+
 
     private async Task ClearInputs(bool reGetProductlist = false)
     {
@@ -192,6 +229,11 @@ public partial class CreateInvoiceFrame : ContentPage
         {
             _allProductInfos = await _productDal.GetProductsWithStockAsync();
             ViewProductInfos = _allProductInfos.ToList();
+
+            _productByCode = _allProductInfos
+                .Where(p => !string.IsNullOrWhiteSpace(p.ProductCode))
+                .GroupBy(p => p.ProductCode.Trim(), StringComparer.OrdinalIgnoreCase)
+                .ToDictionary(g => g.Key, g => g.First(), StringComparer.OrdinalIgnoreCase);
         }
     }
 
@@ -559,4 +601,34 @@ public partial class CreateInvoiceFrame : ContentPage
             this.ChangeEntry.Text = changeAmount.ToString("N0", CultureInfo.InvariantCulture);
         }
     }
+
+    private void BarcodeInput_BarcodeScanned(object? sender, string code)
+    {
+        if (ScanModeSwitch?.IsToggled != true) return; // ✅ đang cho gõ tay thì bỏ qua
+
+        code = (code ?? "").Trim();
+        if (code.Length == 0) return;
+
+        MainThread.BeginInvokeOnMainThread(() =>
+        {
+            if (_productByCode.TryGetValue(code, out var product))
+                AddProductToBill(product);
+            else
+                _ = AppToast.ShowAsync(Controls.ToastView.ToastKind.Warning, $"Không tìm thấy mã: {code}", 1200);
+        });
+    }
+
+
+    private void ScanModeSwitch_Toggled(object sender, ToggledEventArgs e)
+    {
+#if WINDOWS
+        _barcodeInput?.SetScanMode(e.Value);
+
+        _ = AppToast.ShowAsync(
+            Controls.ToastView.ToastKind.Info,
+            e.Value ? "SCAN ON: Không rơi chữ (khóa gõ tay)" : "SCAN OFF: Gõ bình thường",
+            1200);
+#endif
+    }
+
 }

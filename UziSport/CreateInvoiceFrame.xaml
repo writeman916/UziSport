@@ -70,23 +70,49 @@
 
         <!--  Product List  Frame  -->
         <Grid Grid.Row="1" RowDefinitions="35,*">
-            <Frame
-                Grid.Row="0"
-                Margin="20,0,0,0"
-                Padding="0"
-                BackgroundColor="Transparent"
-                BorderColor="{StaticResource Secondary}"
-                CornerRadius="15"
-                HeightRequest="35"
-                HorizontalOptions="Start"
-                WidthRequest="400">
-                <Entry
-                    x:Name="SearchEntry"
+            <Grid Grid.Row="0" ColumnDefinitions="400, *">
+                <Frame
+                    Grid.Column="0"
+                    Margin="20,0,0,0"
+                    Padding="0"
+                    BackgroundColor="Transparent"
+                    BorderColor="{StaticResource Secondary}"
+                    CornerRadius="15"
                     HeightRequest="35"
-                    HorizontalOptions="Fill"
-                    Placeholder="Tìm kiếm"
-                    TextChanged="SearchEntry_TextChanged" />
-            </Frame>
+                    HorizontalOptions="Start"
+                    WidthRequest="400">
+                    <Entry
+                        x:Name="SearchEntry"
+                        HeightRequest="35"
+                        HorizontalOptions="Fill"
+                        Placeholder="Tìm kiếm"
+                        TextChanged="SearchEntry_TextChanged" />
+                </Frame>
+                <Frame
+                    Grid.Column="1"
+                    Margin="20,0,0,0"
+                    Padding="0"
+                    BackgroundColor="Gray"
+                    CornerRadius="15"
+                    HeightRequest="35"
+                    HorizontalOptions="End">
+                    <HorizontalStackLayout HorizontalOptions="End" Spacing="8">
+                        <Label
+                            Margin="20,0,10,0"
+                            Text="Chế độ quét"
+                            TextColor="White"
+                            VerticalTextAlignment="Center" />
+                        <Switch
+                            x:Name="ScanModeSwitch"
+                            IsToggled="True"
+                            WidthRequest="90"
+                            Toggled="ScanModeSwitch_Toggled" />
+                    </HorizontalStackLayout>
+                </Frame>
+
+
+            </Grid>
+
             <Frame
                 Grid.Row="1"
                 Margin="5"

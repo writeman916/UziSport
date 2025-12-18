@@ -353,6 +353,8 @@
     <Style TargetType="Switch">
         <Setter Property="OnColor" Value="{StaticResource Secondary}" />
         <Setter Property="ThumbColor" Value="{StaticResource White}" />
+        <Setter Property="MinimumWidthRequest" Value="60" />
+        <Setter Property="MinimumHeightRequest" Value="40" />
         <Setter Property="VisualStateManager.VisualStateGroups">
             <VisualStateGroupList>
                 <VisualStateGroup x:Name="CommonStates">

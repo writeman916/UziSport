@@ -1,4 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
+#if WINDOWS
+using UziSport.Services;
+#endif
 
 namespace UziSport
 {
@@ -14,6 +17,10 @@ namespace UziSport
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 });
+
+#if WINDOWS
+            builder.Services.AddSingleton<IBarcodeInput, BarcodeInputWindows>();
+#endif
 
 #if DEBUG
     		builder.Logging.AddDebug();
