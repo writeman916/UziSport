@@ -78,7 +78,9 @@ namespace UziSport.Model
             }
         }
 
+        public decimal StockOutTotalCostAmount { get; set; }
         public decimal ProfitAmount { get; set; }
+
     }
 
     public class StockOutSearchCriteria

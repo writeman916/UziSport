@@ -42,8 +42,7 @@ namespace UziSport.DAL
                 soi.ActualIncome,
                 soi.PaymentMethod,
                 soi.Note,
-                SUM(sod.Quantity * (sod.UnitPrice - sod.UnitCost) - sod.LineDiscountAmount) AS ProfitAmount
-
+                soi.ActualIncome - SUM(sod.Quantity * sod.UnitCost) AS ProfitAmount
                 FROM StockOutInfo        AS soi
                 JOIN StockOutDetailInfo  AS sod 
                     ON sod.StockOutId = soi.StockOutId
