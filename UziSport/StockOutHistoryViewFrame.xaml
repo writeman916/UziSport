@@ -73,30 +73,44 @@
         </Grid>
 
         <!--  Total Amount of Result  -->
-        <HorizontalStackLayout
+
+        <Grid
             Grid.Row="1"
             Grid.Column="0"
-            Margin="30">
-            <Label FontSize="30">Doanh thu :</Label>
-            <Label
-                x:Name="ResultTotalAmountLabel"
-                Margin="30"
-                FontSize="30"
-                HorizontalTextAlignment="End"
-                WidthRequest="200">
-                100,000,000
-            </Label>
+            RowDefinitions="*,50">
+            <HorizontalStackLayout
+                Grid.Row="0"
+                Grid.RowSpan="2"
+                Margin="30">
+                <Label FontSize="30">Doanh thu :</Label>
+                <Label
+                    x:Name="ResultTotalAmountLabel"
+                    Margin="30"
+                    FontSize="30"
+                    HorizontalTextAlignment="End"
+                    WidthRequest="200">
+                    100,000,000
+                </Label>
 
-            <Label Margin="100,0,0,0" FontSize="30">Lợi nhuận :</Label>
-            <Label
-                x:Name="ResultProfitAmountLabel"
-                Margin="30"
-                FontSize="30"
-                HorizontalTextAlignment="End"
-                WidthRequest="200">
-                100,000,000
-            </Label>
-        </HorizontalStackLayout>
+                <Label Margin="100,0,0,0" FontSize="30">Lợi nhuận :</Label>
+                <Label
+                    x:Name="ResultProfitAmountLabel"
+                    Margin="30"
+                    FontSize="30"
+                    HorizontalTextAlignment="End"
+                    WidthRequest="200">
+                    100,000,000
+                </Label>
+            </HorizontalStackLayout>
+
+            <HorizontalStackLayout Grid.Row="1" HorizontalOptions="End">
+                <CheckBox
+                    x:Name="CostHiddenCheckBox"
+                    IsChecked="True"
+                    VerticalOptions="Center" />
+                <Label Text="Ẩn giá vốn" VerticalTextAlignment="Center" />
+            </HorizontalStackLayout>
+        </Grid>
 
         <!--  StockOut List  -->
         <Grid Grid.Row="2">
@@ -399,7 +413,16 @@
                                                 FontSize="15"
                                                 HorizontalTextAlignment="Start"
                                                 Text="{Binding UnitCost, StringFormat='{}{0:N0}'}"
-                                                WidthRequest="180" />
+                                                WidthRequest="180">
+                                                <Label.Triggers>
+                                                    <DataTrigger
+                                                        Binding="{Binding Source={x:Reference CostHiddenCheckBox}, Path=IsChecked}"
+                                                        TargetType="Label"
+                                                        Value="True">
+                                                        <Setter Property="Opacity" Value="0" />
+                                                    </DataTrigger>
+                                                </Label.Triggers>
+                                            </Label>
                                             <Label
                                                 FontSize="15"
                                                 HorizontalTextAlignment="End"
