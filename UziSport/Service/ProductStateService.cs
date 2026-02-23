@@ -1,4 +1,4 @@
-﻿namespace UziSport.Services
+﻿namespace UziSport.Service
 {
     public static class ProductStateService
     {

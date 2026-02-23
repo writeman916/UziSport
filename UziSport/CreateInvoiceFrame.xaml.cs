@@ -6,6 +6,7 @@ using UziSport.DAL;
 using UziSport.Model;
 using UziSport.Services;
 using Microsoft.Extensions.DependencyInjection;
+using UziSport.Service;
 
 namespace UziSport;
 

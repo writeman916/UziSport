@@ -316,13 +316,15 @@
         </Grid>
 
         <!--  StockOut Info  -->
-        <VerticalStackLayout
+        <Grid
             Grid.Row="0"
             Grid.RowSpan="2"
             Grid.Column="1"
-            Margin="10,10,10,10">
+            Margin="10,10,10,10"
+            ColumnDefinitions="300, *"
+            RowDefinitions="50,50,140">
 
-            <HorizontalStackLayout Spacing="10">
+            <HorizontalStackLayout Grid.Row="0" Spacing="10">
                 <Label>Mã Hóa Đơn</Label>
                 <Entry
                     x:Name="StockOutCodeEntry"
@@ -333,7 +335,7 @@
                     WidthRequest="200 " />
             </HorizontalStackLayout>
 
-            <HorizontalStackLayout Spacing="10">
+            <HorizontalStackLayout Grid.Row="1" Spacing="10">
                 <Label>Ngày Nhập</Label>
                 <DatePicker
                     x:Name="StockOutDatePicker"
@@ -343,7 +345,11 @@
                     IsEnabled="False"
                     WidthRequest="200" />
             </HorizontalStackLayout>
-            <HorizontalStackLayout Spacing="10">
+
+            <HorizontalStackLayout
+                Grid.Row="2"
+                Grid.ColumnSpan="2"
+                Spacing="10">
                 <Label>Ghi Chú</Label>
                 <Editor
                     x:Name="NoteEntry"
@@ -353,7 +359,17 @@
                     Text="{Binding CurrentStockOutInfo.Note}"
                     WidthRequest="400" />
             </HorizontalStackLayout>
-        </VerticalStackLayout>
+
+            <Button
+                Grid.Row="0"
+                Grid.RowSpan="2"
+                Grid.Column="1"
+                Margin="30,20,30,20"
+                FontSize="18"
+                Text="In Hóa Đơn" 
+                Clicked="PrintButton_Clicked"/>
+        </Grid>
+
 
         <!--  Bill Frame  -->
         <Grid

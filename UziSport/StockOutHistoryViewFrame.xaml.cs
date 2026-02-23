@@ -4,7 +4,7 @@ using System.Text;
 using UziSport.Controls;
 using UziSport.DAL;
 using UziSport.Model;
-using UziSport.Services;
+using UziSport.Service;
 
 namespace UziSport;
 
@@ -224,5 +224,37 @@ public partial class StockOutHistoryViewFrame : ContentPage
 
             this.ReCalculateBillTotal();
         }
+    }
+
+    private void PrintButton_Clicked(object sender, EventArgs e)
+    {
+        var inv = new Invoice
+        {
+            ShopName = "UziSport",
+            ShopAddress = "Đà Nẵng",
+            ShopPhone = "090x xxx xxx",
+            InvoiceNo = CurrentStockOutInfo.StockOutCode,
+            CreatedAt = DateTime.Now,
+            CustomerName = "Customer",
+            Discount = CurrentStockOutInfo.InvoiceDiscountAmount,
+            Paid = CurrentStockOutInfo.ActualIncome,
+        };
+
+        foreach(StockOutDetailViewInfo s in ViewProductInBills)
+        {
+            inv.Lines.Add(new InvoiceLine
+            {
+                Name = s.ProductName,
+                Qty = s.Quantity,
+                Price = s.Price
+            });
+        }
+
+        // USB (qua printer name trong Windows)
+        RawPrinterHelper.PrintInvoiceToUsbPrinter("Xprinter XP-Q371U", inv);
+        //RawPrinterHelper.PrintInvoiceToUsbPrinter("POSPrinter POS80", inv);
+
+        // hoặc LAN
+        // PrintInvoiceToLan("192.168.1.50", inv);
     }
 }
