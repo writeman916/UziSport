@@ -2,8 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
+using UziSport.Controls;
 
 namespace UziSport.Model
 {
@@ -27,7 +29,9 @@ namespace UziSport.Model
         public int PaymentMethod { get; set; }
 
         public decimal ActualIncome { get; set; }
-    
+
+        public int PaymentStatus { get; set; }
+
     }
 
     public  class StockOutViewInfo : StockOutInfo
@@ -52,6 +56,7 @@ namespace UziSport.Model
                 InvoiceDiscountAmount = this.InvoiceDiscountAmount,
                 TotalAmount = this.TotalAmount,
                 PaymentMethod = this.PaymentMethod,
+                PaymentStatus = this.PaymentStatus,
                 CreateBy = this.CreateBy,
                 CreateAt = this.CreateAt,
                 UpdateBy = this.UpdateBy,
@@ -60,7 +65,7 @@ namespace UziSport.Model
         }
     }
 
-    public class StockOutHistoryInfo : StockOutInfo
+    public class StockOutHistoryInfo : StockOutViewInfo
     {
         public string PaymentMethodName 
         {
@@ -78,9 +83,24 @@ namespace UziSport.Model
             }
         }
 
+        public string PaymentStatusName
+        {
+            get
+            {
+                switch (this.PaymentStatus)
+                {
+                    case (int)Controls.PaymentStatus.Paid:
+                        return "Đã xong";
+                    case (int)Controls.PaymentStatus.Unpaid:
+                        return "Chưa xong";
+                    default:
+                        return string.Empty;
+                }
+            }
+        }
+
         public decimal StockOutTotalCostAmount { get; set; }
         public decimal ProfitAmount { get; set; }
-
     }
 
     public class StockOutSearchCriteria
@@ -88,8 +108,7 @@ namespace UziSport.Model
         public DateTime? FromDate { get; set; }
         public DateTime? ToDate { get; set; }
         public string StockOutCode { get; set; } = string.Empty;
-
         public int? PaymentMethod { get; set; }
-
+        public int? PaymentStatus { get; set; }
     }
 }

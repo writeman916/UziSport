@@ -105,8 +105,8 @@
                         <Switch
                             x:Name="ScanModeSwitch"
                             IsToggled="True"
-                            WidthRequest="90"
-                            Toggled="ScanModeSwitch_Toggled" />
+                            Toggled="ScanModeSwitch_Toggled"
+                            WidthRequest="90" />
                     </HorizontalStackLayout>
                 </Frame>
 
@@ -319,7 +319,7 @@
                 CornerRadius="10"
                 HasShadow="True">
 
-                <Grid RowDefinitions="560, 150, *">
+                <Grid RowDefinitions="510, 150, *">
                     <HorizontalStackLayout Grid.Row="0">
                         <CollectionView
                             Grid.Row="2"
@@ -447,10 +447,12 @@
                             </Label>
                             <controls:NumericEntry
                                 x:Name="ActualIncomeEntry"
+                                Focused="NumberEntry_Focused"
                                 FontAttributes="Bold"
                                 FontSize="30"
                                 HeightRequest="50"
                                 HorizontalTextAlignment="End"
+                                Unfocused="NumberEntry_UnFocused"
                                 VerticalTextAlignment="Start"
                                 WidthRequest="200" />
                         </HorizontalStackLayout>
@@ -468,11 +470,23 @@
                             Y2="0" />
                         <HorizontalStackLayout HeightRequest="50">
                             <Label FontSize="30" WidthRequest="280">
+                                Trạng thái:
+                            </Label>
+                            <Picker
+                                x:Name="PaymentStatusPicker"
+                                FontSize="19"
+                                HeightRequest="40"
+                                ItemDisplayBinding="{Binding MethodName}"
+                                ItemsSource="{Binding PaymentStatuses}"
+                                WidthRequest="200" />
+                        </HorizontalStackLayout>
+                        <HorizontalStackLayout HeightRequest="50">
+                            <Label FontSize="30" WidthRequest="280">
                                 Phương thức:
                             </Label>
                             <Picker
                                 x:Name="PaymentMethodPicker"
-                                FontSize="20"
+                                FontSize="19"
                                 HeightRequest="40"
                                 ItemDisplayBinding="{Binding MethodName}"
                                 ItemsSource="{Binding PaymentMethods}"
@@ -484,10 +498,12 @@
                             </Label>
                             <controls:NumericEntry
                                 x:Name="ReceivedEntry"
+                                Focused="NumberEntry_Focused"
                                 FontSize="30"
                                 HeightRequest="50"
                                 HorizontalTextAlignment="End"
                                 TextChanged="ReceivedEntry_TextChanged"
+                                Unfocused="NumberEntry_UnFocused"
                                 VerticalTextAlignment="Start"
                                 WidthRequest="200" />
                         </HorizontalStackLayout>

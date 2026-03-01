@@ -43,6 +43,11 @@ public partial class StockOutHistoryViewFrame : ContentPage
     public StockOutHistoryInfo CurrentStockOutInfo { get; set; } = new StockOutHistoryInfo();
 
     public ObservableCollection<PaymentMethodInfo> PaymentMethods { get; } = new();
+    public ObservableCollection<PaymentMethodInfo> SearchPaymentMethods { get; } = new();
+
+
+    public ObservableCollection<PaymentStatusInfo> PaymentStatuses { get; } = new();
+    public ObservableCollection<PaymentStatusInfo> SearchPaymentStatuses { get; } = new();
 
 
     private decimal _totalAmount = 0;
@@ -115,11 +120,11 @@ public partial class StockOutHistoryViewFrame : ContentPage
     {
         base.OnAppearing();
 
+        //Init Payment Methods
         if (PaymentMethods.Count == 0)
         {
             var paymentMethods = new ObservableCollection<PaymentMethodInfo>()
             {
-                new PaymentMethodInfo { Method = PaymentMethod.None, MethodName = " "},
                 new PaymentMethodInfo { Method = PaymentMethod.Cash,     MethodName = Constants.PaymentMethod_Cash },
                 new PaymentMethodInfo { Method = PaymentMethod.Transfer, MethodName = Constants.PaymentMethod_Transfer },
             };
@@ -129,6 +134,31 @@ public partial class StockOutHistoryViewFrame : ContentPage
             {
                 PaymentMethods.Add(method);
             }
+
+            SearchPaymentMethods.Clear();
+            SearchPaymentMethods.Add(new PaymentMethodInfo { Method = PaymentMethod.None, MethodName = " " }); 
+            foreach (var method in paymentMethods) SearchPaymentMethods.Add(method);
+        }
+
+        //Init Payment Status
+        if (PaymentStatuses.Count == 0)
+        {
+            var paymentStatuses = new ObservableCollection<PaymentStatusInfo>()
+                {
+                    new PaymentStatusInfo { Method = PaymentStatus.Paid,     MethodName = Constants.PaymentStatus_Paid },
+                    new PaymentStatusInfo { Method = PaymentStatus.Unpaid, MethodName = Constants.PaymentStatus_Unpaid },
+                };
+
+            PaymentStatuses.Clear();
+
+            foreach (var method in paymentStatuses)
+            {
+                PaymentStatuses.Add(method);
+            }
+
+            SearchPaymentStatuses.Clear();
+            SearchPaymentStatuses.Add(new PaymentStatusInfo { Method = PaymentStatus.None, MethodName = " " });
+            foreach (var method in paymentStatuses) SearchPaymentStatuses.Add(method);
         }
 
         this.ClearSearchCriteria();
@@ -155,20 +185,31 @@ public partial class StockOutHistoryViewFrame : ContentPage
         this.TotalDiscountAmount = 0;
         this.ActualIncomeEntry.Text = "0";
         this.CurrentStockOutInfo = new StockOutHistoryInfo();
+
+        this.PaymentMethodPicker.SelectedItem = -1;
+        this.PaymentStatusPicker.SelectedItem = -1;
+
+        this.ControlEnableToggle(false);
     }
 
     private void ClearSearchCriteria()
     {
         this.SearchDateFromPicker.Date = DateTime.Now.AddMonths(-1);
         this.SearchDateToPicker.Date = DateTime.Now;
-        this.PaymentMethodPicker.SelectedIndex = 0;
+        this.SearchPaymentMethodPicker.SelectedIndex = 0;
+        this.SearchPaymentStatusPicker.SelectedIndex = 0;
 
         this.ViewStockOutHistoryInfos = new List<StockOutHistoryInfo>();
         this.ResultTotalAmountLabel.Text = "0";
         this.ResultProfitAmountLabel.Text = "0";
     }
 
-    private async void BtnSearch_Clicked(object sender, EventArgs e)
+    private void BtnSearch_Clicked(object sender, EventArgs e)
+    {
+        this.DoSearch();
+    }
+
+    private async void DoSearch()
     {
         //lay dieu kien tim kiem
         var searchCondition = new StockOutSearchCriteria()
@@ -176,11 +217,17 @@ public partial class StockOutHistoryViewFrame : ContentPage
             FromDate = this.SearchDateFromPicker.Date,
             ToDate = this.SearchDateToPicker.Date
         };
-        
-        if(this.PaymentMethodPicker.SelectedItem is PaymentMethodInfo selectedMethod)
+
+        if (this.SearchPaymentMethodPicker.SelectedItem is PaymentMethodInfo selectedMethod)
         {
-            if(selectedMethod.MethodValue != 0)
+            if (selectedMethod.MethodValue != 0)
                 searchCondition.PaymentMethod = selectedMethod.MethodValue;
+        }
+
+        if (this.SearchPaymentStatusPicker.SelectedItem is PaymentStatusInfo selectedStatus)
+        {
+            if (selectedStatus.MethodValue != 0)
+                searchCondition.PaymentStatus = selectedStatus.MethodValue;
         }
 
         IsLoading = true;
@@ -206,6 +253,15 @@ public partial class StockOutHistoryViewFrame : ContentPage
         }
     }
 
+    private void ControlEnableToggle(bool isEnable)
+    {
+        SaveButton.IsEnabled = isEnable;
+        this.NoteEntry.IsEnabled = isEnable;
+        this.ActualIncomeEntry.IsEnabled = isEnable;
+        this.PaymentMethodPicker.IsEnabled = isEnable;
+        this.PaymentStatusPicker.IsEnabled = isEnable;
+    }
+
     private async void StockOutList_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         if (e.CurrentSelection.FirstOrDefault() is StockOutHistoryInfo selectedStockOut)
@@ -214,15 +270,44 @@ public partial class StockOutHistoryViewFrame : ContentPage
             this.StockOutCodeEntry.Text = selectedStockOut.StockOutCode;
             this.StockOutDatePicker.Date = selectedStockOut.StockOutDate;
             this.NoteEntry.Text = selectedStockOut.Note;
-            
+                      
             if (CurrentStockOutInfo != null)
             {
                 this.ActualIncomeEntry.Text = CurrentStockOutInfo.ActualIncome.ToString("N0", CultureInfo.InvariantCulture);
+
+                var statusValue = CurrentStockOutInfo.PaymentStatus;
+                PaymentStatusPicker.SelectedItem = PaymentStatuses.FirstOrDefault(x => x.MethodValue == statusValue);
+
+                var methodsValue = CurrentStockOutInfo.PaymentMethod;
+                PaymentMethodPicker.SelectedItem = PaymentMethods.FirstOrDefault(x => x.MethodValue == methodsValue);
             }
+
+            ControlEnableToggle(CurrentStockOutInfo != null);
 
             this.ViewProductInBills = await _stockOutDetailDAL.GetDetailByStockOutIdAsync(selectedStockOut.StockOutId);
 
             this.ReCalculateBillTotal();
         }
+    }
+
+    private async void btnLuu_Clicked(object sender, EventArgs e)
+    {
+        this.CurrentStockOutInfo.Note = this.NoteEntry.Text;
+        this.CurrentStockOutInfo.ActualIncome = this.ActualIncomeEntry.Value ?? 0m;
+        this.CurrentStockOutInfo.PaymentMethod = (PaymentMethodPicker.SelectedItem as PaymentMethodInfo)?.MethodValue ?? 0;
+        this.CurrentStockOutInfo.PaymentStatus = (PaymentStatusPicker.SelectedItem as PaymentStatusInfo)?.MethodValue ?? 0;
+
+        var dal = new StockOutDAL();
+
+        var stockOutInfo = CurrentStockOutInfo;
+        stockOutInfo.StockOutDetailInfos = this.ViewProductInBills;
+
+        await dal.SaveItemAsync(stockOutInfo);
+
+        _ = AppToast.ShowAsync(Controls.ToastView.ToastKind.Success, "Lưu hóa đơn thành công.", 2000);
+
+        this.ClearDetailInfo();
+
+        this.DoSearch();
     }
 }

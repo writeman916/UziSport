@@ -44,8 +44,11 @@ public partial class CreateInvoiceFrame : ContentPage
     }
 
     public StockOutViewInfo CurrentStockOutInfo { get; set; } = new StockOutViewInfo();
+
     public ObservableCollection<PaymentMethodInfo> PaymentMethods { get; } = new();
-    
+
+    public ObservableCollection<PaymentStatusInfo> PaymentStatuses { get; } = new();
+
 
     private decimal _totalAmount = 0;
     public decimal TotalAmout
@@ -224,6 +227,7 @@ public partial class CreateInvoiceFrame : ContentPage
         this.ChangeEntry.Text = "0";
         this.CurrentStockOutInfo = new StockOutViewInfo();
         this.PaymentMethodPicker.SelectedIndex = 0;
+        this.PaymentStatusPicker.SelectedIndex = 0;
 
         if (reGetProductlist)
         {
@@ -501,7 +505,11 @@ public partial class CreateInvoiceFrame : ContentPage
             if (PaymentMethodPicker.SelectedItem is PaymentMethodInfo selectedMethod)
                 CurrentStockOutInfo.PaymentMethod = selectedMethod.MethodValue;
 
+            if (PaymentStatusPicker.SelectedItem is PaymentStatusInfo selectedStatus)
+                CurrentStockOutInfo.PaymentStatus = selectedStatus.MethodValue;
+
             var dal = new StockOutDAL();
+
             await dal.SaveItemAsync(CurrentStockOutInfo);
 
             if (usedComboCostIds.Count > 0)
@@ -525,18 +533,37 @@ public partial class CreateInvoiceFrame : ContentPage
         {
             IsLoading = true;
 
+            //Init Payment Methods
             if (PaymentMethods.Count == 0)
             {
                 var paymentMethods = new ObservableCollection<PaymentMethodInfo>()
-            {
-                new PaymentMethodInfo { Method = PaymentMethod.Cash,     MethodName = Constants.PaymentMethod_Cash },
-                new PaymentMethodInfo { Method = PaymentMethod.Transfer, MethodName = Constants.PaymentMethod_Transfer },
-            };
+                {
+                    new PaymentMethodInfo { Method = PaymentMethod.Cash,     MethodName = Constants.PaymentMethod_Cash },
+                    new PaymentMethodInfo { Method = PaymentMethod.Transfer, MethodName = Constants.PaymentMethod_Transfer },
+                };
 
                 PaymentMethods.Clear();
+
                 foreach (var method in paymentMethods)
                 {
                     PaymentMethods.Add(method);
+                }
+            }
+
+            //Init Payment Status
+            if (PaymentStatuses.Count == 0)
+            {
+                var paymentStatuses = new ObservableCollection<PaymentStatusInfo>()
+                {
+                    new PaymentStatusInfo { Method = PaymentStatus.Paid,     MethodName = Constants.PaymentStatus_Paid },
+                    new PaymentStatusInfo { Method = PaymentStatus.Unpaid, MethodName = Constants.PaymentStatus_Unpaid },
+                };
+
+                PaymentStatuses.Clear();
+
+                foreach (var method in paymentStatuses)
+                {
+                    PaymentStatuses.Add(method);
                 }
             }
 
@@ -631,4 +658,20 @@ public partial class CreateInvoiceFrame : ContentPage
 #endif
     }
 
+    private void NumberEntry_Focused(object sender, FocusEventArgs e)
+    {
+        if (ScanModeSwitch?.IsToggled == true)
+            _barcodeInput?.SetScanMode(false);
+    }
+
+    private void NumberEntry_UnFocused(object sender, FocusEventArgs e)
+    {
+        if (ScanModeSwitch?.IsToggled == true)
+            _barcodeInput?.SetScanMode(true);
+    }
+
+    private void ReceivedEntry_Unfocused(object sender, FocusEventArgs e)
+    {
+
+    }
 }

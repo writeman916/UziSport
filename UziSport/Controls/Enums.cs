@@ -20,6 +20,13 @@ namespace UziSport.Controls
         Transfer = 2 //chuyen khoan
     }
 
+    public enum  PaymentStatus
+    {
+        None = 0,
+        Unpaid = 1, //chua thanh toan
+        Paid = 2, //da thanh toan
+    }
+
     public static class Constants
     {
         public const string DateFormat = "dd/MM/yyyy";
@@ -29,5 +36,9 @@ namespace UziSport.Controls
         public const string PaymentMethod_Cash = "Tiền mặt";
 
         public const string PaymentMethod_Transfer = "Chuyển khoản";
+
+        public const string PaymentStatus_Unpaid = "Chưa thanh toán";
+
+        public const string PaymentStatus_Paid = "Đã thanh toán";
     }
 }

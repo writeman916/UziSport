@@ -41,6 +41,7 @@ namespace UziSport.DAL
                 soi.TotalAmount,
                 soi.ActualIncome,
                 soi.PaymentMethod,
+                soi.PaymentStatus,
                 soi.Note,
                 soi.ActualIncome - SUM(sod.Quantity * sod.UnitCost) AS ProfitAmount
                 FROM StockOutInfo        AS soi
@@ -61,6 +62,11 @@ namespace UziSport.DAL
             if(search.PaymentMethod != null)
             {
                 sb.AppendLine($" AND soi.PaymentMethod = {search.PaymentMethod.GetValueOrDefault()} ");
+            }
+
+            if (search.PaymentStatus != null)
+            {
+                sb.AppendLine($" AND soi.PaymentStatus = {search.PaymentStatus.GetValueOrDefault()} ");
             }
 
             sb.AppendLine(@"GROUP BY 
