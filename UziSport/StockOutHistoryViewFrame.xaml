@@ -97,6 +97,7 @@
                     x:Name="ResultTotalAmountLabel"
                     Margin="30"
                     FontSize="30"
+                    HeightRequest="40"
                     HorizontalTextAlignment="End"
                     WidthRequest="200">
                     100,000,000
@@ -107,6 +108,7 @@
                     x:Name="ResultProfitAmountLabel"
                     Margin="30"
                     FontSize="30"
+                    HeightRequest="40"
                     HorizontalTextAlignment="End"
                     WidthRequest="200">
                     100,000,000
@@ -358,13 +360,15 @@
         </Grid>
 
         <!--  StockOut Info  -->
-        <VerticalStackLayout
+        <Grid
             Grid.Row="0"
             Grid.RowSpan="2"
             Grid.Column="1"
-            Margin="10,10,10,10">
+            Margin="10,10,10,10"
+            ColumnDefinitions="300, *"
+            RowDefinitions="50,50,90">
 
-            <HorizontalStackLayout Spacing="10">
+            <HorizontalStackLayout Grid.Row="0" Spacing="10">
                 <Label>Mã Hóa Đơn</Label>
                 <Entry
                     x:Name="StockOutCodeEntry"
@@ -375,7 +379,7 @@
                     WidthRequest="200 " />
             </HorizontalStackLayout>
 
-            <HorizontalStackLayout Spacing="10">
+            <HorizontalStackLayout Grid.Row="1" Spacing="10">
                 <Label>Ngày Nhập</Label>
                 <DatePicker
                     x:Name="StockOutDatePicker"
@@ -385,17 +389,21 @@
                     IsEnabled="False"
                     WidthRequest="200" />
             </HorizontalStackLayout>
-            <HorizontalStackLayout Spacing="10">
+            <HorizontalStackLayout
+                Grid.Row="2"
+                Grid.ColumnSpan="2"
+                Spacing="10">
                 <Label>Ghi Chú</Label>
                 <Editor
                     x:Name="NoteEntry"
                     Margin="32,0,0,0"
-                    HeightRequest="90"
+                    HeightRequest="85"
                     IsReadOnly="False"
                     Text="{Binding CurrentStockOutInfo.Note}"
+                    VerticalOptions="Start"
                     WidthRequest="400" />
             </HorizontalStackLayout>
-        </VerticalStackLayout>
+        </Grid>
 
         <!--  Bill Frame  -->
         <Grid
@@ -599,6 +607,12 @@
                 Margin="5"
                 HorizontalOptions="End"
                 Spacing="10">
+                <Button
+                    x:Name="PrintButton"
+                    Clicked="PrintButton_Clicked"
+                    FontSize="16"
+                    HeightRequest="50"
+                    Text="In Hóa Đơn" />
                 <Button
                     x:Name="SaveButton"
                     BackgroundColor="DarkGreen"

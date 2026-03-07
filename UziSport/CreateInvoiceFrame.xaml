@@ -527,8 +527,15 @@
                 Spacing="10">
                 <Button
                     x:Name="SaveButton"
-                    BackgroundColor="DarkGreen"
+                    BackgroundColor="DarkBlue"
                     Clicked="BtnLuu_Clicked"
+                    HeightRequest="50"
+                    Text="Lưu"
+                    WidthRequest="130" />
+                <Button
+                    x:Name="SaveAndPrintButton"
+                    BackgroundColor="DarkGreen"
+                    Clicked="BtnLuuAndPrint_Clicked"
                     HeightRequest="50"
                     Text="Xuất hóa đơn"
                     WidthRequest="130" />

@@ -6,6 +6,7 @@ using UziSport.DAL;
 using UziSport.Model;
 using UziSport.Services;
 using Microsoft.Extensions.DependencyInjection;
+using UziSport.Service;
 
 namespace UziSport;
 
@@ -303,20 +304,16 @@ public partial class CreateInvoiceFrame : ContentPage
         ViewProductInfos = filtered;
     }
 
-
-    private async void BtnHuy_Clicked(object sender, EventArgs e)
+    private async Task<StockOutViewInfo> DoUpdate()
     {
-        await ClearInputs();
-    }
+        var rtValue = new StockOutViewInfo();
 
-    private async void BtnLuu_Clicked(object sender, EventArgs e)
-    {
         try
         {
             if (ViewProductInBills == null || ViewProductInBills.Count == 0)
             {
                 _ = AppToast.ShowAsync(Controls.ToastView.ToastKind.Warning, "Chưa có sản phẩm nào trong hóa đơn.", 2000);
-                return;
+                return null;
             }
 
             // Map từ ViewProductInBills → StockOutDetailViewInfo
@@ -481,7 +478,7 @@ public partial class CreateInvoiceFrame : ContentPage
             if (detailList.Count == 0)
             {
                 _ = AppToast.ShowAsync(Controls.ToastView.ToastKind.Warning, "Tất cả sản phẩm đều có số lượng bằng 0", 2000);
-                return;
+                return null;
             }
 
             // Gán detail vào CurrentStockOutInfo
@@ -498,7 +495,7 @@ public partial class CreateInvoiceFrame : ContentPage
 
             // Đồng bộ với property TotalAmout đang bind ra UI
             TotalAmout = CurrentStockOutInfo.TotalAmount;
-            
+
             CurrentStockOutInfo.ActualIncome = this.ActualIncomeEntry.Value ?? 0m;
             CurrentStockOutInfo.StockOutCode = this.StockOutCodeEntry.Text;
 
@@ -517,6 +514,8 @@ public partial class CreateInvoiceFrame : ContentPage
                 await _productComboCostDal.DeleteByProductComboCostIdAsync(usedComboCostIds);
             }
 
+            rtValue = CurrentStockOutInfo;
+
             await ClearInputs(true);
 
             _ = AppToast.ShowAsync(Controls.ToastView.ToastKind.Success, "Tạo hóa đơn thành công.", 2000);
@@ -525,6 +524,46 @@ public partial class CreateInvoiceFrame : ContentPage
         {
             await DisplayAlert("Lỗi", ex.Message, "OK");
         }
+
+        return rtValue;
+    }
+
+    private void DoPrint(StockOutViewInfo info)
+    {
+        var inv = new Invoice
+        {
+            ShopName = "UZI SPORT",
+            ShopAddress = "941 Tran Thu Do, Dien Ban Dong, Da Nang",
+            ShopPhone = "0905049764",
+            InvoiceNo = CurrentStockOutInfo.StockOutCode,
+            CreatedAt = DateTime.Now,
+            Discount = CurrentStockOutInfo.InvoiceDiscountAmount,
+            Paid = CurrentStockOutInfo.ActualIncome,
+        };
+
+        foreach (StockOutDetailViewInfo s in info.StockOutDetailInfos)
+        {
+            inv.Lines.Add(new InvoiceLine
+            {
+                Name = s.ProductName,
+                Qty = s.Quantity,
+                Price = s.Price
+            });
+        }
+
+        RawPrinterHelper.PrintInvoiceToUsbPrinter("POSPrinter POS80", inv);
+    }
+
+    private async void BtnHuy_Clicked(object sender, EventArgs e)
+    {
+        await ClearInputs();
+    }
+
+    private async void BtnLuuAndPrint_Clicked(object sender, EventArgs e)
+    {
+        var printInfo = await DoUpdate();
+
+        this.DoPrint(printInfo);
     }
 
     private async Task FirstInitAsync()
@@ -673,5 +712,10 @@ public partial class CreateInvoiceFrame : ContentPage
     private void ReceivedEntry_Unfocused(object sender, FocusEventArgs e)
     {
 
+    }
+
+    private async void BtnLuu_Clicked(object sender, EventArgs e)
+    {
+        await this.DoUpdate();
     }
 }

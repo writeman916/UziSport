@@ -4,7 +4,7 @@ using System.Text;
 using UziSport.Controls;
 using UziSport.DAL;
 using UziSport.Model;
-using UziSport.Services;
+using UziSport.Service;
 
 namespace UziSport;
 
@@ -256,6 +256,7 @@ public partial class StockOutHistoryViewFrame : ContentPage
     private void ControlEnableToggle(bool isEnable)
     {
         SaveButton.IsEnabled = isEnable;
+        PrintButton.IsEnabled = isEnable;
         this.NoteEntry.IsEnabled = isEnable;
         this.ActualIncomeEntry.IsEnabled = isEnable;
         this.PaymentMethodPicker.IsEnabled = isEnable;
@@ -309,5 +310,34 @@ public partial class StockOutHistoryViewFrame : ContentPage
         this.ClearDetailInfo();
 
         this.DoSearch();
+    }
+
+    private void PrintButton_Clicked(object sender, EventArgs e)
+    {
+        var inv = new Invoice
+        {
+            ShopName = "UZI SPORT",
+            ShopAddress = "941 Tran Thu Do, Dien Ban Dong, Da Nang",
+            ShopPhone = "0905049764",
+            InvoiceNo = CurrentStockOutInfo.StockOutCode,
+            CreatedAt = DateTime.Now,
+            Discount = CurrentStockOutInfo.InvoiceDiscountAmount,
+            Paid = CurrentStockOutInfo.ActualIncome,
+        };
+
+        foreach(StockOutDetailViewInfo s in ViewProductInBills)
+        {
+            inv.Lines.Add(new InvoiceLine
+            {
+                Name = s.ProductName,
+                Qty = s.Quantity,
+                Price = s.Price
+            });
+        }
+
+        RawPrinterHelper.PrintInvoiceToUsbPrinter("POSPrinter POS80", inv);
+
+        // hoặc LAN
+        // PrintInvoiceToLan("192.168.1.50", inv);
     }
 }

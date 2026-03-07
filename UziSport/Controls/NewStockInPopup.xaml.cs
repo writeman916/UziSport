@@ -4,7 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UziSport.DAL;
 using UziSport.Model;
-using UziSport.Services;
+using UziSport.Service;
 
 #if WINDOWS
 using Microsoft.UI.Xaml;
