@@ -496,6 +496,7 @@ public partial class CreateInvoiceFrame : ContentPage
             // Đồng bộ với property TotalAmout đang bind ra UI
             TotalAmout = CurrentStockOutInfo.TotalAmount;
 
+            CurrentStockOutInfo.InvoiceDiscountAmount = this.TotalDiscountAmount;
             CurrentStockOutInfo.ActualIncome = this.ActualIncomeEntry.Value ?? 0m;
             CurrentStockOutInfo.StockOutCode = this.StockOutCodeEntry.Text;
 
